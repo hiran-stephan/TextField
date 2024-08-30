@@ -4,7 +4,10 @@ import SwiftUI
 struct ContentView: View {
     @State private var text: String = ""
     @State private var showError: Bool = false
-
+    // State variables to handle alerts
+    @State private var showAlert: Bool = false
+    @State private var alertMessage: String = ""
+    
     var body: some View {
         VStack {
             TextInput(
@@ -18,14 +21,19 @@ struct ContentView: View {
                 isError: showError,
                 errorText: "Invalid username",
                 onTrailingIconClicked: {
-                    print("Trailing icon clicked")
+                    alertMessage = "Trailing icon clicked"
+                    showAlert = true
                 },
                 onQuickTipClicked: {
-                    print("Quick tip clicked")
+                    alertMessage = "Quick tip clicked"
+                    showAlert = true
                 }
             )
             .padding()
-
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Alert"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            }
+            
             Button(action: {
                 showError.toggle()
             }) {

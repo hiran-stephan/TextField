@@ -67,7 +67,7 @@ struct TextInput: View {
     private var textFieldView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: TextInputTheme.Spacing.cornerRadius)
-                .fill(TextInputTheme.Colors.backgroundColor)
+                .fill(isError ? TextInputTheme.Colors.errorColor : TextInputTheme.Colors.backgroundColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: TextInputTheme.Spacing.cornerRadius)
                         .stroke(isError ? TextInputTheme.Colors.errorColor : TextInputTheme.Colors.borderColor, lineWidth: 1)
