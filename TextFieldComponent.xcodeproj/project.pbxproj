@@ -14,8 +14,9 @@
 		3B43795A2C80AF7C00495EF1 /* TextFieldComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379592C80AF7C00495EF1 /* TextFieldComponentTests.swift */; };
 		3B4379642C80AF7C00495EF1 /* TextFieldComponentUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379632C80AF7C00495EF1 /* TextFieldComponentUITests.swift */; };
 		3B4379662C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379652C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift */; };
-		3B4379752C80BCDD00495EF1 /* TextInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379732C80BCDD00495EF1 /* TextInputField.swift */; };
-		3B4379762C80BCDD00495EF1 /* TextInputFieldConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379742C80BCDD00495EF1 /* TextInputFieldConfig.swift */; };
+		3B4379752C80BCDD00495EF1 /* TextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379732C80BCDD00495EF1 /* TextInput.swift */; };
+		3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379792C8172F300495EF1 /* FigmaCode.swift */; };
+		3B4379832C82286F00495EF1 /* TextInputTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379822C82286F00495EF1 /* TextInputTheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,8 +47,9 @@
 		3B43795F2C80AF7C00495EF1 /* TextFieldComponentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TextFieldComponentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4379632C80AF7C00495EF1 /* TextFieldComponentUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldComponentUITests.swift; sourceTree = "<group>"; };
 		3B4379652C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldComponentUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		3B4379732C80BCDD00495EF1 /* TextInputField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputField.swift; sourceTree = "<group>"; };
-		3B4379742C80BCDD00495EF1 /* TextInputFieldConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputFieldConfig.swift; sourceTree = "<group>"; };
+		3B4379732C80BCDD00495EF1 /* TextInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInput.swift; sourceTree = "<group>"; };
+		3B4379792C8172F300495EF1 /* FigmaCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FigmaCode.swift; sourceTree = "<group>"; };
+		3B4379822C82286F00495EF1 /* TextInputTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputTheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 				3B4379722C80BCDD00495EF1 /* CustomTextField */,
 				3B43794C2C80AF7C00495EF1 /* Assets.xcassets */,
 				3B43794E2C80AF7C00495EF1 /* Preview Content */,
+				3B4379792C8172F300495EF1 /* FigmaCode.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -135,8 +138,8 @@
 		3B4379722C80BCDD00495EF1 /* CustomTextField */ = {
 			isa = PBXGroup;
 			children = (
-				3B4379732C80BCDD00495EF1 /* TextInputField.swift */,
-				3B4379742C80BCDD00495EF1 /* TextInputFieldConfig.swift */,
+				3B4379732C80BCDD00495EF1 /* TextInput.swift */,
+				3B4379822C82286F00495EF1 /* TextInputTheme.swift */,
 			);
 			path = CustomTextField;
 			sourceTree = "<group>";
@@ -272,9 +275,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B43794B2C80AF7A00495EF1 /* ContentView.swift in Sources */,
-				3B4379762C80BCDD00495EF1 /* TextInputFieldConfig.swift in Sources */,
-				3B4379752C80BCDD00495EF1 /* TextInputField.swift in Sources */,
+				3B4379832C82286F00495EF1 /* TextInputTheme.swift in Sources */,
+				3B4379752C80BCDD00495EF1 /* TextInput.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
+				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
