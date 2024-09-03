@@ -14,9 +14,19 @@
 		3B43795A2C80AF7C00495EF1 /* TextFieldComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379592C80AF7C00495EF1 /* TextFieldComponentTests.swift */; };
 		3B4379642C80AF7C00495EF1 /* TextFieldComponentUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379632C80AF7C00495EF1 /* TextFieldComponentUITests.swift */; };
 		3B4379662C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379652C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift */; };
-		3B4379752C80BCDD00495EF1 /* TextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379732C80BCDD00495EF1 /* TextInput.swift */; };
+		3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379732C80BCDD00495EF1 /* TextFieldGeneral.swift */; };
 		3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379792C8172F300495EF1 /* FigmaCode.swift */; };
-		3B4379832C82286F00495EF1 /* TextInputTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379822C82286F00495EF1 /* TextInputTheme.swift */; };
+		3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379822C82286F00495EF1 /* TextFieldGeneralTheme.swift */; };
+		3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379842C877BA000495EF1 /* TextInputPassword.swift */; };
+		3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379872C8783DC00495EF1 /* USBankingColors.swift */; };
+		3B43798A2C8784B400495EF1 /* Colours.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379892C8784B400495EF1 /* Colours.swift */; };
+		3B43798C2C8784EB00495EF1 /* Dimens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B43798B2C8784EB00495EF1 /* Dimens.swift */; };
+		3B43798E2C87858100495EF1 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B43798D2C87858000495EF1 /* Shapes.swift */; };
+		3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B43798F2C8785BC00495EF1 /* Spacing.swift */; };
+		3B4379922C8785FA00495EF1 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379912C8785FA00495EF1 /* Typography.swift */; };
+		3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379932C87863400495EF1 /* WhitneyFont.swift */; };
+		3B4379962C87886700495EF1 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379952C87886700495EF1 /* Theme.swift */; };
+		3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379972C87950D00495EF1 /* ComponentImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,9 +57,19 @@
 		3B43795F2C80AF7C00495EF1 /* TextFieldComponentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TextFieldComponentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4379632C80AF7C00495EF1 /* TextFieldComponentUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldComponentUITests.swift; sourceTree = "<group>"; };
 		3B4379652C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldComponentUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		3B4379732C80BCDD00495EF1 /* TextInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInput.swift; sourceTree = "<group>"; };
+		3B4379732C80BCDD00495EF1 /* TextFieldGeneral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldGeneral.swift; sourceTree = "<group>"; };
 		3B4379792C8172F300495EF1 /* FigmaCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FigmaCode.swift; sourceTree = "<group>"; };
-		3B4379822C82286F00495EF1 /* TextInputTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputTheme.swift; sourceTree = "<group>"; };
+		3B4379822C82286F00495EF1 /* TextFieldGeneralTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldGeneralTheme.swift; sourceTree = "<group>"; };
+		3B4379842C877BA000495EF1 /* TextInputPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputPassword.swift; sourceTree = "<group>"; };
+		3B4379872C8783DC00495EF1 /* USBankingColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBankingColors.swift; sourceTree = "<group>"; };
+		3B4379892C8784B400495EF1 /* Colours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colours.swift; sourceTree = "<group>"; };
+		3B43798B2C8784EB00495EF1 /* Dimens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dimens.swift; sourceTree = "<group>"; };
+		3B43798D2C87858000495EF1 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
+		3B43798F2C8785BC00495EF1 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
+		3B4379912C8785FA00495EF1 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		3B4379932C87863400495EF1 /* WhitneyFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhitneyFont.swift; sourceTree = "<group>"; };
+		3B4379952C87886700495EF1 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		3B4379972C87950D00495EF1 /* ComponentImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +120,7 @@
 		3B4379472C80AF7A00495EF1 /* TextFieldComponent */ = {
 			isa = PBXGroup;
 			children = (
+				3B4379862C8783AE00495EF1 /* Theme */,
 				3B4379482C80AF7A00495EF1 /* TextFieldComponentApp.swift */,
 				3B43794A2C80AF7A00495EF1 /* ContentView.swift */,
 				3B4379722C80BCDD00495EF1 /* CustomTextField */,
@@ -138,10 +159,27 @@
 		3B4379722C80BCDD00495EF1 /* CustomTextField */ = {
 			isa = PBXGroup;
 			children = (
-				3B4379732C80BCDD00495EF1 /* TextInput.swift */,
-				3B4379822C82286F00495EF1 /* TextInputTheme.swift */,
+				3B4379732C80BCDD00495EF1 /* TextFieldGeneral.swift */,
+				3B4379822C82286F00495EF1 /* TextFieldGeneralTheme.swift */,
+				3B4379842C877BA000495EF1 /* TextInputPassword.swift */,
+				3B4379972C87950D00495EF1 /* ComponentImage.swift */,
 			);
 			path = CustomTextField;
+			sourceTree = "<group>";
+		};
+		3B4379862C8783AE00495EF1 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				3B4379872C8783DC00495EF1 /* USBankingColors.swift */,
+				3B4379892C8784B400495EF1 /* Colours.swift */,
+				3B43798B2C8784EB00495EF1 /* Dimens.swift */,
+				3B43798D2C87858000495EF1 /* Shapes.swift */,
+				3B43798F2C8785BC00495EF1 /* Spacing.swift */,
+				3B4379912C8785FA00495EF1 /* Typography.swift */,
+				3B4379932C87863400495EF1 /* WhitneyFont.swift */,
+				3B4379952C87886700495EF1 /* Theme.swift */,
+			);
+			path = Theme;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -275,10 +313,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B43794B2C80AF7A00495EF1 /* ContentView.swift in Sources */,
-				3B4379832C82286F00495EF1 /* TextInputTheme.swift in Sources */,
-				3B4379752C80BCDD00495EF1 /* TextInput.swift in Sources */,
+				3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */,
+				3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */,
+				3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */,
+				3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */,
+				3B43798C2C8784EB00495EF1 /* Dimens.swift in Sources */,
+				3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */,
+				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
+				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,
+				3B43798E2C87858100495EF1 /* Shapes.swift in Sources */,
 				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
+				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
+				3B43798A2C8784B400495EF1 /* Colours.swift in Sources */,
+				3B4379962C87886700495EF1 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

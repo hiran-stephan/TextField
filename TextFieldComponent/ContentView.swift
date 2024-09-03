@@ -10,41 +10,33 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            TextInput(
+//            TextFieldGeneral(
+//                text: $text,
+//                label: "Email",
+//                labelIcon: "info",
+//                trailingIcon: "padlock",
+//                placeholder: "Enter your email",
+//                isError: showError,
+//                errorText: "Invalid email address",
+//                errorIcon: "error"
+//            )
+//            Spacer()
+            TextFieldPassword(
                 text: $text,
-                enabled: true,
-                label: "Username",
-                labelIcon: "person.fill",
-                leadingIcon: "lock.fill",
-                trailingIcon: "eye.fill",
-                placeholder: "Enter your username",
-                isError: showError,
-                errorText: "Invalid username",
-                onTrailingIconClicked: {
-                    alertMessage = "Trailing icon clicked"
-                    showAlert = true
-                },
+                label: "Password",
+                placeholder: "Enter your password",
+                labelIcon: "info",
+//                leadingIcon: "padlock",
+                isError: true,
+                errorText: "Invalid password",
                 onQuickTipClicked: {
-                    alertMessage = "Quick tip clicked"
-                    showAlert = true
+                    print("Quick tip clicked")
+                },
+                onCommit: {
+                    print("Done")
                 }
             )
-            .padding()
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Alert"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-            }
-            
-            Button(action: {
-                showError.toggle()
-            }) {
-                Text(showError ? "Hide Error" : "Show Error")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    .accessibilityLabel(Text(showError ? "Hide Error" : "Show Error"))
-            }
-            .padding(.top, 20)
+
         }
     }
 }
