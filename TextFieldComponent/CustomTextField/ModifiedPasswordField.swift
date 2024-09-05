@@ -186,3 +186,68 @@ struct TextFieldPassword_Previews: PreviewProvider {
         .previewLayout(.sizeThatFits)
     }
 }
+
+struct LeadingIconStyle: ViewModifier {
+    var color: Color = TextFieldGeneralTheme.Colors.primaryTextColor
+    var padding: CGFloat = TextFieldGeneralTheme.Spacing.iconPadding
+    var height: CGFloat = TextFieldGeneralTheme.Spacing.leadingIconHeight
+
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(color)
+            .padding(.leading, padding)
+            .frame(height: height)
+    }
+}
+
+extension View {
+    func leadingIconStyle(
+        color: Color = TextFieldGeneralTheme.Colors.primaryTextColor,
+        padding: CGFloat = TextFieldGeneralTheme.Spacing.iconPadding,
+        height: CGFloat = TextFieldGeneralTheme.Spacing.leadingIconHeight
+    ) -> some View {
+        self.modifier(LeadingIconStyle(color: color, padding: padding, height: height))
+    }
+}
+
+/*
+ // Using default styles
+ ComponentImage(leadingIcon, resizable: false)
+     .leadingIconStyle()
+
+ // Using custom styles
+ ComponentImage(leadingIcon, resizable: false)
+     .leadingIconStyle(color: .red, padding: 10, height: 40)
+ */
+
+struct BackgroundWithBorderStyle: ViewModifier {
+    var isError: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: TextFieldGeneralTheme.Spacing.cornerRadius)
+                    .foregroundColor(TextFieldGeneralTheme.Colors.backgroundColor)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: TextFieldGeneralTheme.Spacing.cornerRadius)
+                    .stroke(
+                        isError ? TextFieldGeneralTheme.Colors.errorColor : TextFieldGeneralTheme.Colors.borderColor,
+                        lineWidth: 1 // TextFieldGeneralTheme.Spacing.textFieldStroke
+                    )
+            )
+    }
+}
+
+extension View {
+    func backgroundWithBorder(isError: Bool) -> some View {
+        self.modifier(BackgroundWithBorderStyle(isError: isError))
+    }
+}
+
+/*
+ HStack {
+     // Your content here
+ }
+ .backgroundWithBorder(isError: true)
+ */
