@@ -187,28 +187,39 @@ struct TextFieldPassword_Previews: PreviewProvider {
     }
 }
 
+// A custom ViewModifier to style leading icons in a text field, allowing customization of color, padding, and height.
 struct LeadingIconStyle: ViewModifier {
+    // The color for the icon (default is the primary text color from the theme).
     var color: Color = TextFieldGeneralTheme.Colors.primaryTextColor
+    
+    // Padding to be applied to the left side of the icon (default is the icon padding from the theme).
     var padding: CGFloat = TextFieldGeneralTheme.Spacing.iconPadding
+    
+    // The height of the icon (default is the leading icon height from the theme).
     var height: CGFloat = TextFieldGeneralTheme.Spacing.leadingIconHeight
 
+    // The body of the ViewModifier applies the styles to the content.
     func body(content: Content) -> some View {
         content
-            .foregroundColor(color)
-            .padding(.leading, padding)
-            .frame(height: height)
+            .foregroundColor(color) // Set the icon color
+            .padding(.leading, padding) // Apply left padding
+            .frame(height: height) // Set the height of the icon
     }
 }
 
+// Extension to allow easy application of the LeadingIconStyle to any view.
 extension View {
+    // A helper function to apply the LeadingIconStyle ViewModifier with optional customization parameters.
     func leadingIconStyle(
         color: Color = TextFieldGeneralTheme.Colors.primaryTextColor,
         padding: CGFloat = TextFieldGeneralTheme.Spacing.iconPadding,
         height: CGFloat = TextFieldGeneralTheme.Spacing.leadingIconHeight
     ) -> some View {
+        // Use the custom LeadingIconStyle modifier, passing in any customization values provided.
         self.modifier(LeadingIconStyle(color: color, padding: padding, height: height))
     }
 }
+
 
 /*
  // Using default styles
@@ -220,27 +231,37 @@ extension View {
      .leadingIconStyle(color: .red, padding: 10, height: 40)
  */
 
+
+// A custom ViewModifier to apply a background with a border, which changes color based on an error state.
 struct BackgroundWithBorderStyle: ViewModifier {
+    // A binding to a boolean that indicates whether there is an error state.
     @Binding var isError: Bool
 
+    // The body of the ViewModifier defines how the content should be styled.
     func body(content: Content) -> some View {
         content
             .background(
+                // Apply a rounded rectangle as the background, using a corner radius.
                 RoundedRectangle(cornerRadius: TextFieldGeneralTheme.Spacing.cornerRadius)
-                    .foregroundColor(TextFieldGeneralTheme.Colors.backgroundColor)
+                    .foregroundColor(TextFieldGeneralTheme.Colors.backgroundColor) // Set background color
             )
             .overlay(
+                // Apply an overlay with a rounded rectangle, used for the border.
                 RoundedRectangle(cornerRadius: TextFieldGeneralTheme.Spacing.cornerRadius)
                     .stroke(
+                        // Change the border color based on the error state.
                         isError ? TextFieldGeneralTheme.Colors.errorColor : TextFieldGeneralTheme.Colors.borderColor,
-                        lineWidth: TextFieldGeneralTheme.Spacing.textFieldStroke
+                        lineWidth: TextFieldGeneralTheme.Spacing.textFieldStroke // Set the stroke width
                     )
             )
     }
 }
 
+// Extension to allow easy application of the custom modifier.
 extension View {
+    // A helper function to apply the BackgroundWithBorderStyle ViewModifier.
     func backgroundWithBorder(isError: Binding<Bool>) -> some View {
+        // Use the custom modifier and pass the binding for the error state.
         self.modifier(BackgroundWithBorderStyle(isError: isError))
     }
 }
