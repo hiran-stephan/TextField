@@ -184,3 +184,20 @@ struct TextFieldPassword_Previews: PreviewProvider {
         .previewLayout(.sizeThatFits)
     }
 }
+
+
+//            TextFieldPassword(
+//                text: $text,
+//                label: "Password",
+//                placeholder: "Enter your password",
+//                labelIcon: "info",
+////                leadingIcon: "padlock",
+//                isError: true,
+//                errorText: "Invalid password",
+//                onQuickTipClicked: {
+//                    print("Quick tip clicked")
+//                },
+//                onCommit: {
+//                    print("Done")
+//                }
+//            )

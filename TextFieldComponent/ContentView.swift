@@ -10,39 +10,15 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-//            TextFieldGeneral(
-//                text: $text,
-//                label: "Email",
-//                labelIcon: "info",
-//                trailingIcon: "padlock",
-//                placeholder: "Enter your email",
-//                isError: showError,
-//                errorText: "Invalid email address",
-//                errorIcon: "error"
-//            )
-//            Spacer()
-            TextFieldPassword(
-                text: $text,
-                label: "Password",
-                placeholder: "Enter your password",
-                labelIcon: "info",
-//                leadingIcon: "padlock",
-                isError: true,
-                errorText: "Invalid password",
-                onQuickTipClicked: {
-                    print("Quick tip clicked")
-                },
-                onCommit: {
-                    print("Done")
-                }
-            )
-
+            PlaceholderView()
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        PlaceholderView()
     }
 }
