@@ -25,8 +25,8 @@ public struct TextFieldPassword: View {
     var placeholder: String?
     
     // Error handling
-    /// Boolean to indicate if there's an error state
-    var isError: Bool = false
+    /// Binding boolean to indicate if there's an error state
+    @Binding var isError: Bool
     /// Optional error message displayed below the text field when 'isError' is true
     var errorText: String?
     
@@ -46,7 +46,7 @@ public struct TextFieldPassword: View {
         labelIcon: String? = nil,
         leadingIcon: String? = nil,
         placeholder: String? = nil,
-        isError: Bool = false,
+        isError: Binding<Bool>,
         errorText: String? = nil,
         onQuickTipClicked: (() -> Void)? = nil,
         onCommit: (() -> Void)? = nil
@@ -221,7 +221,7 @@ extension View {
  */
 
 struct BackgroundWithBorderStyle: ViewModifier {
-    var isError: Bool
+    @Binding var isError: Bool
 
     func body(content: Content) -> some View {
         content
@@ -233,14 +233,14 @@ struct BackgroundWithBorderStyle: ViewModifier {
                 RoundedRectangle(cornerRadius: TextFieldGeneralTheme.Spacing.cornerRadius)
                     .stroke(
                         isError ? TextFieldGeneralTheme.Colors.errorColor : TextFieldGeneralTheme.Colors.borderColor,
-                        lineWidth: 1 // TextFieldGeneralTheme.Spacing.textFieldStroke
+                        lineWidth: TextFieldGeneralTheme.Spacing.textFieldStroke
                     )
             )
     }
 }
 
 extension View {
-    func backgroundWithBorder(isError: Bool) -> some View {
+    func backgroundWithBorder(isError: Binding<Bool>) -> some View {
         self.modifier(BackgroundWithBorderStyle(isError: isError))
     }
 }
@@ -249,5 +249,5 @@ extension View {
  HStack {
      // Your content here
  }
- .backgroundWithBorder(isError: true)
+ .backgroundWithBorder(isError: $isError)
  */
