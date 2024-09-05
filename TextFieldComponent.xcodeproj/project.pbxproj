@@ -28,6 +28,7 @@
 		3B4379962C87886700495EF1 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379952C87886700495EF1 /* Theme.swift */; };
 		3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379972C87950D00495EF1 /* ComponentImage.swift */; };
 		3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9602C89F7C30058896A /* PlaceholderView.swift */; };
+		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		3B4379952C87886700495EF1 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3B4379972C87950D00495EF1 /* ComponentImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentImage.swift; sourceTree = "<group>"; };
 		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
+		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 				3B4379822C82286F00495EF1 /* TextFieldGeneralTheme.swift */,
 				3B4379842C877BA000495EF1 /* TextInputPassword.swift */,
 				3B4379972C87950D00495EF1 /* ComponentImage.swift */,
+				3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */,
 			);
 			path = CustomTextField;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */,
 				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
+				3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */,
 				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,
 				3B43798E2C87858100495EF1 /* Shapes.swift in Sources */,
 				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
