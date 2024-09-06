@@ -8,15 +8,16 @@
 import Foundation
 import SwiftUI
 
+/// A container view that dynamically adjusts its layout and size based on the device's size class.
+/// Displays an image and a title, adapting for different screen sizes such as iPads (Regular) and iPhones (Compact).
 public struct LoginGraphicContainer: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.verticalSizeClass) var verticalSizeClass
-    
-    /// Properties for image name and title
+
     let imageName: String
     let title: String
 
-    /// Custom initializer for LoginGraphicContainer, accepting imageName and title as parameters
+    /// Custom initializer for LoginGraphicContainer, accepting optional imageName and title as parameters.
+    /// If no parameters are provided, it defaults to pre-configured values.
     public init(imageName: String? = nil, title: String? = nil) {
         self.imageName = imageName ?? ComponentConstants.Images.loginGraphics
         self.title = title ?? Constants.defaultTitle
@@ -24,108 +25,98 @@ public struct LoginGraphicContainer: View {
 
     public var body: some View {
         VStack {
-            // Pass the image name and title to the placeholder view
+            // The LoginGraphicPlaceholder contains the image and title to be displayed
             LoginGraphicPlaceholder(imageName: imageName, title: title)
-                .padding(containerPadding) // Dynamic padding based on device size
                 .frame(
-                    maxWidth: .infinity,
-                    minHeight: minHeight,
-                    maxHeight: maxHeight,
-                    alignment: .center
+                    maxWidth: .infinity, // Makes the view take up the maximum width available
+                    minHeight: minHeight, // Dynamically sets the minimum height based on size class
+                    maxHeight: maxHeight, // Dynamically sets the maximum height based on size class
+                    alignment: .center // Centers the content vertically and horizontally
                 )
-                .background(BankingTheme.colors.illustrationPink)
-                .cornerRadius(BankingTheme.spacing.paddingSmallMedium)
+                .background(BankingTheme.colors.illustrationPink) // Applies a background color to the view
+                .cornerRadius(BankingTheme.spacing.paddingSmallMedium) // Rounds the corners of the background
         }
     }
 
-    // Dynamic padding based on the device's size class
-    private var containerPadding: CGFloat {
-        horizontalSizeClass == .regular ? BankingTheme.spacing.paddingLarge : BankingTheme.spacing.paddingMedium
-    }
-
-    // Determines the minimum height based on the horizontal size class
+    // Determines the minimum height based on the horizontal size class (iPad or iPhone)
     private var minHeight: CGFloat {
         horizontalSizeClass == .regular ? Constants.MinHeightRegular : Constants.MinHeightCompact
     }
 
-    // Determines the maximum height based on the horizontal size class
+    // Determines the maximum height based on the horizontal size class (iPad or iPhone)
     private var maxHeight: CGFloat {
         horizontalSizeClass == .regular ? Constants.MaxHeightRegular : Constants.MaxHeightCompact
     }
 
     public struct Constants {
-        static let defaultTitle: String = "Sign on to CIBC NetBanking"
-        
-        // Adjustable values for min and max heights based on device class
-        static let MinHeightRegular: CGFloat = 120 // Regular size class (iPad)
-        static let MaxHeightRegular: CGFloat = 120
-        static let MinHeightCompact: CGFloat = 130 // Compact size class (iPhone)
-        static let MaxHeightCompact: CGFloat = 130
+        static let defaultTitle: String = "Sign on to CIBC NetBanking" // Default title for the LoginGraphicPlaceholder
+
+        // Adjustable height values for different device classes (iPad vs iPhone)
+        static let MinHeightRegular: CGFloat = 120 // Minimum height for Regular size class (iPad)
+        static let MaxHeightRegular: CGFloat = 120 // Maximum height for Regular size class
+        static let MinHeightCompact: CGFloat = 130 // Minimum height for Compact size class (iPhone)
+        static let MaxHeightCompact: CGFloat = 130 // Maximum height for Compact size class
     }
 }
 
 
-struct Constants {
-    // These values can be adjusted as needed to control the height of the `PlaceholderView`.
-    static let MinHeightRegular: CGFloat = 120  // Minimum height for Regular size class (e.g., iPad).
-    static let MaxHeightRegular: CGFloat = 120  // Maximum height for Regular size class.
-    static let MinHeightCompact: CGFloat = 130  // Minimum height for Compact size class (e.g., iPhone).
-    static let MaxHeightCompact: CGFloat = 130  // Maximum height for Compact size class.
-}
-
+/// A placeholder view that displays an image and a title.
+/// It adapts its layout to be horizontal on larger devices (e.g., iPads) and vertical on smaller devices (e.g., iPhones).
 struct LoginGraphicPlaceholder: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    
+
     /// Property for the image name
     let imageName: String
     /// Property for the title
     let title: String
-    
+
+    /// Initializer for the LoginGraphicPlaceholder, which accepts the image name and title.
+    /// These values are passed from the parent container.
     init(imageName: String, title: String) {
         self.imageName = imageName
         self.title = title
     }
-    
+
+    /// The body of the view which contains the image and title text, displayed either horizontally or vertically depending on the device.
     var body: some View {
         Group {
             if horizontalSizeClass == .regular {
                 // Horizontal layout for iPad or larger screens
-                HStack(alignment: .center, spacing: 20) {
-                    imageView()
-                    textView()
+                HStack(alignment: .center, spacing: BankingTheme.spacing.paddingSmallMedium) {
+                    imageView() // Display the image on the left
+                    textView()  // Display the title text on the right
                 }
-                .padding(.horizontal, BankingTheme.spacing.paddingMedium)
-                .frame(maxWidth: .infinity, alignment: .center) // Ensures layout is centered
+                .frame(maxWidth: .infinity, alignment: .center) // Centers the content horizontally within the available space
             } else {
                 // Vertical layout for iPhone or smaller screens
-                VStack(alignment: .center, spacing: 10) {
-                    imageView()
-                    textView()
+                VStack(alignment: .center, spacing: BankingTheme.spacing.paddingSmallMedium) {
+                    imageView() // Display the image at the top
+                    textView()  // Display the title text below the image
                 }
-                .padding(.vertical, BankingTheme.spacing.paddingSmall)
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity, alignment: .center) // Centers the content vertically within the available space
             }
         }
-        .padding() // General padding for both layouts
-        .background(BankingTheme.colors.backgroundSecondary) // Apply background to differentiate sections
-        .cornerRadius(BankingTheme.spacing.paddingSmallMedium) // Rounded corners for a polished look
     }
-    
+
     // Image view component
-    @ViewBuilder
+    // Displays the image using the given name, with resizable scaling for dynamic adjustment.
     private func imageView() -> some View {
         ComponentImage(imageName, resizable: true)
-            .scaledToFit()
-            .frame(maxWidth: 135, maxHeight: 60, alignment: .center)
+            .scaledToFit() // Ensures the image maintains its aspect ratio while fitting within the given frame
+            .frame(maxWidth: Constants.MaxWidthImage, maxHeight: Constants.MaxHeightImage, alignment: .center) // Sets the image size
     }
-    
+
     // Text view component
-    @ViewBuilder
+    // Displays the title text, with the font and color defined by the BankingTheme.
     private func textView() -> some View {
         Text(title)
-            .font(BankingTheme.typography.headingSmall.small.font)
-            .multilineTextAlignment(horizontalSizeClass == .regular ? .leading : .center)
-            .foregroundColor(BankingTheme.colors.textPrimary)
-            .frame(maxWidth: .infinity, alignment: horizontalSizeClass == .regular ? .leading : .center)
+            .font(BankingTheme.typography.headingSmall.small.font) // Sets the font style based on the BankingTheme
+            .foregroundColor(BankingTheme.colors.textPrimary) // Sets the text color based on the BankingTheme
+    }
+
+    // Constants for image dimensions to ensure a consistent design
+    public struct Constants {
+        static let MaxWidthImage: CGFloat = 135 // Maximum width for the image
+        static let MaxHeightImage: CGFloat = 60  // Maximum height for the image
     }
 }
