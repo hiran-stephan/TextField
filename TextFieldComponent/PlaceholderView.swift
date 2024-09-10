@@ -19,7 +19,7 @@ public struct LoginGraphicContainer: View {
     /// Custom initializer for LoginGraphicContainer, accepting optional imageName and title as parameters.
     /// If no parameters are provided, it defaults to pre-configured values.
     public init(imageName: String? = nil, title: String? = nil) {
-        self.imageName = imageName ?? ComponentConstants.Images.loginGraphics
+        self.imageName = imageName ?? "" //ComponentConstants.Images.loginGraphics
         self.title = title ?? Constants.defaultTitle
     }
 
