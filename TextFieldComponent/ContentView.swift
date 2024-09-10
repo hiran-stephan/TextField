@@ -24,7 +24,8 @@ import SwiftUI
 //}
 
 struct ContentView: View {
-    @StateObject private var coordinator = SheetCoordinator<HelpSheet>()
+    @StateObject var coordinator = SheetCoordinator<HelpSheet>()
+    @State private var showSheet = false
 
     var body: some View {
         VStack {
@@ -32,9 +33,13 @@ struct ContentView: View {
                 coordinator.presentSheet(sheet: .help)
             }
         }
-        .sheetCoordinating(coordinator: coordinator)
-        .edgesIgnoringSafeArea(.bottom) // Ensures the sheet touches the bottom
-
+        .sheet(item: $coordinator.currentSheet, onDismiss: {
+            coordinator.sheetDismissed()
+        }) { sheet in
+            sheet.view(coordinator: coordinator)
+                .presentationDetents([.medium, .fraction(0.3)])
+                .presentationDragIndicator(.visible)
+        }
     }
 }
 
