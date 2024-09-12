@@ -116,3 +116,18 @@ extension CustomFont {
 }
 
 
+public extension Text {
+    func typography(_ typography: TypographyFont) -> some View {
+        // TODO: Apply all caps if necessary
+        return self.font(typography.font)
+            .lineSpacing(typography.lineSpacing)
+            .padding(.vertical, typography.lineSpacing / 2.0)
+    }
+
+    func typography(_ typography: TypographyGroup) -> some View {
+        // TODO: Apply all caps if necessary
+        return self.font(typography.small.font)
+            .lineSpacing(typography.small.lineSpacing)
+            .padding(.vertical, typography.small.lineSpacing / 2.0)
+    }
+}
