@@ -8,42 +8,6 @@
 import Foundation
 import SwiftUI
 
-public class PersistedSheetController<Content>: UIHostingController<Content> where Content: View {
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        if let sheet = sheetPresentationController {
-            if #available(iOS 16.0, *) {
-                // optional custom size
-                let fraction = UISheetPresentationController.Detent.custom { context in
-                    50.0
-                }
-                sheet.detents = [fraction, .medium(), .large()]
-                sheet.largestUndimmedDetentIdentifier = fraction.identifier
-                isModalInPresentation = true
-            } else {
-                sheet.detents = [.medium(), .large()]
-            }
-            sheet.prefersGrabberVisible = false
-        }
-    }
-}
-
-public struct PersistedSheet<Content>: UIViewControllerRepresentable where Content: View {
-    private let content: Content
-
-    public init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    public func makeUIViewController(context: Context) -> PersistedSheetController<Content> {
-        return PersistedSheetController(rootView: content)
-    }
-
-    public func updateUIViewController(_ controller: PersistedSheetController<Content>, context: Context) {
-    }
-}
-
 public protocol SheetEnum: Identifiable {
     associatedtype Body: View
 
@@ -68,7 +32,9 @@ public final class SheetCoordinator<Sheet: SheetEnum>: ObservableObject {
 
     @MainActor
     func sheetDismissed() {
-        sheetStack.removeFirst()
+        if sheetStack.count == 1 {
+            sheetStack.removeFirst()
+        }
 
         if let nextSheet = sheetStack.first {
             currentSheet = nextSheet
@@ -76,16 +42,37 @@ public final class SheetCoordinator<Sheet: SheetEnum>: ObservableObject {
     }
 }
 
+
 public struct SheetCoordinating<Sheet: SheetEnum>: ViewModifier {
     @StateObject var coordinator: SheetCoordinator<Sheet>
-
+    
     public func body(content: Content) -> some View {
         content
             .sheet(item: $coordinator.currentSheet, onDismiss: {
                 coordinator.sheetDismissed()
             }, content: { sheet in
-                sheet.view(coordinator: coordinator)
+                adjustSheet {
+                    sheet.view(coordinator: coordinator)
+                }
             })
+            .applyPresentationStyleIfNeeded()
+    }
+    
+    func adjustSheet(content: () -> any View) -> AnyView {
+        if #available(iOS 16.4, *) {
+            return AnyView(
+                content()
+                    .presentationDetents([.fraction(0.1), .medium, .large])
+                    .presentationCompactAdaptation(.sheet)
+            )
+        } else if #available(iOS 16.0, *) {
+            return AnyView(
+                content()
+                    .presentationDetents([.fraction(0.1), .medium, .large])
+            )
+        } else {
+            return AnyView(content())
+        }
     }
 }
 
@@ -96,7 +83,7 @@ public extension View {
 }
 
 
-// Example enum conforming to SheetEnum
+
 enum AppSheet: String, Identifiable, SheetEnum {
     case sheetOne
     case sheetTwo
@@ -124,6 +111,7 @@ extension View {
         Button(action: {
             Task {
                 await MainActor.run {
+                    coordinator.sheetDismissed()
                     coordinator.presentSheet(sheet: nextSheet)
                 }
             }
@@ -133,6 +121,18 @@ extension View {
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(8)
+        }
+    }
+}
+
+
+extension View {
+    @ViewBuilder
+    func applyPresentationStyleIfNeeded() -> some View {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            self.presentationDetents([.medium])
+        } else {
+            self
         }
     }
 }

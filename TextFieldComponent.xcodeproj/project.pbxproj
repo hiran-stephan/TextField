@@ -31,6 +31,7 @@
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B99B2C8F6ED90058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
+		3B71B99F2C93496A0058896A /* CopyContent.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 3B71B99E2C93496A0058896A /* CopyContent.rtf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,9 @@
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheet.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		3B71B99E2C93496A0058896A /* CopyContent.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = CopyContent.rtf; sourceTree = "<group>"; };
+		3B71B9A12C93499D0058896A /* Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4"; sourceTree = "<group>"; };
+		3B71B9A22C93499E0058896A /* Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,7 @@
 		3B43793C2C80AF7A00495EF1 = {
 			isa = PBXGroup;
 			children = (
+				3B71B99E2C93496A0058896A /* CopyContent.rtf */,
 				3B4379472C80AF7A00495EF1 /* TextFieldComponent */,
 				3B4379582C80AF7C00495EF1 /* TextFieldComponentTests */,
 				3B4379622C80AF7C00495EF1 /* TextFieldComponentUITests */,
@@ -128,6 +133,7 @@
 		3B4379472C80AF7A00495EF1 /* TextFieldComponent */ = {
 			isa = PBXGroup;
 			children = (
+				3B71B9A02C9349900058896A /* Resources */,
 				3B4379862C8783AE00495EF1 /* Theme */,
 				3B4379482C80AF7A00495EF1 /* TextFieldComponentApp.swift */,
 				3B43794A2C80AF7A00495EF1 /* ContentView.swift */,
@@ -192,6 +198,15 @@
 				3B4379952C87886700495EF1 /* Theme.swift */,
 			);
 			path = Theme;
+			sourceTree = "<group>";
+		};
+		3B71B9A02C9349900058896A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3B71B9A22C93499E0058896A /* Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4 */,
+				3B71B9A12C93499D0058896A /* Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4 */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -298,6 +313,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B71B99F2C93496A0058896A /* CopyContent.rtf in Resources */,
 				3B4379502C80AF7C00495EF1 /* Preview Assets.xcassets in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
 			);
