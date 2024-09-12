@@ -51,28 +51,59 @@ public struct SheetCoordinating<Sheet: SheetEnum>: ViewModifier {
             .sheet(item: $coordinator.currentSheet, onDismiss: {
                 coordinator.sheetDismissed()
             }, content: { sheet in
-                adjustSheet {
-                    sheet.view(coordinator: coordinator)
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    HalfSheet {
+                        sheet.view(coordinator: coordinator)
+                    }
+                } else {
+                    adjustSheet {
+                        sheet.view(coordinator: coordinator)
+                    }
                 }
             })
-            .applyPresentationStyleIfNeeded()
     }
     
-    func adjustSheet(content: () -> any View) -> AnyView {
-        if #available(iOS 16.4, *) {
-            return AnyView(
-                content()
-                    .presentationDetents([.fraction(0.1), .medium, .large])
-                    .presentationCompactAdaptation(.sheet)
-            )
-        } else if #available(iOS 16.0, *) {
-            return AnyView(
-                content()
-                    .presentationDetents([.fraction(0.1), .medium, .large])
-            )
+    // Function to adjust sheet presentation for iPhone
+    @ViewBuilder
+    func adjustSheet<Content: View>(content: () -> Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content()
+                .presentationDetents([.fraction(0.1), .medium, .large])
         } else {
-            return AnyView(content())
+            content()
         }
+    }
+}
+
+
+// HalfSheetController to customize the sheet presentation for iPad
+class HalfSheetController<Content: View>: UIHostingController<Content> {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let presentation = sheetPresentationController {
+            // Set the detents to medium and large for iPad
+            presentation.detents = [.medium(), .large()]
+            // Optional: Prevent drag-to-dismiss if required
+            presentation.largestUndimmedDetentIdentifier = nil
+        }
+    }
+}
+
+// UIViewControllerRepresentable to wrap the HalfSheetController for iPad
+struct HalfSheet<Content: View>: UIViewControllerRepresentable {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    func makeUIViewController(context: Context) -> HalfSheetController<Content> {
+        HalfSheetController(rootView: content)
+    }
+
+    func updateUIViewController(_ uiViewController: HalfSheetController<Content>, context: Context) {
+        // No updates required for now
     }
 }
 
@@ -84,6 +115,7 @@ public extension View {
 
 
 
+// Example AppSheet enum for managing sheets
 enum AppSheet: String, Identifiable, SheetEnum {
     case sheetOne
     case sheetTwo
@@ -126,13 +158,3 @@ extension View {
 }
 
 
-extension View {
-    @ViewBuilder
-    func applyPresentationStyleIfNeeded() -> some View {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            self.presentationDetents([.medium])
-        } else {
-            self
-        }
-    }
-}

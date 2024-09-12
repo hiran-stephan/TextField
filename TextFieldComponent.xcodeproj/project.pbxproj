@@ -32,6 +32,7 @@
 		3B71B99B2C8F6ED90058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
 		3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A32C9349F50058896A /* CopyContyent.swift */; };
+		3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A52C9357B80058896A /* CustomSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		3B71B9A12C93499D0058896A /* Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4"; sourceTree = "<group>"; };
 		3B71B9A22C93499E0058896A /* Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4"; sourceTree = "<group>"; };
 		3B71B9A32C9349F50058896A /* CopyContyent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyContyent.swift; sourceTree = "<group>"; };
+		3B71B9A52C9357B80058896A /* CustomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 				3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */,
 				3B71B99C2C8F8BC20058896A /* File.swift */,
 				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
+				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -347,6 +350,7 @@
 				3B43798C2C8784EB00495EF1 /* Dimens.swift in Sources */,
 				3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */,
 				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
+				3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
 				3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */,
 				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,

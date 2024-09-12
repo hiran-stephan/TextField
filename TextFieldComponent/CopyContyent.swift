@@ -22,3 +22,46 @@ import Foundation
      •    Potential Workarounds: As of now, there isn’t a straightforward solution in SwiftUI to adjust sheet height in fullscreen on iPads. However, alternative patterns (like using .popover or a custom modal view) could be considered if the current presentation doesn’t align with design expectations.
 
  */
+
+/*
+ import WebKit
+
+ class ViewController: UIViewController, WKNavigationDelegate {
+
+     var webView: WKWebView!
+
+     override func viewDidLoad() {
+         super.viewDidLoad()
+
+         // Initialize WKWebView
+         webView = WKWebView(frame: self.view.frame)
+         webView.navigationDelegate = self
+         self.view.addSubview(webView)
+
+         // Load a URL
+         if let url = URL(string: "https://www.example.com") {
+             let request = URLRequest(url: url)
+             webView.load(request)
+         }
+     }
+
+     // WKNavigationDelegate callback when page finishes loading
+     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+         print("Main document finished loading")
+
+         // Inject JavaScript to set session data in the web page
+         let sessionToken = "your-session-token"
+         let js = """
+         localStorage.setItem('session_token', '\(sessionToken)');
+         """
+         webView.evaluateJavaScript(js) { (result, error) in
+             if let error = error {
+                 print("Failed to inject session token: \(error)")
+             } else {
+                 print("Session token injected into localStorage")
+             }
+         }
+     }
+ }
+
+ */
