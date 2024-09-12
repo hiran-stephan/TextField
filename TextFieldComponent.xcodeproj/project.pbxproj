@@ -31,7 +31,7 @@
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B99B2C8F6ED90058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
-		3B71B99F2C93496A0058896A /* CopyContent.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 3B71B99E2C93496A0058896A /* CopyContent.rtf */; };
+		3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A32C9349F50058896A /* CopyContyent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,9 +79,9 @@
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheet.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		3B71B99E2C93496A0058896A /* CopyContent.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = CopyContent.rtf; sourceTree = "<group>"; };
 		3B71B9A12C93499D0058896A /* Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4"; sourceTree = "<group>"; };
 		3B71B9A22C93499E0058896A /* Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4"; sourceTree = "<group>"; };
+		3B71B9A32C9349F50058896A /* CopyContyent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyContyent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +112,6 @@
 		3B43793C2C80AF7A00495EF1 = {
 			isa = PBXGroup;
 			children = (
-				3B71B99E2C93496A0058896A /* CopyContent.rtf */,
 				3B4379472C80AF7A00495EF1 /* TextFieldComponent */,
 				3B4379582C80AF7C00495EF1 /* TextFieldComponentTests */,
 				3B4379622C80AF7C00495EF1 /* TextFieldComponentUITests */,
@@ -144,6 +143,7 @@
 				3B71B9602C89F7C30058896A /* PlaceholderView.swift */,
 				3B71B99A2C8F6ED90058896A /* ListCellBottomSheet.swift */,
 				3B71B99C2C8F8BC20058896A /* File.swift */,
+				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -313,7 +313,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B71B99F2C93496A0058896A /* CopyContent.rtf in Resources */,
 				3B4379502C80AF7C00495EF1 /* Preview Assets.xcassets in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
 			);
@@ -352,6 +351,7 @@
 				3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */,
 				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,
 				3B43798E2C87858100495EF1 /* Shapes.swift in Sources */,
+				3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */,
 				3B71B99B2C8F6ED90058896A /* ListCellBottomSheet.swift in Sources */,
 				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
 				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
