@@ -8,54 +8,125 @@
 import Foundation
 import SwiftUI
 
+//enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
+//    case sheetOne
+//    case sheetTwo
+//
+//    var id: String { rawValue }
+//
+//    @ViewBuilder
+//    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>) -> some View {
+//        switch self {
+//        case .sheetOne:
+//            VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+//
+//                HStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
+//                    Text("Need more help?")
+//                        .font(BankingTheme.typography.bodySemiBold.font)
+//                        .foregroundColor(BankingTheme.colors.textPrimary)
+//                        .frame(maxWidth: .infinity, alignment: .topLeading)
+//                }
+//                .padding(.horizontal, BankingTheme.dimens.medium) // 16
+//                .padding(.top, BankingTheme.dimens.extraExtraLarge) // 40
+//                .padding(.bottom, BankingTheme.dimens.smallMedium)
+//                .frame(maxWidth: .infinity, alignment: .leading)
+//
+//
+//                // Using ListCellContainerView here with ListCellItemData
+//                ListCellContainerView(listCellItemData: [
+//                    ListCellItemData(textPrimary: "Locations",textSecondary: "please add", leftIconName: "mappin.and.ellipse", actionCount: "1"),
+//                    ListCellItemData(textPrimary: "Help", leftIconName: "questionmark.circle"),
+//                    ListCellItemData(textPrimary: "About", leftIconName: "info.circle"),
+//                    ListCellItemData(textPrimary: "Mobile Privacy Policy", leftIconName: "shield"),
+//                    ListCellItemData(textPrimary: "Mobile Online Security", leftIconName: "lock.shield"),
+//                    ListCellItemData(textPrimary: "Mobile Terms", leftIconName: "doc.text")
+//                ])
+//                .listStyle(PlainListStyle())
+//
+//                Spacer() // Pushes the content to the top
+//            }
+//            .frame(maxHeight: .infinity, alignment: .top)
+//        case .sheetTwo:
+//            VStack {
+//                Text("This is Sheet Two")
+//                    .padding()
+//
+//                BottomSheetButton(coordinator: coordinator, nextSheet: .sheetOne, title: "Go back to Sheet One")
+//            }
+//        }
+//    }
+//}
+
 enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     case sheetOne
     case sheetTwo
     
     var id: String { rawValue }
-    
+
     @ViewBuilder
     func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>) -> some View {
         switch self {
         case .sheetOne:
-            VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-                
-                HStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
-                    Text("Need more help?")
-                        .font(BankingTheme.typography.bodySemiBold.font)
-                        .foregroundColor(BankingTheme.colors.textPrimary)
-                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                }
-                .padding(.horizontal, BankingTheme.dimens.medium) // 16
-                .padding(.top, BankingTheme.dimens.extraExtraLarge) // 40
-                .padding(.bottom, BankingTheme.dimens.smallMedium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-                
-                // Using ListCellContainerView here with ListCellItemData
-                ListCellContainerView(listCellItemData: [
-                    ListCellItemData(textPrimary: "Locations",textSecondary: "please add", leftIconName: "mappin.and.ellipse", actionCount: "1"),
-                    ListCellItemData(textPrimary: "Help", leftIconName: "questionmark.circle"),
-                    ListCellItemData(textPrimary: "About", leftIconName: "info.circle"),
-                    ListCellItemData(textPrimary: "Mobile Privacy Policy", leftIconName: "shield"),
-                    ListCellItemData(textPrimary: "Mobile Online Security", leftIconName: "lock.shield"),
-                    ListCellItemData(textPrimary: "Mobile Terms", leftIconName: "doc.text")
-                ])
-                .listStyle(PlainListStyle())
-                
-                Spacer() // Pushes the content to the top
-            }
-            .frame(maxHeight: .infinity, alignment: .top)
+            sheetOneView()
         case .sheetTwo:
-            VStack {
-                Text("This is Sheet Two")
-                    .padding()
-                
-                BottomSheetButton(coordinator: coordinator, nextSheet: .sheetOne, title: "Go back to Sheet One")
-            }
+            sheetTwoView(coordinator: coordinator)
         }
     }
+    
+    // MARK: - View Components
+    
+    @ViewBuilder
+    private func sheetOneView() -> some View {
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+            ListCellBottomSheetHeaderView(text: "Need more help?")
+            
+            // ListCellContainerView with predefined data
+            ListCellContainerView(listCellItemData: sheetOneListData)
+                .listStyle(PlainListStyle())
+
+            Spacer() // Pushes the content to the top
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+    }
+    
+    @ViewBuilder
+    private func sheetTwoView(coordinator: BottomSheetCoordinator<ListCellBottomSheet>) -> some View {
+        VStack {
+            Text("This is Sheet Two")
+                .padding()
+            
+            BottomSheetButton(coordinator: coordinator, nextSheet: .sheetOne, title: "Go back to Sheet One")
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private var sheetOneListData: [ListCellItemData] {
+        return [
+            ListCellItemData(textPrimary: "Locations", textSecondary: "please add", leftIconName: "mappin.and.ellipse", actionCount: "1"),
+            ListCellItemData(textPrimary: "Help", leftIconName: "questionmark.circle"),
+            ListCellItemData(textPrimary: "About", leftIconName: "info.circle"),
+            ListCellItemData(textPrimary: "Mobile Privacy Policy", leftIconName: "shield"),
+            ListCellItemData(textPrimary: "Mobile Online Security", leftIconName: "lock.shield"),
+            ListCellItemData(textPrimary: "Mobile Terms", leftIconName: "doc.text")
+        ]
+    }
+    
+    @ViewBuilder
+    private func ListCellBottomSheetHeaderView(text: String) -> some View {
+        HStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
+            Text(text)
+                .font(BankingTheme.typography.bodySemiBold.font)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+        }
+        .padding(.horizontal, BankingTheme.dimens.medium)
+        .padding(.top, BankingTheme.dimens.extraExtraLarge)
+        .padding(.bottom, BankingTheme.dimens.smallMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 }
+
 
 
 
