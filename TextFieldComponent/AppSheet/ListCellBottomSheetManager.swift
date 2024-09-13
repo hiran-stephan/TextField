@@ -58,11 +58,15 @@ public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
                 }
             })
     }
-
+    
     @ViewBuilder
     func adjustBottomSheet<Content: View>(content: () -> Content) -> some View {
         if #available(iOS 16.0, *) {
-            content().presentationDetents([.medium, .large])
+            content()
+                .presentationDetents([
+                    .fraction(0.75),
+                    .large
+                ])
         } else {
             content()
         }
@@ -106,9 +110,12 @@ public struct BottomSheetButton<Sheet: BottomSheetEnum>: View {
 class BottomSheetHostingController<Content: View>: UIHostingController<Content> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         if let presentation = sheetPresentationController {
-            presentation.detents = [.medium(), .large()]
+            let threeQuarterDetent = UISheetPresentationController.Detent.custom { context in
+                return context.maximumDetentValue * 0.75
+            }
+            presentation.detents = [threeQuarterDetent, .large()]
             presentation.prefersGrabberVisible = true
         }
     }
