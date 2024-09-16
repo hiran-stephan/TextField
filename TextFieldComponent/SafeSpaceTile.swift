@@ -61,6 +61,15 @@ struct RoundedCornersShape: Shape {
     var corners: UIRectCorner
     var radius: CGFloat
     
+    /// Initializes the shape with specific corners to round and a corner radius.
+    /// - Parameters:
+    ///   - corners: The corners to round (e.g., [.topLeft, .topRight]).
+    ///   - radius: The radius to apply to the corners.
+    init(corners: UIRectCorner, radius: CGFloat) {
+        self.corners = corners
+        self.radius = radius
+    }
+    
     /// Defines the path for the rounded corners.
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
