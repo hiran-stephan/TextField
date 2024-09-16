@@ -11,22 +11,22 @@ import SwiftUI
 /// A view that displays a help button with customizable height.
 struct SafeSpaceTile: View {
     
+    /// The maximum height of the button. Default is `SafeSpaceTile.defaultMaxHeight`.
+    var maxHeight: CGFloat
+    
     /// Action to be performed when the button is tapped.
     var action: () -> Void
-    
-    /// The maximum height of the button. Default is `Constants.maxHeight`.
-    var maxHeight: CGFloat
     
     /// Default maximum height for the button.
     static let defaultMaxHeight: CGFloat = 68
     
     /// Initializes the help button view.
     /// - Parameters:
+    ///   - maxHeight: The height of the button. Defaults to `SafeSpaceTile.defaultMaxHeight`.
     ///   - action: The action to be triggered when the button is tapped.
-    ///   - maxHeight: The height of the button. Defaults to `Constants.maxHeight`.
-    init(action: @escaping () -> Void, maxHeight: CGFloat = SafeSpaceTile.defaultMaxHeight) {
-        self.action = action
+    init(maxHeight: CGFloat = SafeSpaceTile.defaultMaxHeight, action: @escaping () -> Void) {
         self.maxHeight = maxHeight
+        self.action = action
     }
     
     var body: some View {
