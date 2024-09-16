@@ -80,9 +80,17 @@ struct Constants {
 }
 
 
-// Preview
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HelpButtonView()
-//    }
-//}
+// Usage Examples
+/*
+ // Basic Usage (with default height)
+ HelpButtonView(action: {
+     print("Help button tapped!")
+ })
+ 
+ // Custom Height Usage
+ HelpButtonView(action: {
+     print("Help button tapped!")
+ }, maxHeight: 100)
+ 
+ */
+
