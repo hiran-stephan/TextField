@@ -8,6 +8,20 @@
 import Foundation
 import SwiftUI
 
+/// Constants used for configuration.
+private enum Constants {
+    
+    /// Text constants.
+    enum Texts {
+        static let needMoreHelp = "Need more help?"
+    }
+    
+    /// Image names.
+    enum Images {
+        static let chevron = "chevron-up"
+    }
+}
+
 /// A view that displays a help button with customizable height.
 struct SafeSpaceTile: View {
     
@@ -40,7 +54,7 @@ struct SafeSpaceTile: View {
                     .frame(width: BankingTheme.dimens.large, height: BankingTheme.dimens.large)
                 
                 // Text indicating Need More Help.
-                Text(Constants.textNeedMoreHelp)
+                Text(Constants.Texts.needMoreHelp)
                     .font(BankingTheme.typography.bodySmall.font)
                     .multilineTextAlignment(.center)
                     .foregroundColor(BankingTheme.colors.textSecondary)
@@ -80,14 +94,7 @@ struct RoundedCornersShape: Shape {
     }
 }
 
-/// Constants used for configuration.
-struct Constants {
-    
-    static let textNeedMoreHelp: String = "Need more help?"
-    struct Images {
-        static let chevron = "chevron-up"
-    }
-}
+
 
 
 // Usage Examples
