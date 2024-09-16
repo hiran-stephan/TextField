@@ -93,14 +93,14 @@ struct Constants {
 // Usage Examples
 /*
  // Basic Usage (with default height)
- HelpButtonView(action: {
+ SafeSpaceTile {
      print("Help button tapped!")
- })
+ }
  
  // Custom Height Usage
- HelpButtonView(action: {
-     print("Help button tapped!")
- }, maxHeight: 100)
+ SafeSpaceTile(maxHeight: 80) {
+     print("Button tapped")
+ }
  
  */
 
