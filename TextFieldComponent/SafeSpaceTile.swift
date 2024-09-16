@@ -17,11 +17,14 @@ struct SafeSpaceTile: View {
     /// The maximum height of the button. Default is `Constants.maxHeight`.
     var maxHeight: CGFloat
     
+    /// Default maximum height for the button.
+    static let defaultMaxHeight: CGFloat = 68
+    
     /// Initializes the help button view.
     /// - Parameters:
     ///   - action: The action to be triggered when the button is tapped.
     ///   - maxHeight: The height of the button. Defaults to `Constants.maxHeight`.
-    init(action: @escaping () -> Void, maxHeight: CGFloat = Constants.maxHeight) {
+    init(action: @escaping () -> Void, maxHeight: CGFloat = SafeSpaceTile.defaultMaxHeight) {
         self.action = action
         self.maxHeight = maxHeight
     }
@@ -81,8 +84,6 @@ struct RoundedCornersShape: Shape {
 struct Constants {
     
     static let textNeedMoreHelp: String = "Need more help?"
-    static let maxHeight: CGFloat = 68
-    
     struct Images {
         static let chevron = "chevron-up"
     }
