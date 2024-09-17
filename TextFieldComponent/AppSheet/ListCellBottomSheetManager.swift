@@ -29,6 +29,7 @@ public protocol BottomSheetEnum: Identifiable {
 
 /// A class responsible for coordinating the presentation of bottom sheets.
 /// It manages a stack of sheets and ensures proper navigation between them.
+@MainActor
 public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObject {
     /// The currently presented sheet.
     @Published var currentSheet: Sheet?
@@ -41,14 +42,12 @@ public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObj
     
     /// Presents a new sheet by adding it to the stack and making it the current sheet.
     /// - Parameter sheet: The sheet to be presented.
-    @MainActor
     public func presentSheet(sheet: Sheet) {
         sheetStack.append(sheet)
         currentSheet = sheet
     }
     
     /// Handles the dismissal of the current sheet. If there are more sheets in the stack, the next one is presented.
-    @MainActor
     func sheetDismissed() {
         if !sheetStack.isEmpty {
             sheetStack.removeFirst() // Remove the current sheet
