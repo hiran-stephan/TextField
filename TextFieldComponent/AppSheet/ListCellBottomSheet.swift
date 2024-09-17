@@ -58,8 +58,11 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
         VStack {
             Text("This is Sheet Two")
                 .padding()
-            // Button to navigate back to the first sheet.
-            BottomSheetButton(coordinator: coordinator, nextSheet: .sheetOne, title: "Go back to Sheet One")
+            
+            // Button to navigate back to the first sheet using the reusable transition method
+            BottomSheetButton<ListCellBottomSheet>(title: "Go back to Sheet One") {
+                await coordinator.transitionToSheet(.sheetOne) // Reuse the transition logic
+            }
         }
     }
     

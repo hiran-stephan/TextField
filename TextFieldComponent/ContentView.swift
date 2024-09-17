@@ -9,14 +9,16 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .padding()
             
-//            // Use the SheetButton to present Sheet One
-//            BottomSheetButton(coordinator: coordinator, nextSheet: .sheetOne, title: "Show Sheet One")
-//                .bottomSheetManaging(coordinator: coordinator) // Apply the sheet manager to handle sheet presentation
-            Spacer() 
-            SafeSpaceTile {
-                // Action when the button is tapped
-                print("Help button tapped!")
+            // Use the SheetButton to present Sheet One
+            BottomSheetButton<ListCellBottomSheet>(title: "Show Sheet One") {
+                await coordinator.transitionToSheet(.sheetOne) // Reuse the transition logic
             }
+            .bottomSheetManaging(coordinator: coordinator)
+            Spacer() 
+//            SafeSpaceTile {
+//                // Action when the button is tapped
+//                print("Help button tapped!")
+//            }
         }
         .ignoresSafeArea(.container, edges: .bottom) // Merge the button with the safe area at the bottom
 

@@ -107,30 +107,19 @@ public extension View {
 }
 
 /// A button used to navigate between bottom sheets.
-/// When pressed, it dismisses the current sheet and presents the next one after a brief delay.
+/// The button accepts an async block that can handle custom logic when the button is pressed.
 public struct BottomSheetButton<Sheet: BottomSheetEnum>: View {
-    /// The coordinator managing the sheet transitions.
-    let coordinator: BottomSheetCoordinator<Sheet>
-    
-    /// The next sheet to be presented when the button is pressed.
-    let nextSheet: Sheet
-    
     /// The title of the button.
     let title: String
+    
+    /// The async action to be executed when the button is pressed.
+    let action: () async -> Void
 
     /// The body of the button, defining its appearance and action.
     public var body: some View {
         Button(action: {
             Task {
-                await MainActor.run {
-                    coordinator.currentSheet = nil // Dismiss the current sheet
-                }
-
-                try? await Task.sleep(nanoseconds: 300_000_000) // Wait for 300ms
-
-                await MainActor.run {
-                    coordinator.presentSheet(sheet: nextSheet) // Present the next sheet
-                }
+                await action() // Execute the async action when the button is pressed
             }
         }) {
             Text(title)
@@ -139,6 +128,24 @@ public struct BottomSheetButton<Sheet: BottomSheetEnum>: View {
                 .foregroundColor(.white)
                 .cornerRadius(8)
         }
+    }
+}
+
+public extension BottomSheetCoordinator {
+    /// Handles transitioning from the current sheet to a new sheet with an optional delay.
+    /// - Parameters:
+    ///   - nextSheet: The sheet to present after the current sheet is dismissed.
+    ///   - delay: An optional delay before presenting the next sheet (default is 300ms).
+    @MainActor
+    func transitionToSheet(_ nextSheet: Sheet, withDelay delay: UInt64 = 300_000_000) async {
+        // Dismiss the current sheet
+        currentSheet = nil
+
+        // Wait for the specified delay
+        try? await Task.sleep(nanoseconds: delay)
+
+        // Present the next sheet
+        presentSheet(sheet: nextSheet)
     }
 }
 
