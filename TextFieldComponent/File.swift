@@ -25,72 +25,100 @@ cd $SRCROOT/../
 
 /*
  
- public struct ListCellItemView: View {
-     let listCellItemData: ListCellItemData
+ import SwiftUI
 
+ /// A view representing an individual list cell, displaying primary text, optional secondary text,
+ /// and optional icons with customizable badges.
+ public struct ListCellItemView: View {
+     // Data for the specific list cell.
+     let listCellItemData: ListCellItemData
+     
+     /// Minimum height for the cell.
+     static let minCellHeight: CGFloat = 76.0
+     
+     /// Initializes the `ListCellItemView` with its corresponding data.
+     /// - Parameter listCellItemData: The data object containing details for this list cell.
      public init(listCellItemData: ListCellItemData) {
          self.listCellItemData = listCellItemData
      }
-
+     
+     /// The body of the list cell, displaying its content within a button.
      public var body: some View {
          Button {
-             // TODO: Add button action here if needed
+             // TODO: button action
          } label: {
-             HStack(alignment: .center, spacing: Constants.Padding3Xs) {
-                 // Left Icon (if available)
-                 if let leftIcon = listCellItemData.leftIconName {
-                     Image(systemName: leftIcon)
-                         .frame(width: 24, height: 24)
-                         .cornerRadius(Constants.size0)
+             VStack(spacing: BankingTheme.spacing.noPadding) {
+                 HStack(alignment: .center, spacing: BankingTheme.dimens.small) {
+                     // Leading Image Placeholder
+                     ListCellIconView(imageName: "chevron", padding: BankingTheme.dimens.small)
+                     
+                     // Primary and Secondary Text
+                     listCellTextContent(listCellItemData: listCellItemData)
+                     
+                     Spacer()
+                     
+                     // Badge or Count Indicator View
+                     listCellBadgeIndicatorView(listCellItemData: listCellItemData)
+
+                     // Trailing Image Placeholder
+                     ListCellIconView(imageName: "chevron")
                  }
-
-                 VStack(alignment: .leading, spacing: 0) {
-                     // Primary text
-                     Text(listCellItemData.textPrimary)
-                         .font(Font.custom("Whitney", size: Constants.FontSizeBody)) // Adjusted font size
-                         .foregroundColor(Constants.TextTextPrimary)
-                         .frame(maxWidth: .infinity, alignment: .topLeading)
-
-                     // Secondary text (if available)
-                     if let textSecondary = listCellItemData.textSecondary {
-                         Text(textSecondary)
-                             .font(Font.custom("Whitney", size: Constants.FontSizeBody)) // Adjusted font size
-                             .foregroundColor(BankingTheme.colors.textSecondary)
-                     }
-                 }
-
-                 Spacer()
-
-                 // Right Icon (if available), else chevron
-                 if let rightIcon = listCellItemData.rightIconName {
-                     Image(systemName: rightIcon)
-                         .frame(width: 24, height: 24)
-                         .cornerRadius(Constants.size0)
-                 } else {
-                     Image(systemName: "chevron.right")
-                         .frame(width: 24, height: 24)
-                         .cornerRadius(Constants.size0)
-                 }
+                 .frame(maxWidth: .infinity, alignment: .center)
+                 .padding(BankingTheme.dimens.medium)
              }
-             .padding(Constants.Padding2Xs)
-             .frame(maxWidth: .infinity, alignment: .leading)
-             .background(Constants.BrandWhite)
-             .cornerRadius(Constants.SectionMarginOlbMediumScreen)
-             .padding(.horizontal, Constants.Padding2Xs)
+             .frame(minHeight: ListCellItemView.minCellHeight) // Setting the minimum height here
          }
-         .padding(.horizontal, Constants.Padding2Xs) // Adjust outer padding as necessary
+         .buttonStyle(ListCellButtonModifier())
+         .ignoresSafeArea()
+     }
+     
+     /// A subview that renders the primary and optional secondary text for the list cell.
+     @ViewBuilder
+     private func listCellTextContent(listCellItemData: ListCellItemData) -> some View {
+         VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+             Text(listCellItemData.textPrimary)
+                 .typography(BankingTheme.typography.body)
+                 .foregroundColor(BankingTheme.colors.textPrimary)
+                 .frame(maxHeight: listCellItemData.textSecondary == nil ? .infinity : nil)
+             
+             if let textSecondary = listCellItemData.textSecondary {
+                 Text(textSecondary)
+                     .typography(BankingTheme.typography.bodySmall)
+                     .foregroundColor(BankingTheme.colors.textSecondary)
+             }
+         }
+     }
+     
+     /// A subview that renders a badge or count indicator for the list cell, if available.
+     @ViewBuilder
+     private func listCellBadgeIndicatorView(listCellItemData: ListCellItemData) -> some View {
+         if let trailingNumber = listCellItemData.actionCount {
+             HStack {
+                 Text(trailingNumber)
+                     .font(BankingTheme.typography.caption.font)
+                     .frame(width: BankingTheme.dimens.mediumLarge, height: BankingTheme.dimens.medium)
+                     .foregroundColor(BankingTheme.colors.textPrimary)
+                     .background(Color(hex: 0xFFFCCDDF2))
+                     .cornerRadius(BankingTheme.dimens.mediumLarge)
+             }
+         }
      }
  }
 
- // Constants
- struct Constants {
-     static let Padding3Xs: CGFloat = 12
-     static let BrandWhite: Color = .white
-     static let size0: CGFloat = 0
-     static let Padding2Xs: CGFloat = 16
-     static let SectionMarginOlbMediumScreen: CGFloat = 50
-     static let TextTextPrimary: Color = Color(red: 0.22, green: 0.23, blue: 0.24)
-     static let FontSizeBody: CGFloat = 17
+ /// A custom button style for the list cell button, adding a divider at the bottom and handling
+ /// background color changes when pressed.
+ struct ListCellButtonModifier: ButtonStyle {
+     func makeBody(configuration: Configuration) -> some View {
+         configuration.label
+             .frame(maxWidth: .infinity)
+             .overlay(
+                 Divider()
+                     .frame(height: BankingTheme.spacing.stroke)
+                     .background(BankingTheme.colors.borderDefault)
+                     .padding(.horizontal, BankingTheme.dimens.medium), alignment: .bottom
+             )
+             .background(configuration.isPressed ? BankingTheme.colors.pressed : BankingTheme.colors.surfaceVariant)
+     }
  }
 
  
