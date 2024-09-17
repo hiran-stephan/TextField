@@ -67,6 +67,8 @@ cd $SRCROOT/../
                  .padding(BankingTheme.dimens.medium)
              }
              .frame(minHeight: ListCellItemView.minCellHeight) // Setting the minimum height here
+            .fixedSize(horizontal: false, vertical: true) // Allow cells to expand vertically only if needed
+
          }
          .buttonStyle(ListCellButtonModifier())
          .ignoresSafeArea()
