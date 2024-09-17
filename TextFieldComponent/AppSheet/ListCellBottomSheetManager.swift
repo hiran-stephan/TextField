@@ -156,46 +156,47 @@ public extension BottomSheetCoordinator {
     }
 }
 
-/// A custom `UIHostingController` that configures the bottom sheet's appearance.
-/// It ensures that the bottom sheet has a custom 3/4 detent and a grabber handle.
+// MARK: - BottomSheetHostingController (UIKit)
+
+/// A custom `UIHostingController` to configure bottom sheet presentation with custom detents and a grabber.
 class BottomSheetHostingController<Content: View>: UIHostingController<Content> {
+    
+    /// Configures the sheet’s detents and grabber visibility before the view appears.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if let presentation = sheetPresentationController {
-            let threeQuarterDetent = UISheetPresentationController.Detent.custom { context in
-                return context.maximumDetentValue * BottomSheetConstants.Detents.threeQuarter
+            if #available(iOS 16.0, *) {
+                let threeQuarterDetent = UISheetPresentationController.Detent.custom { context in
+                    context.maximumDetentValue * BottomSheetConstants.Detents.threeQuarter
+                }
+                presentation.detents = [threeQuarterDetent, .large()]
+            } else {
+                presentation.detents = [.medium(), .large()]
             }
-            presentation.detents = [threeQuarterDetent, .large()] // Available detents
-            presentation.prefersGrabberVisible = true // Show grabber handle for dragging
+            presentation.prefersGrabberVisible = true
         }
     }
 }
 
-/// A wrapper view that uses `UIViewControllerRepresentable` to present a `BottomSheetHostingController`
-/// for displaying content as a bottom sheet.
+// MARK: - BottomSheetView (UIKit)
+
+/// A SwiftUI wrapper for a `UIHostingController` that presents SwiftUI content as a bottom sheet.
 struct BottomSheetView<Content: View>: UIViewControllerRepresentable {
-    /// The content to be displayed in the bottom sheet.
-    let content: Content
     
-    /// Initializes the `BottomSheetView` with the content to be presented.
+    let content: Content
+
+    /// Initializes with the SwiftUI content to be displayed.
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
-    /// Creates the `BottomSheetHostingController` that hosts the content.
-    /// - Parameter context: The context in which the view is presented.
-    /// - Returns: A `BottomSheetHostingController` that hosts the provided content.
+
+    /// Creates the `BottomSheetHostingController` with the SwiftUI content.
     func makeUIViewController(context: Context) -> BottomSheetHostingController<Content> {
         BottomSheetHostingController(rootView: content)
     }
-    
-    /// Updates the `BottomSheetHostingController` when the SwiftUI state changes.
-    /// - Parameters:
-    ///   - uiViewController: The hosting controller to update.
-    ///   - context: The context in which the update occurs.
-    func updateUIViewController(_ uiViewController: BottomSheetHostingController<Content>, context: Context) {
-        // No updates required for now
-    }
+
+    /// Updates the hosting controller (no updates needed here).
+    func updateUIViewController(_ uiViewController: BottomSheetHostingController<Content>, context: Context) {}
 }
 
