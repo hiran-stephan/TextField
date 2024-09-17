@@ -72,22 +72,26 @@ cd $SRCROOT/../
          .ignoresSafeArea()
      }
      
-     /// A subview that renders the primary and optional secondary text for the list cell.
+ /// A subview that renders the primary and optional secondary text for the list cell.
      @ViewBuilder
      private func listCellTextContent(listCellItemData: ListCellItemData) -> some View {
          VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
              Text(listCellItemData.textPrimary)
                  .typography(BankingTheme.typography.body)
                  .foregroundColor(BankingTheme.colors.textPrimary)
-                 .frame(maxHeight: listCellItemData.textSecondary == nil ? .infinity : nil)
+                 .lineLimit(nil) // Allow primary text to wrap to multiple lines
+                 .fixedSize(horizontal: false, vertical: true) // Ensure the text expands vertically as needed
              
              if let textSecondary = listCellItemData.textSecondary {
                  Text(textSecondary)
                      .typography(BankingTheme.typography.bodySmall)
                      .foregroundColor(BankingTheme.colors.textSecondary)
+                     .lineLimit(nil) // Allow secondary text to wrap to multiple lines
+                     .fixedSize(horizontal: false, vertical: true) // Ensure the text expands vertically as needed
              }
          }
      }
+     
      
      /// A subview that renders a badge or count indicator for the list cell, if available.
      @ViewBuilder
