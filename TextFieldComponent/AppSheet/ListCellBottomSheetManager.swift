@@ -8,6 +8,14 @@
 import Foundation
 import SwiftUI
 
+enum BottomSheetConstants {
+    
+    enum Detents {
+        static let threeQuarter: CGFloat = 0.75
+        static let half: CGFloat = 0.5
+    }
+}
+
 /// A protocol for representing an identifiable sheet in a bottom sheet presentation system.
 /// Conforming types must define a view to be presented in the bottom sheet.
 public protocol BottomSheetEnum: Identifiable {
@@ -27,10 +35,10 @@ public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObj
     
     /// A stack to hold the presented sheets for navigation.
     private var sheetStack: [Sheet] = []
-
+    
     /// Initializes the `BottomSheetCoordinator`.
     public init() {}
-
+    
     /// Presents a new sheet by adding it to the stack and making it the current sheet.
     /// - Parameter sheet: The sheet to be presented.
     @MainActor
@@ -38,14 +46,14 @@ public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObj
         sheetStack.append(sheet)
         currentSheet = sheet
     }
-
+    
     /// Handles the dismissal of the current sheet. If there are more sheets in the stack, the next one is presented.
     @MainActor
     func sheetDismissed() {
         if !sheetStack.isEmpty {
             sheetStack.removeFirst() // Remove the current sheet
         }
-
+        
         if let nextSheet = sheetStack.first {
             currentSheet = nextSheet // Present the next sheet if available
         } else {
@@ -59,7 +67,7 @@ public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObj
 public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
     /// The coordinator responsible for managing the bottom sheets.
     @StateObject var coordinator: BottomSheetCoordinator<Sheet>
-
+    
     /// Defines the body content of the view modifier.
     /// It listens for changes in the coordinator and presents the appropriate sheet.
     public func body(content: Content) -> some View {
@@ -88,8 +96,8 @@ public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
         if #available(iOS 16.0, *) {
             content()
                 .presentationDetents([
-                    .fraction(0.75), // 3/4 of the screen height
-                    .large // Full-screen detent
+                    .fraction(BottomSheetConstants.Detents.threeQuarter),
+                    .large
                 ])
         } else {
             content() // Fallback for iOS versions below 16
@@ -114,7 +122,7 @@ public struct BottomSheetButton<Sheet: BottomSheetEnum>: View {
     
     /// The async action to be executed when the button is pressed.
     let action: () async -> Void
-
+    
     /// The body of the button, defining its appearance and action.
     public var body: some View {
         Button(action: {
@@ -140,10 +148,10 @@ public extension BottomSheetCoordinator {
     func transitionToSheet(_ nextSheet: Sheet, withDelay delay: UInt64 = 300_000_000) async {
         // Dismiss the current sheet
         currentSheet = nil
-
+        
         // Wait for the specified delay
         try? await Task.sleep(nanoseconds: delay)
-
+        
         // Present the next sheet
         presentSheet(sheet: nextSheet)
     }
@@ -157,7 +165,7 @@ class BottomSheetHostingController<Content: View>: UIHostingController<Content> 
         
         if let presentation = sheetPresentationController {
             let threeQuarterDetent = UISheetPresentationController.Detent.custom { context in
-                return context.maximumDetentValue * 0.75 // 3/4 height of the available screen
+                return context.maximumDetentValue * BottomSheetConstants.Detents.threeQuarter
             }
             presentation.detents = [threeQuarterDetent, .large()] // Available detents
             presentation.prefersGrabberVisible = true // Show grabber handle for dragging
@@ -170,19 +178,19 @@ class BottomSheetHostingController<Content: View>: UIHostingController<Content> 
 struct BottomSheetView<Content: View>: UIViewControllerRepresentable {
     /// The content to be displayed in the bottom sheet.
     let content: Content
-
+    
     /// Initializes the `BottomSheetView` with the content to be presented.
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-
+    
     /// Creates the `BottomSheetHostingController` that hosts the content.
     /// - Parameter context: The context in which the view is presented.
     /// - Returns: A `BottomSheetHostingController` that hosts the provided content.
     func makeUIViewController(context: Context) -> BottomSheetHostingController<Content> {
         BottomSheetHostingController(rootView: content)
     }
-
+    
     /// Updates the `BottomSheetHostingController` when the SwiftUI state changes.
     /// - Parameters:
     ///   - uiViewController: The hosting controller to update.
