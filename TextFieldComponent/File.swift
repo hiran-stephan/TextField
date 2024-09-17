@@ -25,6 +25,25 @@ cd $SRCROOT/../
 
 /*
  
+ // Define a constant for button height
+ let fixedButtonHeight: CGFloat = 76
+
+ SafeSpaceTile(maxHeight: fixedButtonHeight) {
+     showSheetOne()
+ }
+
+ // Define the sheet presentation logic in a separate function
+ private func showSheetOne() {
+     Task {
+         do {
+             await coordinator.transitionToSheet(.sheetOne)
+         } catch {
+             // Handle any error that might occur during the transition
+             print("Failed to present sheet: \(error)")
+         }
+     }
+ }
+ 
  import SwiftUI
 
  /// A view representing an individual list cell, displaying primary text, optional secondary text,
