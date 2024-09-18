@@ -35,6 +35,7 @@
 		3B71B9A92C937D7A0058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */; };
 		3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */; };
 		3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */; };
+		3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B112C9AE3F9008208AC /* Mapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,7 @@
 		3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheet.swift; sourceTree = "<group>"; };
 		3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheetManager.swift; sourceTree = "<group>"; };
 		3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeSpaceTile.swift; sourceTree = "<group>"; };
+		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
 				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
 				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
+				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -360,6 +363,7 @@
 				3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */,
 				3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */,
 				3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */,
+				3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */,
 				3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */,
 				3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */,
 				3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */,
