@@ -19,6 +19,7 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
 
     /// Provides the content view for each bottom sheet, switching based on the specific case.
     /// - Parameter coordinator: The `BottomSheetCoordinator` used to handle sheet transitions.
+    /// - Parameter listCellItemData: A binding to the list of data (`ListCellItemData`) for each cell in the bottom sheet.
     /// - Returns: A `View` representing the content of the sheet.
     @ViewBuilder
     func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>, listCellItemData: Binding<[ListCellItemData]>) -> some View {
@@ -32,6 +33,7 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     
     // MARK: - View Components
     /// View content for the first bottom sheet (`sheetOne`). It includes a header and a list of items.
+    /// - Parameter listCellItemData: A binding to an array of `ListCellItemData` passed to the sheet.
     /// - Returns: A `View` representing the first sheet content.
     @ViewBuilder
     private func sheetOneView(listCellItemData: Binding<[ListCellItemData]>) -> some View {
