@@ -44,7 +44,7 @@ struct ListCellDataMapper {
 
 
 // Struct representing the ListMenuAction
-struct ListMenuAction {
+struct ListMenuAction: Decodable {
     let id: String
     let primaryText: [String: String] // Localized primary text
     let secondaryText: [String: String]? // Optional localized secondary text
@@ -52,11 +52,108 @@ struct ListMenuAction {
     let actionType: ActionType
     let leadingIcon: LocalizedText? // Optional leading icon
     let trailingIcon: LocalizedText? // Optional trailing icon
+    
+    // CodingKeys to map JSON keys to Swift property names
+    enum CodingKeys: String, CodingKey {
+        case id
+        case primaryText = "primary_text"
+        case secondaryText = "secondary_text"
+        case actionLink = "action_link"
+        case actionType = "action_type"
+        case leadingIcon = "leading_icon"
+        case trailingIcon = "trailing_icon"
+    }
+    
+    // Static function to load ListMenuActions from JSON
+    static func loadMenuActionsFromJSON() -> [ListMenuAction] {
+        let jsonData = """
+        [
+          {
+            "id": "privacy_policy",
+            "primary_text": {
+              "en": "Mobile Privacy Policy",
+              "fr": "Politique de confidentialité mobile"
+            },
+            "action_link": "app://privacy",
+            "action_type": "webLink",
+            "leading_icon": {
+              "en": "shield.png",
+              "fr": "bouclier.png"
+            },
+            "trailing_icon": {
+              "en": "chevron_right.png",
+              "fr": "chevron_droit.png"
+            }
+          },
+          {
+            "id": "online_security",
+            "primary_text": {
+              "en": "Mobile Online Security",
+              "fr": "Sécurité en ligne mobile"
+            },
+            "action_link": "app://security",
+            "action_type": "webLink",
+            "leading_icon": {
+              "en": "lock_shield.png",
+              "fr": "verrou_bouclier.png"
+            },
+            "trailing_icon": {
+              "en": "chevron_right.png",
+              "fr": "chevron_droit.png"
+            }
+          },
+          {
+            "id": "terms_conditions",
+            "primary_text": {
+              "en": "Mobile Terms",
+              "fr": "Conditions d'utilisation mobile"
+            },
+            "action_link": "app://terms",
+            "action_type": "webLink",
+            "leading_icon": {
+              "en": "doc_text.png",
+              "fr": "doc_texte.png"
+            },
+            "trailing_icon": {
+              "en": "chevron_right.png",
+              "fr": "chevron_droit.png"
+            }
+          }
+        ]
+        """.data(using: .utf8)!
+        
+        let decoder = JSONDecoder()
+        do {
+            let menuActions = try decoder.decode([ListMenuAction].self, from: jsonData)
+            return menuActions
+        } catch {
+            print("Failed to decode JSON: \(error)")
+            return []
+        }
+    }
 }
 
 // Struct representing localized text (for icons, labels, etc.)
-struct LocalizedText {
+struct LocalizedText: Decodable {
     let text: [String: String] // Localized versions of the text
+
+    // CodingKeys to map JSON keys to Swift property names (empty, since we are decoding directly)
+    private enum CodingKeys: String, CodingKey {
+        case en, fr // You can add more languages if needed
+    }
+
+    // Custom initializer to decode the localized text directly as a dictionary
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        var textDict = [String: String]()
+        if let enText = try container.decodeIfPresent(String.self, forKey: .en) {
+            textDict["en"] = enText
+        }
+        if let frText = try container.decodeIfPresent(String.self, forKey: .fr) {
+            textDict["fr"] = frText
+        }
+        self.text = textDict
+    }
 
     // Method to get the localized version of the text
     func localized(_ locale: String) -> String? {
@@ -70,25 +167,13 @@ struct LocalizedText {
 }
 
 // Enum for action types
-enum ActionType: String {
+enum ActionType: String, Decodable {
     case deeplink = "DEEPLINK"
     case external = "EXTERNAL"
     case inApp = "IN_APP"
+    case webLink = "webLink"
 }
 
-// Example data for ListMenuAction
-let helpMenuAction = ListMenuAction(
-    id: "help",
-    primaryText: [
-        "en": "Help Centre",
-        "fr": "Centre d'aide"
-    ],
-    secondaryText: nil, // No secondary text provided
-    actionLink: "cibebanking://helpcentre",
-    actionType: .deeplink,
-    leadingIcon: LocalizedText(text: ["en": "help_icon.png", "fr": "icone_aide.png"]),
-    trailingIcon: LocalizedText(text: ["en": "chevron_right.png", "fr": "chevron_droit.png"])
-)
 
 //let aboutViewModel = YourViewModel(
 //    id: "about",
@@ -108,7 +193,7 @@ let helpMenuAction = ListMenuAction(
 //)
 
 // Convert ListMenuAction to ListCellItemData using the DataMapper
-let listCellData = ListCellDataMapper.toListCellData(listMenuAction: helpMenuAction, locale: "en")
+//let listCellData = ListCellDataMapper.toListCellData(listMenuAction: helpMenuAction, locale: "en")
 
 //// Example usage in your bottom sheet
 //let bottomSheet = ListCellBottomSheet.sheetOne
