@@ -21,10 +21,10 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     /// - Parameter coordinator: The `BottomSheetCoordinator` used to handle sheet transitions.
     /// - Returns: A `View` representing the content of the sheet.
     @ViewBuilder
-    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>) -> some View {
+    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>, listCellItemData: Binding<[ListCellItemData]>) -> some View {
         switch self {
         case .sheetOne:
-            sheetOneView()
+            sheetOneView(listCellItemData: listCellItemData)
         case .sheetTwo:
             sheetTwoView(coordinator: coordinator)
         }
@@ -34,14 +34,13 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     /// View content for the first bottom sheet (`sheetOne`). It includes a header and a list of items.
     /// - Returns: A `View` representing the first sheet content.
     @ViewBuilder
-    private func sheetOneView() -> some View {
+    private func sheetOneView(listCellItemData: Binding<[ListCellItemData]>) -> some View {
         VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            
             // Header view for the bottom sheet.
             ListCellBottomSheetHeaderView(text: "Need more help?")
             
-            // List of cell items displayed within this bottom sheet.
-            ListCellContainerView(listCellItemData: sheetOneListData)
+            // Use the Binding's data
+            ListCellContainerView(listCellItemData: listCellItemData.wrappedValue)
                 .listStyle(PlainListStyle())
 
             Spacer() // Pushes the content to the top
@@ -59,25 +58,10 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
             Text("This is Sheet Two")
                 .padding()
             
-            // Button to navigate back to the first sheet using the reusable transition method
             BottomSheetButton<ListCellBottomSheet>(title: "Go back to Sheet One") {
-                await coordinator.transitionToSheet(.sheetOne) // Reuse the transition logic
+                await coordinator.transitionToSheet(.sheetOne)
             }
         }
-    }
-    
-    // MARK: - Helper Methods
-    /// Provides the list data for the first bottom sheet, with predefined `ListCellItemData` entries.
-    /// - Returns: An array of `ListCellItemData` objects representing the items in the list.
-    private var sheetOneListData: [ListCellItemData] {
-        return [
-            ListCellItemData(textPrimary: "Locations", textSecondary: "please add", leftIconName: "mappin.and.ellipse", actionCount: "1"),
-            ListCellItemData(textPrimary: "Help", leftIconName: "questionmark.circle"),
-            ListCellItemData(textPrimary: "About", leftIconName: "info.circle"),
-            ListCellItemData(textPrimary: "Mobile Privacy Policy", leftIconName: "shield"),
-            ListCellItemData(textPrimary: "Mobile Online Security", leftIconName: "lock.shield"),
-            ListCellItemData(textPrimary: "Mobile Terms", leftIconName: "doc.text")
-        ]
     }
     
     /// Creates a header view for the bottom sheet, containing a customizable text label.
@@ -97,6 +81,7 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+
 
 
 
@@ -121,7 +106,6 @@ public struct ListCellContainerView: View {
     }
 }
 
-/// Data model for a list cell item, containing primary text, secondary text, icons, and more.
 public struct ListCellItemData: Identifiable {
     // Unique identifier for each list cell item.
     public let id = UUID()
@@ -133,13 +117,10 @@ public struct ListCellItemData: Identifiable {
     public let textSecondary: String?
     
     // Optional icon name to be displayed on the left side of the cell.
-    public let showLeftIcon: String?
+    public let leftIconName: String?
     
     // Optional icon name for the right side of the cell.
     public let rightIconName: String?
-    
-    // Optional icon name for the left side of the cell.
-    public let leftIconName: String?
     
     // Accessibility text for the right icon.
     public let rightIconAccessibilityText: String?
@@ -150,35 +131,43 @@ public struct ListCellItemData: Identifiable {
     // Optional number badge or count indicator for the list cell.
     public let actionCount: String?
     
+    // Optional action link (e.g., deeplink or URL).
+    public let actionLink: String?
+    
+    // Optional action type (e.g., "deeplink", "external", "in-app").
+    public let actionType: String?
+    
     /// Initializes the `ListCellItemData` with various optional parameters for customization.
     /// - Parameters:
     ///   - textPrimary: The main text for the list cell.
     ///   - textSecondary: Optional secondary text.
-    ///   - showLeftIcon: Optional left icon.
-    ///   - rightIconName: Optional right icon.
     ///   - leftIconName: Optional left icon.
+    ///   - rightIconName: Optional right icon.
     ///   - rightIconAccessibilityText: Accessibility description for the right icon.
     ///   - leftIconAccessibilityText: Accessibility description for the left icon.
     ///   - actionCount: Optional badge or count indicator.
+    ///   - actionLink: Action link (e.g., deeplink or URL).
+    ///   - actionType: Action type (e.g., "deeplink", "external", "in-app").
     public init(textPrimary: String,
                 textSecondary: String? = nil,
-                showLeftIcon: String? = nil,
-                rightIconName: String? = nil,
                 leftIconName: String? = nil,
+                rightIconName: String? = nil,
                 rightIconAccessibilityText: String? = nil,
                 leftIconAccessibilityText: String? = nil,
-                actionCount: String? = nil) {
+                actionCount: String? = nil,
+                actionLink: String? = nil,
+                actionType: String? = nil) {
         self.textPrimary = textPrimary
         self.textSecondary = textSecondary
-        self.showLeftIcon = showLeftIcon
-        self.rightIconName = rightIconName
         self.leftIconName = leftIconName
+        self.rightIconName = rightIconName
         self.rightIconAccessibilityText = rightIconAccessibilityText
         self.leftIconAccessibilityText = leftIconAccessibilityText
         self.actionCount = actionCount
+        self.actionLink = actionLink
+        self.actionType = actionType
     }
 }
-
 /// A view representing an individual list cell, displaying primary text, optional secondary text,
 /// and optional icons with customizable badges.
 public struct ListCellItemView: View {
@@ -300,3 +289,66 @@ public struct ListCellIconView: View {
 }
 
 
+// MARK: - Helper Methods
+/// Provides the list data for the first bottom sheet, with updated `ListCellItemData` to include action links and types.
+/// - Returns: An array of `ListCellItemData` objects representing the items in the list.
+private var sheetOneListData: [ListCellItemData] {
+    return [
+        ListCellItemData(
+            textPrimary: "Locations",
+            textSecondary: "please add",
+            leftIconName: "mappin.and.ellipse",
+            rightIconName: "chevron.right",
+            rightIconAccessibilityText: "Navigate to locations",
+            leftIconAccessibilityText: "Map pin icon",
+            actionCount: "1",
+            actionLink: "app://locations",
+            actionType: "deeplink"
+        ),
+        ListCellItemData(
+            textPrimary: "Help",
+            leftIconName: "questionmark.circle",
+            rightIconName: "chevron.right",
+            rightIconAccessibilityText: "Navigate to help center",
+            leftIconAccessibilityText: "Help icon",
+            actionLink: "app://help",
+            actionType: "deeplink"
+        ),
+        ListCellItemData(
+            textPrimary: "About",
+            leftIconName: "info.circle",
+            rightIconName: "chevron.right",
+            rightIconAccessibilityText: "Learn more about us",
+            leftIconAccessibilityText: "Info icon",
+            actionLink: "app://about",
+            actionType: "deeplink"
+        ),
+        ListCellItemData(
+            textPrimary: "Mobile Privacy Policy",
+            leftIconName: "shield",
+            rightIconName: "chevron.right",
+            rightIconAccessibilityText: "Read privacy policy",
+            leftIconAccessibilityText: "Shield icon",
+            actionLink: "app://privacy",
+            actionType: "webLink"
+        ),
+        ListCellItemData(
+            textPrimary: "Mobile Online Security",
+            leftIconName: "lock.shield",
+            rightIconName: "chevron.right",
+            rightIconAccessibilityText: "Learn more about online security",
+            leftIconAccessibilityText: "Lock shield icon",
+            actionLink: "app://security",
+            actionType: "webLink"
+        ),
+        ListCellItemData(
+            textPrimary: "Mobile Terms",
+            leftIconName: "doc.text",
+            rightIconName: "chevron.right",
+            rightIconAccessibilityText: "Read terms and conditions",
+            leftIconAccessibilityText: "Document icon",
+            actionLink: "app://terms",
+            actionType: "webLink"
+        )
+    ]
+}

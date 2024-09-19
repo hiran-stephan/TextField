@@ -23,8 +23,9 @@ public protocol BottomSheetEnum: Identifiable {
     
     /// A method that returns the view to be displayed when the sheet is presented.
     /// - Parameter coordinator: The `BottomSheetCoordinator` managing the sheet presentation.
+    /// - Parameter listCellItemData: A binding to the list data to be shown in the sheet.
     /// - Returns: A view representing the content of the bottom sheet.
-    @ViewBuilder func view(coordinator: BottomSheetCoordinator<Self>) -> Body
+    @ViewBuilder func view(coordinator: BottomSheetCoordinator<Self>, listCellItemData: Binding<[ListCellItemData]>) -> Body
 }
 
 /// A class responsible for coordinating the presentation of bottom sheets.
@@ -64,32 +65,26 @@ public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObj
 /// A view modifier that manages the presentation of a bottom sheet based on the current sheet
 /// managed by the `BottomSheetCoordinator`.
 public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
-    /// The coordinator responsible for managing the bottom sheets.
     @StateObject var coordinator: BottomSheetCoordinator<Sheet>
+    @Binding var listCellItemData: [ListCellItemData] // Add binding to the data passed from the parent view
     
-    /// Defines the body content of the view modifier.
-    /// It listens for changes in the coordinator and presents the appropriate sheet.
     public func body(content: Content) -> some View {
         content
             .sheet(item: $coordinator.currentSheet, onDismiss: {
                 coordinator.sheetDismissed()
             }, content: { sheet in
                 if UIDevice.current.userInterfaceIdiom == .pad {
-                    // Use BottomSheetView for iPad
                     BottomSheetView {
-                        sheet.view(coordinator: coordinator)
+                        sheet.view(coordinator: coordinator, listCellItemData: $listCellItemData) // Pass the binding here
                     }
                 } else {
-                    // Adjust bottom sheet presentation for iPhone and smaller devices
                     adjustBottomSheet {
-                        sheet.view(coordinator: coordinator)
+                        sheet.view(coordinator: coordinator, listCellItemData: $listCellItemData) // Pass the binding here
                     }
                 }
             })
     }
     
-    /// Adjusts the presentation of the bottom sheet, using `.presentationDetents` for iOS 16 and above.
-    /// - Parameter content: The content view to be presented in the bottom sheet.
     @ViewBuilder
     func adjustBottomSheet<Content: View>(content: () -> Content) -> some View {
         if #available(iOS 16.0, *) {
@@ -99,17 +94,14 @@ public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
                     .large
                 ])
         } else {
-            content() // Fallback for iOS versions below 16
+            content()
         }
     }
 }
 
-/// A view extension that adds the `bottomSheetManaging` modifier to manage bottom sheets using a coordinator.
-/// - Parameter coordinator: The coordinator managing the sheet presentation.
-/// - Returns: A view that applies the bottom sheet management logic.
 public extension View {
-    func bottomSheetManaging<Sheet: BottomSheetEnum>(coordinator: BottomSheetCoordinator<Sheet>) -> some View {
-        modifier(BottomSheetManaging(coordinator: coordinator))
+    func bottomSheetManaging<Sheet: BottomSheetEnum>(coordinator: BottomSheetCoordinator<Sheet>, listCellItemData: Binding<[ListCellItemData]>) -> some View {
+        modifier(BottomSheetManaging(coordinator: coordinator, listCellItemData: listCellItemData))
     }
 }
 
