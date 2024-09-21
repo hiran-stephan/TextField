@@ -7,17 +7,18 @@
 
 import Foundation
 
-struct LoginFieldData {
-    let mastheadCaption: String
-    let mastheadCaptionAccessibilityText: String
-    let loginGraphicTitle: String
-    let loginGraphicContentURL: String
-    let systemErrorDialogDismiss: String
-    let systemErrorDialogResetPassword: String
-}
-
 struct LoginFieldDataMapper {
-    
+
+    // Define LoginFieldData inside the mapper
+    struct LoginFieldData {
+        let mastheadCaption: String
+        let mastheadCaptionAccessibilityText: String
+        let loginGraphicTitle: String
+        let loginGraphicContentURL: String
+        let systemErrorDialogDismiss: String
+        let systemErrorDialogResetPassword: String
+    }
+
     // Map from LoginPagePresenter to LoginFieldData
     static func map(from presenter: LoginPagePresenter) -> LoginFieldData {
         return LoginFieldData(
@@ -31,26 +32,27 @@ struct LoginFieldDataMapper {
     }
 }
 
-struct LoginSubmitFormData {
-    let userIdTitle: String
-    let selectedUserIdAccessibilityText: String
-    let deleteUserIdAccessibilityText: String
-    let removeSavedUserIdDialogTitle: String
-    let removeSavedUserIdDialogProceed: String
-    let removeSavedUserIdDialogCancel: String
-    let notRegisteredLinkText: String
-    let passwordTitle: String
-    let resetPasswordLinkText: String
-    let showPasswordAccessibilityText: String
-    let hidePasswordAccessibilityText: String
-    let rememberMeTitleText: String
-    let rememberMeDialogTitle: String
-    let rememberMeDialogText: String
-    let rememberMeDialogDismiss: String
-}
-
 struct LoginSubmitFormDataMapper {
-    
+
+    // Define LoginSubmitFormData inside the mapper
+    struct LoginSubmitFormData {
+        let userIdTitle: String
+        let selectedUserIdAccessibilityText: String
+        let deleteUserIdAccessibilityText: String
+        let removeSavedUserIdDialogTitle: String
+        let removeSavedUserIdDialogProceed: String
+        let removeSavedUserIdDialogCancel: String
+        let notRegisteredLinkText: String
+        let passwordTitle: String
+        let resetPasswordLinkText: String
+        let showPasswordAccessibilityText: String
+        let hidePasswordAccessibilityText: String
+        let rememberMeTitleText: String
+        let rememberMeDialogTitle: String
+        let rememberMeDialogText: String
+        let rememberMeDialogDismiss: String
+    }
+
     // Map from LoginSubmitFormPresenter to LoginSubmitFormData
     static func map(from presenter: LoginSubmitFormPresenter) -> LoginSubmitFormData {
         return LoginSubmitFormData(
@@ -74,7 +76,9 @@ struct LoginSubmitFormDataMapper {
 }
 
 
-// Map presenter to data models using the mappers
+// Map presenter to data model using the LoginFieldDataMapper
 let loginFieldData = LoginFieldDataMapper.map(from: viewModel.createLoginPagePresenter())
+
+// Map the data from LoginSubmitFormPresenter using LoginSubmitFormDataMapper
 let loginSubmitFormData = LoginSubmitFormDataMapper.map(from: viewModel.createLoginSubmitFormPresenter())
 
