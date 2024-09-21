@@ -82,7 +82,78 @@ let loginFieldData = LoginFieldDataMapper.map(from: viewModel.createLoginPagePre
 // Map the data from LoginSubmitFormPresenter using LoginSubmitFormDataMapper
 let loginSubmitFormData = LoginSubmitFormDataMapper.map(from: viewModel.createLoginSubmitFormPresenter())
 
-func loadSubmitFormData(from presenter: LoginSubmitFormPresenter) {
-        // Logic to map presenter data into the form model
+final class LoginFormViewModel: ObservableObject {
+    @Published var editingField: Field?
+    @Published var username: String = ""
+    @Published var password: String = ""
+    @Published var validationUsername: ValidationRule?
+    @Published var validationPassword: ValidationRule?
+    @Published var submitFormData: LoginSubmitFormData?
+
+    enum Field {
+        case username, password
+    }
+
+    // Pass LoginSubmitFormPresenter and retrieve the data inside the view model
+    init(presenter: LoginSubmitFormPresenter) {
+        loadSubmitFormData(from: presenter)
+    }
+
+    // Function to map presenter data to the model
+    func loadSubmitFormData(from presenter: LoginSubmitFormPresenter) {
         submitFormData = LoginSubmitFormDataMapper.map(from: presenter)
     }
+}
+
+public struct LoginScreen: View {
+    @ObservedObject private var viewModel: LoginViewModel
+
+    // Initialize the form view model with the presenter
+    @StateObject private var formViewModel: LoginFormViewModel
+
+    public init(viewModel: LoginViewModel = KoinApplication.inject()) {
+        self.viewModel = viewModel
+        // Pass the presenter when initializing the formViewModel
+        _formViewModel = StateObject(wrappedValue: LoginFormViewModel(presenter: viewModel.createLoginSubmitFormPresenter()))
+    }
+
+    public var body: some View {
+        VStack {
+            // Pass the viewModel to the LoginForm
+            LoginForm(viewModel: formViewModel)
+        }
+    }
+}
+
+
+struct LoginForm: View {
+    @EnvironmentObject var theme: Theme
+    @ObservedObject var viewModel: LoginFormViewModel
+
+    var body: some View {
+        VStack(spacing: theme.dimens.medium) {
+            // Ensure submitFormData is available before using it
+            if let submitFormData = viewModel.submitFormData {
+                TextFieldGeneral(
+                    text: $viewModel.username,
+                    label: submitFormData.userIdTitle,  // Accessing submitFormData
+                    trailingIcon: ComponentConstants.Images.profile,
+                    isError: false
+                )
+
+                TextFieldPassword(
+                    text: $viewModel.password,
+                    label: submitFormData.passwordTitle,  // Accessing submitFormData
+                    placeholder: "verysecuredpassword",
+                    isError: false
+                )
+                
+                TextLinkButton(title: submitFormData.notRegisteredLinkText) {}
+                TextLinkButton(title: submitFormData.resetPasswordLinkText) {}
+            } else {
+                // Placeholder or loading state if submitFormData is not available yet
+                Text("Loading...")
+            }
+        }
+    }
+}
