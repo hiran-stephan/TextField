@@ -82,3 +82,7 @@ let loginFieldData = LoginFieldDataMapper.map(from: viewModel.createLoginPagePre
 // Map the data from LoginSubmitFormPresenter using LoginSubmitFormDataMapper
 let loginSubmitFormData = LoginSubmitFormDataMapper.map(from: viewModel.createLoginSubmitFormPresenter())
 
+func loadSubmitFormData(from presenter: LoginSubmitFormPresenter) {
+        // Logic to map presenter data into the form model
+        submitFormData = LoginSubmitFormDataMapper.map(from: presenter)
+    }
