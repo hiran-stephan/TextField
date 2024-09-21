@@ -7,153 +7,127 @@
 
 import Foundation
 
-struct LoginFieldDataMapper {
-
-    // Define LoginFieldData inside the mapper
-    struct LoginFieldData {
-        let mastheadCaption: String
-        let mastheadCaptionAccessibilityText: String
-        let loginGraphicTitle: String
-        let loginGraphicContentURL: String
-        let systemErrorDialogDismiss: String
-        let systemErrorDialogResetPassword: String
-    }
-
-    // Map from LoginPagePresenter to LoginFieldData
-    static func map(from presenter: LoginPagePresenter) -> LoginFieldData {
-        return LoginFieldData(
-            mastheadCaption: presenter.mastheadCaption,
-            mastheadCaptionAccessibilityText: presenter.mastheadCaptionAccessibilityText,
-            loginGraphicTitle: presenter.loginGraphicTitle,
-            loginGraphicContentURL: presenter.loginGraphicContentURL,
-            systemErrorDialogDismiss: presenter.systemErrorDialogDismiss,
-            systemErrorDialogResetPassword: presenter.systemErrorDialogResetPassword
-        )
-    }
-}
-
-struct LoginSubmitFormDataMapper {
-
-    // Define LoginSubmitFormData inside the mapper
-    struct LoginSubmitFormData {
-        let userIdTitle: String
-        let selectedUserIdAccessibilityText: String
-        let deleteUserIdAccessibilityText: String
-        let removeSavedUserIdDialogTitle: String
-        let removeSavedUserIdDialogProceed: String
-        let removeSavedUserIdDialogCancel: String
-        let notRegisteredLinkText: String
-        let passwordTitle: String
-        let resetPasswordLinkText: String
-        let showPasswordAccessibilityText: String
-        let hidePasswordAccessibilityText: String
-        let rememberMeTitleText: String
-        let rememberMeDialogTitle: String
-        let rememberMeDialogText: String
-        let rememberMeDialogDismiss: String
-    }
-
-    // Map from LoginSubmitFormPresenter to LoginSubmitFormData
-    static func map(from presenter: LoginSubmitFormPresenter) -> LoginSubmitFormData {
-        return LoginSubmitFormData(
-            userIdTitle: presenter.userIdTitle,
-            selectedUserIdAccessibilityText: presenter.selectedUserIdAccessibilityText,
-            deleteUserIdAccessibilityText: presenter.deleteUserIdAccessibilityText,
-            removeSavedUserIdDialogTitle: presenter.removeSavedUserIdDialogTitle,
-            removeSavedUserIdDialogProceed: presenter.removeSavedUserIdDialogProceed,
-            removeSavedUserIdDialogCancel: presenter.removeSavedUserIdDialogCancel,
-            notRegisteredLinkText: presenter.notRegisteredLinkText,
-            passwordTitle: presenter.passwordTitle,
-            resetPasswordLinkText: presenter.resetPasswordLinkText,
-            showPasswordAccessibilityText: presenter.showPasswordAccessibilityText,
-            hidePasswordAccessibilityText: presenter.hidePasswordAccessibilityText,
-            rememberMeTitleText: presenter.rememberMeTitleText,
-            rememberMeDialogTitle: presenter.rememberMeDialogTitle,
-            rememberMeDialogText: presenter.rememberMeDialogText,
-            rememberMeDialogDismiss: presenter.rememberMeDialogDismiss
-        )
-    }
-}
-
-
-// Map presenter to data model using the LoginFieldDataMapper
-let loginFieldData = LoginFieldDataMapper.map(from: viewModel.createLoginPagePresenter())
-
-// Map the data from LoginSubmitFormPresenter using LoginSubmitFormDataMapper
-let loginSubmitFormData = LoginSubmitFormDataMapper.map(from: viewModel.createLoginSubmitFormPresenter())
-
-final class LoginFormViewModel: ObservableObject {
-    @Published var editingField: Field?
-    @Published var username: String = ""
-    @Published var password: String = ""
-    @Published var validationUsername: ValidationRule?
-    @Published var validationPassword: ValidationRule?
-    @Published var submitFormData: LoginSubmitFormData?
-
-    enum Field {
-        case username, password
-    }
-
-    // Pass LoginSubmitFormPresenter and retrieve the data inside the view model
-    init(presenter: LoginSubmitFormPresenter) {
-        loadSubmitFormData(from: presenter)
-    }
-
-    // Function to map presenter data to the model
-    func loadSubmitFormData(from presenter: LoginSubmitFormPresenter) {
-        submitFormData = LoginSubmitFormDataMapper.map(from: presenter)
-    }
-}
-
-public struct LoginScreen: View {
-    @ObservedObject private var viewModel: LoginViewModel
-
-    // Initialize the form view model with the presenter
-    @StateObject private var formViewModel: LoginFormViewModel
-
-    public init(viewModel: LoginViewModel = KoinApplication.inject()) {
-        self.viewModel = viewModel
-        // Pass the presenter when initializing the formViewModel
-        _formViewModel = StateObject(wrappedValue: LoginFormViewModel(presenter: viewModel.createLoginSubmitFormPresenter()))
-    }
-
-    public var body: some View {
-        VStack {
-            // Pass the viewModel to the LoginForm
-            LoginForm(viewModel: formViewModel)
-        }
-    }
-}
-
-
+/// A SwiftUI view representing the login form, containing fields for the user ID and password,
+/// and buttons for submitting the form and performing additional actions like password recovery.
 struct LoginForm: View {
     @EnvironmentObject var theme: Theme
     @ObservedObject var viewModel: LoginFormViewModel
+    
+    /// Indicates whether the form submission process is currently loading.
+    let isLoading: Bool
+    
+    /// A closure to handle the "Recover Username" action.
+    let onRecoverUsername: () -> Void
+    
+    /// A closure to handle the "Forgot Password" action.
+    let onForgotPassword: () -> Void
+    
+    /// A closure to handle the form submission process.
+    let onSubmitForm: () -> Void
 
+    /// State variable to manage the error state for input fields, e.g., highlighting incorrect inputs.
+    @State var isError = false
+    
     var body: some View {
-        VStack(spacing: theme.dimens.medium) {
-            // Ensure submitFormData is available before using it
+        VStack(spacing: BankingTheme.dimens.medium) {
+            /// The main content area, conditionally displayed if the `submitFormData` is available.
             if let submitFormData = viewModel.submitFormData {
-                TextFieldGeneral(
-                    text: $viewModel.username,
-                    label: submitFormData.userIdTitle,  // Accessing submitFormData
-                    trailingIcon: ComponentConstants.Images.profile,
-                    isError: false
-                )
-
-                TextFieldPassword(
-                    text: $viewModel.password,
-                    label: submitFormData.passwordTitle,  // Accessing submitFormData
-                    placeholder: "verysecuredpassword",
-                    isError: false
-                )
                 
-                TextLinkButton(title: submitFormData.notRegisteredLinkText) {}
-                TextLinkButton(title: submitFormData.resetPasswordLinkText) {}
-            } else {
-                // Placeholder or loading state if submitFormData is not available yet
-                Text("Loading...")
+                /// A container for the login page's graphic, located above the input fields.
+                LoginGraphicContainer()
+                    .padding(.horizontal, BankingTheme.dimens.medium)
+                
+                VStack(spacing: BankingTheme.spacing.noPadding) {
+                    /// Creates the username input field along with associated links (Recover Username, Not Registered).
+                    createUsernameField(submitFormData: submitFormData)
+                    
+                    /// Creates the password input field along with a link for resetting the password.
+                    createPasswordField(submitFormData: submitFormData)
+                    
+                    /// Footer section with additional links for user actions.
+                    createFooterLinks(submitFormData: submitFormData)
+                    
+                    Spacer()
+                    
+                    /// Option for the user to toggle the "Remember User ID" setting.
+                    RememberUserIdView(
+                        title: submitFormData.rememberMeTitleText,
+                        isRemembered: true
+                    )
+                    
+                    /// A primary button that submits the form.
+                    createPrimaryButton(submitFormData: submitFormData)
+                }
+            }
+        }
+        .padding(.top, theme.dimens.medium)
+        .padding(.bottom, theme.dimens.medium)
+    }
+    
+    // MARK: - Subviews
+    
+    /// Creates the input field for the username and associated links for user actions.
+    /// - Parameter submitFormData: Data used to configure the user ID field and related links.
+    /// - Returns: A SwiftUI view that contains the username input field and associated links.
+    private func createUsernameField(submitFormData: LoginSubmitFormData) -> some View {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
+            /// A general input field for entering the username.
+            TextFieldGeneral(
+                text: $viewModel.username,
+                label: submitFormData.userIdTitle,
+                trailingIcon: ComponentConstants.Images.profile,
+                placeholder: "Type here",
+                isError: false
+            )
+            
+            HStack {
+                /// Link for recovering the username.
+                TextLinkButton(title: submitFormData.userIdActionLinkText, action: onRecoverUsername)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                /// Link for users who have not yet registered.
+                TextLinkButton(title: submitFormData.notRegisteredLinkText, action: onForgotPassword)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        }
+    }
+    
+    /// Creates the input field for the password.
+    /// - Parameter submitFormData: Data used to configure the password field.
+    /// - Returns: A SwiftUI view containing the password input field.
+    private func createPasswordField(submitFormData: LoginSubmitFormData) -> some View {
+        TextFieldPassword(
+            text: $viewModel.password,
+            label: submitFormData.passwordTitle,
+            isError: $isError
+        )
+    }
+    
+    /// Creates additional footer links for user actions, such as resetting the password.
+    /// - Parameter submitFormData: Data used to configure the footer links.
+    /// - Returns: A SwiftUI view that contains links for additional actions.
+    private func createFooterLinks(submitFormData: LoginSubmitFormData) -> some View {
+        HStack {
+            /// Link for resetting the password.
+            TextLinkButton(title: submitFormData.resetPasswordLinkText, action: onForgotPassword)
+        }
+    }
+    
+    /// Creates the primary button used to submit the form.
+    /// - Parameter submitFormData: Data used to configure the button's label and action.
+    /// - Returns: A SwiftUI view that contains the primary form submission button.
+    private func createPrimaryButton(submitFormData: LoginSubmitFormData) -> some View {
+        HStack {
+            /// A button labeled with the form's submission label, disabled if `isLoading` is true.
+            PrimaryButton(
+                content: {
+                    Text(submitFormData.signonButtonLabel)
+                },
+                isDisabled: isLoading
+            ) {
+                onSubmitForm()
             }
         }
     }
 }
+
