@@ -54,6 +54,11 @@ public struct ListCellBottomSheetData {
         self.menuActions = menuActions
     }
 }
+@State private var bottomSheetData: ListCellBottomSheetData = ListCellBottomSheetData(
+        title: "",
+        titleAccessibilityText: "",
+        menuActions: []
+    ) // Initial placeholder value for state variable
 
 
     .onAppear {
