@@ -17,12 +17,15 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     /// Provides the content view for each bottom sheet, switching based on the specific case.
     /// - Parameter coordinator: The `BottomSheetCoordinator` used to handle sheet transitions.
     /// - Parameter sheetData: A binding to `ListCellBottomSheetData` for each cell in the bottom sheet.
+    /// - Parameter onSelect: A closure that is called when a specific row is selected.
     /// - Returns: A `View` representing the content of the sheet.
     @ViewBuilder
-    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>, sheetData: Binding<ListCellBottomSheetData>) -> some View {
+    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>,
+              sheetData: Binding<ListCellBottomSheetData>,
+              onSelect: @escaping (ListCellItemData) -> Void) -> some View {
         switch self {
         case .sheetOne:
-            sheetOneView(sheetData: sheetData)
+            sheetOneView(sheetData: sheetData, onSelect: onSelect)
         case .sheetTwo:
             sheetTwoView(coordinator: coordinator)
         }
@@ -31,17 +34,20 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     // MARK: - View Components
     /// View content for the first bottom sheet (`sheetOne`), including title, accessibility text, and items.
     /// - Parameter sheetData: A binding to the `ListCellBottomSheetData` passed to the sheet.
+    /// - Parameter onSelect: A closure to be called when a list cell is selected.
     /// - Returns: A `View` representing the first sheet content.
     @ViewBuilder
-    private func sheetOneView(sheetData: Binding<ListCellBottomSheetData>) -> some View {
+    private func sheetOneView(sheetData: Binding<ListCellBottomSheetData>,
+                              onSelect: @escaping (ListCellItemData) -> Void) -> some View {
         VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
             // Header view for the bottom sheet using title and accessibility text.
-            ListCellBottomSheetHeaderView(text: sheetData.wrappedValue.title, accessibilityText: sheetData.wrappedValue.titleAccessibilityText)
+            ListCellBottomSheetHeaderView(text: sheetData.wrappedValue.title,
+                                          accessibilityText: sheetData.wrappedValue.titleAccessibilityText)
             
-            // Use the Binding's menu actions data
-            ListCellContainerView(listCellItemData: sheetData.wrappedValue.menuActions)
+            // Use the Binding's menu actions data and pass the onSelect callback
+            ListCellContainerView(listCellItemData: sheetData.wrappedValue.menuActions, onSelect: onSelect)
                 .listStyle(PlainListStyle())
-
+            
             Spacer() // Pushes the content to the top
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -90,16 +96,23 @@ public struct ListCellContainerView: View {
     // An array of data objects representing each list cell.
     let listCellItemData: [ListCellItemData]
     
-    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData`.
+    // A closure that is called when a cell is selected.
+    let onSelect: (ListCellItemData) -> Void
+    
+    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData` and a selection callback.
     /// - Parameter listCellItemData: The array of data for each list cell.
-    public init(listCellItemData: [ListCellItemData]) {
+    /// - Parameter onSelect: A closure to be called when a cell is selected.
+    public init(listCellItemData: [ListCellItemData], onSelect: @escaping (ListCellItemData) -> Void) {
         self.listCellItemData = listCellItemData
+        self.onSelect = onSelect
     }
     
     /// The body of the view that renders each list cell using a `ForEach` loop.
     public var body: some View {
         ForEach(listCellItemData) { itemData in
-            ListCellItemView(listCellItemData: itemData)
+            ListCellItemView(listCellItemData: itemData) { selectedItem in
+                onSelect(selectedItem)
+            }
         }
     }
 }
@@ -172,16 +185,22 @@ public struct ListCellItemView: View {
     // Data for the specific list cell.
     let listCellItemData: ListCellItemData
     
+    // A closure that is called when the button is tapped.
+    let onSelect: (ListCellItemData) -> Void
+    
     /// Initializes the `ListCellItemView` with its corresponding data.
     /// - Parameter listCellItemData: The data object containing details for this list cell.
-    public init(listCellItemData: ListCellItemData) {
+    /// - Parameter onSelect: A closure to be called when the cell is selected.
+    public init(listCellItemData: ListCellItemData, onSelect: @escaping (ListCellItemData) -> Void) {
         self.listCellItemData = listCellItemData
+        self.onSelect = onSelect
     }
     
     /// The body of the list cell, displaying its content within a button.
     public var body: some View {
         Button {
-            // TODO: button action
+            // Trigger the callback when the button is tapped.
+            onSelect(listCellItemData)
         } label: {
             VStack(spacing: BankingTheme.spacing.noPadding) {
                 HStack(alignment: .center, spacing: BankingTheme.dimens.small) {

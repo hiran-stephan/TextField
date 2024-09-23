@@ -22,18 +22,22 @@ struct ContentView: View {
             SafeSpaceTile {
                 showSheetOne()
             }
-            .bottomSheetManaging(coordinator: coordinator, listCellItemData: $listCellItemData) // Pass the mapped data to the sheet
+            .bottomSheetManaging(coordinator: coordinator, listCellItemData: $listCellItemData) { selectedItem in
+                // Handle row selection here
+                print("Selected item: \(selectedItem.textPrimary)")
+                // Perform any specific actions when an item is selected
+            }
             
         }
         .ignoresSafeArea(.container, edges: .bottom) // Merge the button with the safe area at the bottom
         .onAppear {
             // Load the menu actions from JSON
-            let menuActionsFromJSON = ListMenuAction.loadMenuActionsFromJSON()
+//            let menuActionsFromJSON = ListMenuAction.loadMenuActionsFromJSON()
             
-            // Map the JSON-loaded ListMenuActions to ListCellItemData
-            listCellItemData = menuActionsFromJSON.map {
-                ListCellDataMapper.toListCellData(listMenuAction: $0, locale: locale)
-            }
+//            // Map the JSON-loaded ListMenuActions to ListCellItemData
+//            listCellItemData = menuActionsFromJSON.map {
+//                ListCellDataMapper.toListCellData(listMenuAction: $0, locale: locale)
+//            }
         }
     }
     

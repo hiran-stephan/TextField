@@ -98,8 +98,8 @@ public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
 }
 
 public extension View {
-    func bottomSheetManaging<Sheet: BottomSheetEnum>(coordinator: BottomSheetCoordinator<Sheet>, sheetData: Binding<ListCellBottomSheetData>) -> some View {
-        modifier(BottomSheetManaging(coordinator: coordinator, sheetData: sheetData))
+    func bottomSheetManaging<Sheet: BottomSheetEnum>(coordinator: BottomSheetCoordinator<Sheet>, sheetData: Binding<ListCellBottomSheetData>, onSelect: @escaping (ListCellItemData) -> Void) -> some View {
+        modifier(BottomSheetManaging(coordinator: coordinator, sheetData: sheetData, onSelect: onSelect))
     }
 }
 
