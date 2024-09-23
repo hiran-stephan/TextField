@@ -62,12 +62,10 @@ public final class BottomSheetCoordinator<Sheet: BottomSheetEnum>: ObservableObj
     }
 }
 
-/// A view modifier that manages the presentation of a bottom sheet based on the current sheet
-/// managed by the `BottomSheetCoordinator`.
 public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
     @StateObject var coordinator: BottomSheetCoordinator<Sheet>
-    @Binding var listCellItemData: [ListCellItemData] // Add binding to the data passed from the parent view
-    
+    @Binding var sheetData: ListCellBottomSheetData // Update to binding for the new parent model
+
     public func body(content: Content) -> some View {
         content
             .sheet(item: $coordinator.currentSheet, onDismiss: {
@@ -75,11 +73,11 @@ public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
             }, content: { sheet in
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     BottomSheetView {
-                        sheet.view(coordinator: coordinator, listCellItemData: $listCellItemData) // Pass the binding here
+                        sheet.view(coordinator: coordinator, sheetData: $sheetData) // Pass the parent data model
                     }
                 } else {
                     adjustBottomSheet {
-                        sheet.view(coordinator: coordinator, listCellItemData: $listCellItemData) // Pass the binding here
+                        sheet.view(coordinator: coordinator, sheetData: $sheetData) // Pass the parent data model
                     }
                 }
             })
@@ -100,8 +98,8 @@ public struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
 }
 
 public extension View {
-    func bottomSheetManaging<Sheet: BottomSheetEnum>(coordinator: BottomSheetCoordinator<Sheet>, listCellItemData: Binding<[ListCellItemData]>) -> some View {
-        modifier(BottomSheetManaging(coordinator: coordinator, listCellItemData: listCellItemData))
+    func bottomSheetManaging<Sheet: BottomSheetEnum>(coordinator: BottomSheetCoordinator<Sheet>, sheetData: Binding<ListCellBottomSheetData>) -> some View {
+        modifier(BottomSheetManaging(coordinator: coordinator, sheetData: sheetData))
     }
 }
 

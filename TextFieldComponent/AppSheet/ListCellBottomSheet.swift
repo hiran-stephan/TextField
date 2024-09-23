@@ -8,41 +8,38 @@
 import Foundation
 import SwiftUI
 
-/// Enum representing different bottom sheets within the list cell context. Each case defines
-/// a different sheet with associated views and content.
 enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     case sheetOne
     case sheetTwo
     
-    /// Unique identifier for each bottom sheet, based on its raw value.
     var id: String { rawValue }
 
     /// Provides the content view for each bottom sheet, switching based on the specific case.
     /// - Parameter coordinator: The `BottomSheetCoordinator` used to handle sheet transitions.
-    /// - Parameter listCellItemData: A binding to the list of data (`ListCellItemData`) for each cell in the bottom sheet.
+    /// - Parameter sheetData: A binding to `ListCellBottomSheetData` for each cell in the bottom sheet.
     /// - Returns: A `View` representing the content of the sheet.
     @ViewBuilder
-    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>, listCellItemData: Binding<[ListCellItemData]>) -> some View {
+    func view(coordinator: BottomSheetCoordinator<ListCellBottomSheet>, sheetData: Binding<ListCellBottomSheetData>) -> some View {
         switch self {
         case .sheetOne:
-            sheetOneView(listCellItemData: listCellItemData)
+            sheetOneView(sheetData: sheetData)
         case .sheetTwo:
             sheetTwoView(coordinator: coordinator)
         }
     }
     
     // MARK: - View Components
-    /// View content for the first bottom sheet (`sheetOne`). It includes a header and a list of items.
-    /// - Parameter listCellItemData: A binding to an array of `ListCellItemData` passed to the sheet.
+    /// View content for the first bottom sheet (`sheetOne`), including title, accessibility text, and items.
+    /// - Parameter sheetData: A binding to the `ListCellBottomSheetData` passed to the sheet.
     /// - Returns: A `View` representing the first sheet content.
     @ViewBuilder
-    private func sheetOneView(listCellItemData: Binding<[ListCellItemData]>) -> some View {
+    private func sheetOneView(sheetData: Binding<ListCellBottomSheetData>) -> some View {
         VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            // Header view for the bottom sheet.
-            ListCellBottomSheetHeaderView(text: "Need more help?")
+            // Header view for the bottom sheet using title and accessibility text.
+            ListCellBottomSheetHeaderView(text: sheetData.wrappedValue.title, accessibilityText: sheetData.wrappedValue.titleAccessibilityText)
             
-            // Use the Binding's data
-            ListCellContainerView(listCellItemData: listCellItemData.wrappedValue)
+            // Use the Binding's menu actions data
+            ListCellContainerView(listCellItemData: sheetData.wrappedValue.menuActions)
                 .listStyle(PlainListStyle())
 
             Spacer() // Pushes the content to the top
@@ -50,10 +47,6 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
         .frame(maxHeight: .infinity, alignment: .top)
     }
     
-    /// View content for the second bottom sheet (`sheetTwo`). It includes a text description and a button
-    /// to navigate back to the first sheet.
-    /// - Parameter coordinator: The `BottomSheetCoordinator` to manage sheet transitions.
-    /// - Returns: A `View` representing the second sheet content.
     @ViewBuilder
     private func sheetTwoView(coordinator: BottomSheetCoordinator<ListCellBottomSheet>) -> some View {
         VStack {
@@ -68,14 +61,16 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
     
     /// Creates a header view for the bottom sheet, containing a customizable text label.
     /// - Parameter text: The header text displayed at the top of the bottom sheet.
+    /// - Parameter accessibilityText: The accessibility label text for the header.
     /// - Returns: A `View` representing the header content.
     @ViewBuilder
-    private func ListCellBottomSheetHeaderView(text: String) -> some View {
+    private func ListCellBottomSheetHeaderView(text: String, accessibilityText: String) -> some View {
         HStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
             Text(text)
                 .font(BankingTheme.typography.bodySemiBold.font)
                 .foregroundColor(BankingTheme.colors.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .topLeading)
+                .accessibility(label: Text(accessibilityText))
         }
         .padding(.horizontal, BankingTheme.dimens.medium)
         .padding(.top, BankingTheme.dimens.extraExtraLarge)
@@ -83,6 +78,7 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+
 
 
 

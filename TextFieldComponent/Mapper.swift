@@ -50,10 +50,8 @@ struct ListCellBottomSheetData {
 
 
     .onAppear {
-        // Attach the ViewModel's navigator on screen appear.
         viewModel.attachViewModel(navigator: LoginPageNavigatorImpl())
 
-        // Load the menu actions from presenter
         let preSignonMenuPresenter = viewModel.createPreSignonMenuPresenter()
 
         // Use the updated ListCellDataMapper to get the ListCellBottomSheetData
