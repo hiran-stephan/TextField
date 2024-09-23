@@ -2,8 +2,11 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var coordinator = BottomSheetCoordinator<ListCellBottomSheet>()
-    @State private var listCellItemData: [ListCellItemData] = [] // Initialize data here if needed
-    // Define the locale for localization (can be dynamic)
+    @State private var bottomSheetData: ListCellBottomSheetData = ListCellBottomSheetData(
+            title: "",
+            titleAccessibilityText: "",
+            menuActions: []
+        )     // Define the locale for localization (can be dynamic)
     let locale = "en"
     
     var body: some View {
@@ -22,7 +25,7 @@ struct ContentView: View {
             SafeSpaceTile {
                 showSheetOne()
             }
-            .bottomSheetManaging(coordinator: coordinator, listCellItemData: $listCellItemData) { selectedItem in
+            .bottomSheetManaging(coordinator: coordinator, sheetData: $bottomSheetData) { selectedItem in
                 // Handle row selection here
                 print("Selected item: \(selectedItem.textPrimary)")
                 // Perform any specific actions when an item is selected
