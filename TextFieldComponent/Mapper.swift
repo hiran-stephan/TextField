@@ -8,38 +8,52 @@
 import Foundation
 
 struct ListCellDataMapper {
-
     /// Converts ViewModel data (ListMenuAction) into `ListCellItemData` based on the current locale.
+    ///
     /// - Parameters:
-    ///   - listMenuAction: The ViewModel data to be converted (similar to ListMenuAction in Kotlin).
+    ///   - listMenuAction: The ViewModel data to be converted.
     ///   - locale: The locale for localization (e.g., "en", "fr").
     /// - Returns: A `ListCellItemData` object populated with localized values.
     static func toListCellData(listMenuAction: ListMenuAction, locale: String) -> ListCellItemData {
         return ListCellItemData(
             // Primary text from ListMenuAction
             textPrimary: listMenuAction.primaryText[locale] ?? listMenuAction.primaryText["en"] ?? "",
-            
+
             // Secondary text (optional)
             textSecondary: listMenuAction.secondaryText?[locale] ?? listMenuAction.secondaryText?["en"],
-            
-            // Leading icon (left icon)
-            leftIconName: listMenuAction.leadingIcon?.localized(locale) ?? "",
-            
+
             // Right icon mapped to a drawable resource (if available)
             rightIconName: listMenuAction.trailingIcon?.localized(locale),
-            
+
+            // Leading icon (left icon)
+            leftIconName: listMenuAction.leadingIcon?.localized(locale) ?? "",
+
             // Accessibility text for the right icon (localized)
             rightIconAccessibilityText: listMenuAction.trailingIcon?.localizedAccessibility(locale),
-            
+
             // Accessibility text for the left icon (localized)
             leftIconAccessibilityText: listMenuAction.leadingIcon?.localizedAccessibility(locale),
-            
+
             // Action link and type
             actionLink: listMenuAction.actionLink,
             actionType: listMenuAction.actionType.rawValue
         )
     }
 }
+
+    .onAppear {
+        // Attach the ViewModel's navigator on screen appear.
+        viewModel.attachViewModel(navigator: LoginPageNavigatorImpl())
+
+        // Load the menu actions directly from the presenter
+        // TODO: Remove `loadMenuActionsFromJSON` when presenter data is available
+        let menuActions = viewModel.createPreSignonMenuPresenter()
+
+        // Map the presenter data to ListCellItemData using ListCellDataMapper
+        let listCellItemData = menuActions.menuActionList.map {
+            ListCellDataMapper.toListCellData(listMenuAction: $0, locale: locale)
+        }
+    }
 
 
 
