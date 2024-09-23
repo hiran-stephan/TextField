@@ -23,9 +23,9 @@ public protocol BottomSheetEnum: Identifiable {
     
     /// A method that returns the view to be displayed when the sheet is presented.
     /// - Parameter coordinator: The `BottomSheetCoordinator` managing the sheet presentation.
-    /// - Parameter listCellItemData: A binding to the list data to be shown in the sheet.
+    /// - Parameter sheetData: A binding to the full data (`ListCellBottomSheetData`) to be shown in the sheet.
     /// - Returns: A view representing the content of the bottom sheet.
-    @ViewBuilder func view(coordinator: BottomSheetCoordinator<Self>, listCellItemData: Binding<[ListCellItemData]>) -> Body
+    @ViewBuilder func view(coordinator: BottomSheetCoordinator<Self>, sheetData: Binding<ListCellBottomSheetData>) -> Body
 }
 
 /// A class responsible for coordinating the presentation of bottom sheets.
