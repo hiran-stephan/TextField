@@ -54,6 +54,32 @@ extension RemoteResourceActionType {
     }
 }
 
+extension String {
+    // Localized helper function to match Kotlin's localized logic
+    func localized(lang: String) -> String {
+        switch lang {
+        case "en":
+            return self // Default English localization
+        case "fr":
+            return self // Localized French text if available, adapt as needed
+        default:
+            return self // Fallback to English if no match
+        }
+    }
+
+    // Localized accessibility helper function to match Kotlin's logic
+    func localizedAccessibility(lang: String) -> String {
+        switch lang {
+        case "en":
+            return self // English accessibility
+        case "fr":
+            return self // French accessibility if available
+        default:
+            return self // Fallback to empty string or default
+        }
+    }
+}
+
 public struct ListCellBottomSheetData {
     public var title: String
     public var titleAccessibilityText: String
