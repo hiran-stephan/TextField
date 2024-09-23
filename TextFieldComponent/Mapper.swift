@@ -8,31 +8,29 @@
 import Foundation
 
 struct ListCellDataMapper {
-    /// Maps the data from PreSignonMenuPresenter to ListCellBottomSheetData.
+    /// Maps the data from `PreSignonMenuPresenter` to `ListCellBottomSheetData`.
     ///
-    /// - Parameters:
-    ///   - preSignonMenuPresenter: The presenter containing menu title, accessibility text, and actions.
-    ///   - locale: The current locale.
-    /// - Returns: A `ListCellBottomSheetData` object.
-    static func map(preSignonMenuPresenter: PreSignonMenuPresenter, locale: String) -> ListCellBottomSheetData {
-        // Extract menu title and accessibility text
+    /// - Parameter preSignonMenuPresenter: The presenter containing menu title, accessibility text, and actions.
+    /// - Returns: A `ListCellBottomSheetData` object populated with localized data directly from the presenter.
+    static func map(preSignonMenuPresenter: PreSignonMenuPresenter) -> ListCellBottomSheetData {
+        // Extract localized menu title and accessibility text directly from the presenter
         let menuTitle = preSignonMenuPresenter.menuTitle
         let menuTitleAccessibilityText = preSignonMenuPresenter.menuTitleAccessibilityText
-        
+
         // Map the menu actions to ListCellItemData
         let listCellItemData = preSignonMenuPresenter.menuActionList.map { menuAction in
             ListCellItemData(
-                textPrimary: menuAction.primaryText[locale] ?? menuAction.primaryText["en"] ?? "",
-                textSecondary: menuAction.secondaryText?[locale] ?? menuAction.secondaryText?["en"],
-                rightIconName: menuAction.trailingIcon?.localized(locale),
-                leftIconName: menuAction.leadingIcon?.localized(locale) ?? "",
-                rightIconAccessibilityText: menuAction.trailingIcon?.localizedAccessibility(locale),
-                leftIconAccessibilityText: menuAction.leadingIcon?.localizedAccessibility(locale),
+                textPrimary: menuAction.primaryText, // No need to specify .en or .fr
+                textSecondary: menuAction.secondaryText, // Presenter should handle localization
+                rightIconName: menuAction.trailingIcon, // Presenter returns the correct value
+                leftIconName: menuAction.leadingIcon ?? "", // Provide default empty string if nil
+                rightIconAccessibilityText: menuAction.trailingIconAccessibility, // Already localized
+                leftIconAccessibilityText: menuAction.leadingIconAccessibility, // Already localized
                 actionLink: menuAction.actionLink,
                 actionType: menuAction.actionType.rawValue
             )
         }
-        
+
         // Return the new ListCellBottomSheetData
         return ListCellBottomSheetData(
             title: menuTitle,
@@ -41,6 +39,7 @@ struct ListCellDataMapper {
         )
     }
 }
+
 
 public struct ListCellBottomSheetData {
     public var title: String
