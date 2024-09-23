@@ -42,10 +42,17 @@ struct ListCellDataMapper {
     }
 }
 
-struct ListCellBottomSheetData {
-    var title: String
-    var titleAccessibilityText: String
-    var menuActions: [ListCellItemData]
+public struct ListCellBottomSheetData {
+    public var title: String
+    public var titleAccessibilityText: String
+    public var menuActions: [ListCellItemData]
+    
+    // Initializer
+    public init(title: String, titleAccessibilityText: String, menuActions: [ListCellItemData]) {
+        self.title = title
+        self.titleAccessibilityText = titleAccessibilityText
+        self.menuActions = menuActions
+    }
 }
 
 
