@@ -8,51 +8,62 @@
 import Foundation
 
 struct ListCellDataMapper {
-    /// Converts ViewModel data (ListMenuAction) into `ListCellItemData` based on the current locale.
+    /// Maps the data from PreSignonMenuPresenter to ListCellBottomSheetData.
     ///
     /// - Parameters:
-    ///   - listMenuAction: The ViewModel data to be converted.
-    ///   - locale: The locale for localization (e.g., "en", "fr").
-    /// - Returns: A `ListCellItemData` object populated with localized values.
-    static func toListCellData(listMenuAction: ListMenuAction, locale: String) -> ListCellItemData {
-        return ListCellItemData(
-            // Primary text from ListMenuAction
-            textPrimary: listMenuAction.primaryText[locale] ?? listMenuAction.primaryText["en"] ?? "",
-
-            // Secondary text (optional)
-            textSecondary: listMenuAction.secondaryText?[locale] ?? listMenuAction.secondaryText?["en"],
-
-            // Right icon mapped to a drawable resource (if available)
-            rightIconName: listMenuAction.trailingIcon?.localized(locale),
-
-            // Leading icon (left icon)
-            leftIconName: listMenuAction.leadingIcon?.localized(locale) ?? "",
-
-            // Accessibility text for the right icon (localized)
-            rightIconAccessibilityText: listMenuAction.trailingIcon?.localizedAccessibility(locale),
-
-            // Accessibility text for the left icon (localized)
-            leftIconAccessibilityText: listMenuAction.leadingIcon?.localizedAccessibility(locale),
-
-            // Action link and type
-            actionLink: listMenuAction.actionLink,
-            actionType: listMenuAction.actionType.rawValue
+    ///   - preSignonMenuPresenter: The presenter containing menu title, accessibility text, and actions.
+    ///   - locale: The current locale.
+    /// - Returns: A `ListCellBottomSheetData` object.
+    static func map(preSignonMenuPresenter: PreSignonMenuPresenter, locale: String) -> ListCellBottomSheetData {
+        // Extract menu title and accessibility text
+        let menuTitle = preSignonMenuPresenter.menuTitle
+        let menuTitleAccessibilityText = preSignonMenuPresenter.menuTitleAccessibilityText
+        
+        // Map the menu actions to ListCellItemData
+        let listCellItemData = preSignonMenuPresenter.menuActionList.map { menuAction in
+            ListCellItemData(
+                textPrimary: menuAction.primaryText[locale] ?? menuAction.primaryText["en"] ?? "",
+                textSecondary: menuAction.secondaryText?[locale] ?? menuAction.secondaryText?["en"],
+                rightIconName: menuAction.trailingIcon?.localized(locale),
+                leftIconName: menuAction.leadingIcon?.localized(locale) ?? "",
+                rightIconAccessibilityText: menuAction.trailingIcon?.localizedAccessibility(locale),
+                leftIconAccessibilityText: menuAction.leadingIcon?.localizedAccessibility(locale),
+                actionLink: menuAction.actionLink,
+                actionType: menuAction.actionType.rawValue
+            )
+        }
+        
+        // Return the new ListCellBottomSheetData
+        return ListCellBottomSheetData(
+            title: menuTitle,
+            titleAccessibilityText: menuTitleAccessibilityText,
+            menuActions: listCellItemData
         )
     }
 }
+
+struct ListCellBottomSheetData {
+    var title: String
+    var titleAccessibilityText: String
+    var menuActions: [ListCellItemData]
+}
+
 
     .onAppear {
         // Attach the ViewModel's navigator on screen appear.
         viewModel.attachViewModel(navigator: LoginPageNavigatorImpl())
 
-        // Load the menu actions directly from the presenter
-        // TODO: Remove `loadMenuActionsFromJSON` when presenter data is available
-        let menuActions = viewModel.createPreSignonMenuPresenter()
+        // Load the menu actions from presenter
+        let preSignonMenuPresenter = viewModel.createPreSignonMenuPresenter()
 
-        // Map the presenter data to ListCellItemData using ListCellDataMapper
-        let listCellItemData = menuActions.menuActionList.map {
-            ListCellDataMapper.toListCellData(listMenuAction: $0, locale: locale)
-        }
+        // Use the updated ListCellDataMapper to get the ListCellBottomSheetData
+        let bottomSheetData = ListCellDataMapper.map(
+            preSignonMenuPresenter: preSignonMenuPresenter,
+            locale: locale
+        )
+
+        // Pass the ListCellBottomSheetData to ListCellBottomSheet
+        coordinator.showBottomSheet(data: bottomSheetData)
     }
 
 
