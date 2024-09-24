@@ -17,19 +17,9 @@ struct ListCellDataMapper {
         let menuTitle = preSignonMenuPresenter.menuTitle
         let menuTitleAccessibilityText = preSignonMenuPresenter.menuTitleAccessibilityText
 
-        // Map the menu actions to ListCellItemData
-        let listCellItemData = preSignonMenuPresenter.menuActionList.map { menuAction in
-            ListCellItemData(
-                textPrimary: menuAction.primaryText, // No need to specify .en or .fr
-                textSecondary: menuAction.secondaryText, // Presenter should handle localization
-                rightIconName: menuAction.trailingIcon, // Presenter returns the correct value
-                leftIconName: menuAction.leadingIcon ?? "", // Provide default empty string if nil
-                rightIconAccessibilityText: menuAction.trailingIconAccessibility, // Already localized
-                leftIconAccessibilityText: menuAction.leadingIconAccessibility, // Already localized
-                actionLink: menuAction.actionLink,
-                actionType: menuAction.actionType.toString()
-            )
-        }
+        // Use the static method on ListCellItemData for mapping
+        let listCellItemData = ListCellItemData.fromMenuActionList(preSignonMenuPresenter.menuActionList)
+
 
         // Return the new ListCellBottomSheetData
         return ListCellBottomSheetData(

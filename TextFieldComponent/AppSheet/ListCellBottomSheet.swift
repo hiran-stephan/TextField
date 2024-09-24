@@ -178,6 +178,22 @@ public struct ListCellItemData: Identifiable {
         self.actionLink = actionLink
         self.actionType = actionType
     }
+    
+    // Static method to map from PreSignonMenuPresenter actions
+    static func fromMenuActionList(_ menuActionList: [MenuAction]) -> [ListCellItemData] {
+        return menuActionList.map { menuAction in
+            ListCellItemData(
+                textPrimary: menuAction.primaryText,
+                textSecondary: menuAction.secondaryText,
+                leftIconName: menuAction.leadingIcon ?? "",
+                rightIconName: menuAction.trailingIcon, // Provide default empty string if nil
+                rightIconAccessibilityText: menuAction.trailingIconAccessibility, // Already localized
+                leftIconAccessibilityText: menuAction.leadingIconAccessibility, // Already localized
+                actionLink: menuAction.actionLink,
+                actionType: menuAction.actionType.toString()
+            )
+        }
+    }
 }
 /// A view representing an individual list cell, displaying primary text, optional secondary text,
 /// and optional icons with customizable badges.
