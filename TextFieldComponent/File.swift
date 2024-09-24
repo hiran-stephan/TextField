@@ -190,3 +190,48 @@ import Foundation
 //}
 //
 //
+
+import SwiftUI
+import Combine
+
+class KeyboardObserver: ObservableObject {
+    @Published var keyboardHeight: CGFloat = 0
+
+    private var cancellable: AnyCancellable?
+
+    init() {
+        self.cancellable = NotificationCenter.default
+            .publisher(for: UIResponder.keyboardWillShowNotification)
+            .merge(with: NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification))
+            .sink { notification in
+                if notification.name == UIResponder.keyboardWillShowNotification {
+                    if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                        self.keyboardHeight = keyboardFrame.height
+                    }
+                } else {
+                    self.keyboardHeight = 0
+                }
+            }
+    }
+}
+
+struct LoginScreen: View {
+    @StateObject private var keyboardObserver = KeyboardObserver()
+
+    var body: some View {
+        VStack {
+            ScrollView {
+                VStack {
+                    // Your login form fields go here
+                    loginFormView(loginSubmitFormData: loginSubmitFormData)
+                        .padding(.bottom, keyboardObserver.keyboardHeight) // Adjust for keyboard height
+                }
+            }
+        }
+        .onAppear {
+            // Setup the view model and other logic
+        }
+        .animation(.easeOut(duration: 0.3)) // Smooth animation when keyboard appears
+    }
+}
+
