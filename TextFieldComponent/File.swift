@@ -259,7 +259,7 @@ struct KeyboardAwareModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(.bottom, keyboardHeightPublisher.keyboardHeight)
-            .animation(.easeOut(duration: 0.3)) // Smooth adjustment animation
+            .animation(.easeOut(duration: 0.3), value: keyboardHeightPublisher.keyboardHeight) 
     }
 }
 
