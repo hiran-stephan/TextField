@@ -235,3 +235,57 @@ struct LoginScreen: View {
     }
 }
 
+import SwiftUI
+import Combine
+
+final class KeyboardHeightPublisher: ObservableObject {
+    @Published var keyboardHeight: CGFloat = 0
+    
+    init() {
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .merge(with: NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification))
+            .compactMap { notification -> CGFloat? in
+                guard let userInfo = notification.userInfo else { return nil }
+                let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+                return notification.name == UIResponder.keyboardWillShowNotification ? endFrame.height : 0
+            }
+            .assign(to: &$keyboardHeight)
+    }
+}
+
+struct KeyboardAwareModifier: ViewModifier {
+    @ObservedObject var keyboardHeightPublisher = KeyboardHeightPublisher()
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, keyboardHeightPublisher.keyboardHeight)
+            .animation(.easeOut(duration: 0.3)) // Smooth adjustment animation
+    }
+}
+
+struct LoginScreen: View {
+    var body: some View {
+        VStack {
+            ScrollView {
+                VStack {
+                    // Username field
+                    loginFieldView("Username")
+                        .padding()
+
+                    // Password field
+                    loginFieldView("Password")
+                        .padding()
+                }
+            }
+        }
+        .modifier(KeyboardAwareModifier()) // Adjust for keyboard
+    }
+    
+    func loginFieldView(_ title: String) -> some View {
+        VStack {
+            Text(title)
+            TextField(title, text: .constant(""))
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+        }
+    }
+}
