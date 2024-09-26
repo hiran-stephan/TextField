@@ -1,31 +1,94 @@
-//
-//  AlertView.swift
-//  TextFieldComponent
-//
-//  Created by Hiran Stephan on 25/09/24.
-//
-
-import Foundation
 import SwiftUI
+import UIKit
 
-// MARK: - ContentView (Example)
-/// Example usage of the custom multi-button alert with different actions.
+// Defines an action for UIAlertController
+struct AlertAction {
+    let title: String
+    let style: UIAlertAction.Style
+    let handler: (() -> Void)?
+    
+    init(title: String, style: UIAlertAction.Style = .default, handler: (() -> Void)? = nil) {
+        self.title = title
+        self.style = style
+        self.handler = handler
+    }
+}
+
+// Wrapper to present a UIKit UIAlertController in SwiftUI
+struct AlertControllerWrapper: UIViewControllerRepresentable {
+    @Binding var isPresented: Bool
+    let title: String
+    let message: String
+    let actions: [AlertAction]
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        UIViewController()
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        if isPresented {
+            let alertController = context.coordinator.createAlertController()
+            DispatchQueue.main.async {
+                uiViewController.present(alertController, animated: true) {
+                    isPresented = false
+                }
+            }
+        }
+    }
+    
+    class Coordinator: NSObject {
+        var parent: AlertControllerWrapper
+        
+        init(_ parent: AlertControllerWrapper) {
+            self.parent = parent
+        }
+        
+        func createAlertController() -> UIAlertController {
+            let alertController = UIAlertController(title: parent.title, message: parent.message, preferredStyle: .alert)
+            parent.actions.forEach { actionConfig in
+                let action = UIAlertAction(title: actionConfig.title, style: actionConfig.style) { _ in
+                    actionConfig.handler?()
+                }
+                alertController.addAction(action)
+            }
+            return alertController
+        }
+    }
+}
+
+// Extension to easily present a UIKit UIAlertController
+extension View {
+    func presentAlert(
+        isPresented: Binding<Bool>,
+        title: String,
+        message: String,
+        actions: [AlertAction]
+    ) -> some View {
+        self.background(AlertControllerWrapper(isPresented: isPresented, title: title, message: message, actions: actions))
+    }
+}
+
+// Example usage in SwiftUI view
 struct ContentView: View {
     @State private var showAlert = false
-
+    
     var body: some View {
         VStack(spacing: 20) {
-            Button("Show Custom Alert with Multiple Buttons") {
+            Button("Show UIKit Alert") {
                 showAlert = true
             }
             .presentAlert(
-                isVisible: $showAlert,
-                title: "Custom Alert",
-                message: "This is a custom alert with multiple actions.",
+                isPresented: $showAlert,
+                title: "UIKit Alert",
+                message: "This is a UIKit UIAlertController in SwiftUI.",
                 actions: [
-                    AlertActionConfiguration(label: "Option 1", action: { print("Option 1 selected") }),
-                    AlertActionConfiguration(label: "Option 2", action: { print("Option 2 selected") }),
-                    AlertActionConfiguration(label: "Delete", type: .destructive, action: { print("Delete action selected") })
+                    AlertAction(title: "OK", style: .default, handler: { print("OK Pressed") }),
+                    AlertAction(title: "Cancel", style: .cancel, handler: { print("Cancel Pressed") }),
+                    AlertAction(title: "Delete", style: .destructive, handler: { print("Delete Pressed") })
                 ]
             )
         }
@@ -38,86 +101,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-import SwiftUI
-
-struct TooltipAlertView: View {
-    @State private var showTooltipAlert = false  // State variable to control the visibility of the alert
-
-    let tooltipTitle: String
-    let tooltipMessage: String
-    let okButtonLabel: String
-    let isRemembered: Bool
-
-    var body: some View {
-        VStack {
-            Text(tooltipTitle)
-            Toggle(isOn: .constant(isRemembered)) {
-                Text("Remember User ID")
-            }
-            Button(action: {
-                // Set showTooltipAlert to true when the button is clicked to show the alert
-                showTooltipAlert.toggle()
-            }) {
-                Image(systemName: "info.circle")
-            }
-        }
-        // Reuse your earlier custom alert implementation, renamed for TooltipAlert
-        .presentAlert(
-            isVisible: $showTooltipAlert,             // Bind the alert visibility to the state variable
-            title: tooltipTitle,                      // Title passed from outside
-            message: tooltipMessage,                  // Message passed from outside
-            actions: [
-                AlertActionConfiguration(
-                    label: okButtonLabel,      // OK button label passed from outside
-                    action: {
-                        print("\(okButtonLabel) pressed")
-                        showTooltipAlert = false      // Dismiss the alert by setting showTooltipAlert to false
-                    }
-                )
-            ]
-        )
-        .padding()
-    }
-}
-
-// MARK: - Preview for TooltipAlertView
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        TooltipAlertView(
-            tooltipTitle: "Custom Alert",
-            tooltipMessage: "This is a custom tooltip alert message.",
-            okButtonLabel: "OK",
-            isRemembered: true
-        )
-    }
-}
-
-
-// Usage Example
-/*
-Button("Show Custom Alert") {
-    showAlert = true
-}
-.presentAlert(
-    isVisible: $showAlert,                      // Bind the alert visibility to the state
-    title: "Custom Alert",                      // Title of the alert
-    message: "This is a custom alert message.", // Message of the alert
-    actions: [                                  // Array of actions (buttons)
-        AlertActionConfiguration(
-            label: "Option 1",                  // Button label
-            action: { print("Option 1 pressed") } // Button action
-        ),
-        AlertActionConfiguration(
-            label: "Option 2",                  // Button label
-            action: { print("Option 2 pressed") }
-        ),
-        AlertActionConfiguration(
-            label: "Delete",                    // Destructive button label
-            type: .destructive,                 // Button type (destructive)
-            action: { print("Delete pressed") }
-        )
-             ]
-)
-
-*/
