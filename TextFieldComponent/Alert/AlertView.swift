@@ -39,6 +39,60 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
+import SwiftUI
+
+struct TooltipAlertView: View {
+    @State private var showTooltipAlert = false  // State variable to control the visibility of the alert
+
+    let tooltipTitle: String
+    let tooltipMessage: String
+    let okButtonLabel: String
+    let isRemembered: Bool
+
+    var body: some View {
+        VStack {
+            Text(tooltipTitle)
+            Toggle(isOn: .constant(isRemembered)) {
+                Text("Remember User ID")
+            }
+            Button(action: {
+                // Set showTooltipAlert to true when the button is clicked to show the alert
+                showTooltipAlert.toggle()
+            }) {
+                Image(systemName: "info.circle")
+            }
+        }
+        // Reuse your earlier custom alert implementation, renamed for TooltipAlert
+        .presentAlert(
+            isVisible: $showTooltipAlert,             // Bind the alert visibility to the state variable
+            title: tooltipTitle,                      // Title passed from outside
+            message: tooltipMessage,                  // Message passed from outside
+            actions: [
+                AlertActionConfiguration(
+                    label: okButtonLabel,      // OK button label passed from outside
+                    action: {
+                        print("\(okButtonLabel) pressed")
+                        showTooltipAlert = false      // Dismiss the alert by setting showTooltipAlert to false
+                    }
+                )
+            ]
+        )
+        .padding()
+    }
+}
+
+// MARK: - Preview for TooltipAlertView
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        TooltipAlertView(
+            tooltipTitle: "Custom Alert",
+            tooltipMessage: "This is a custom tooltip alert message.",
+            okButtonLabel: "OK",
+            isRemembered: true
+        )
+    }
+}
+
 
 // Usage Example
 /*
