@@ -39,30 +39,31 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
+
+// Usage Example
 /*
- // Usage Example
- 
- Button("Show Custom Alert") {
-     showAlert = true
- }
- .presentAlert(
-     isVisible: $showAlert,
-     title: "Custom Alert",
-     message: "This is a custom alert message.",
-     actions: [
-         AlertActionConfiguration(
-             label: "Option 1",
-             action: { print("Option 1 pressed") }
-         ),
-         AlertActionConfiguration(
-             label: "Option 2",
-             action: { print("Option 2 pressed") }
-         ),
-         AlertActionConfiguration(
-             label: "Delete",
-             type: .destructive,
-             action: { print("Delete pressed") }
-         )
-     ]
- )
- */
+Button("Show Custom Alert") {
+    showAlert = true
+}
+.presentAlert(
+    isVisible: $showAlert,                      // Bind the alert visibility to the state
+    title: "Custom Alert",                      // Title of the alert
+    message: "This is a custom alert message.", // Message of the alert
+    actions: [                                  // Array of actions (buttons)
+        AlertActionConfiguration(
+            label: "Option 1",                  // Button label
+            action: { print("Option 1 pressed") } // Button action
+        ),
+        AlertActionConfiguration(
+            label: "Option 2",                  // Button label
+            action: { print("Option 2 pressed") }
+        ),
+        AlertActionConfiguration(
+            label: "Delete",                    // Destructive button label
+            type: .destructive,                 // Button type (destructive)
+            action: { print("Delete pressed") }
+        )
+             ]
+)
+
+*/
