@@ -36,6 +36,12 @@
 		3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */; };
 		3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */; };
 		3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B112C9AE3F9008208AC /* Mapper.swift */; };
+		3BDE7B4B2CA4FA18008208AC /* AlertConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B4A2CA4FA18008208AC /* AlertConstants.swift */; };
+		3BDE7B4D2CA4FA2B008208AC /* AlertActionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B4C2CA4FA2B008208AC /* AlertActionConfiguration.swift */; };
+		3BDE7B4F2CA4FA41008208AC /* AlertButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B4E2CA4FA40008208AC /* AlertButtonType.swift */; };
+		3BDE7B512CA4FA54008208AC /* AlertViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B502CA4FA54008208AC /* AlertViewModifier.swift */; };
+		3BDE7B532CA4FA6C008208AC /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B522CA4FA6C008208AC /* ButtonStyles.swift */; };
+		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +96,12 @@
 		3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheetManager.swift; sourceTree = "<group>"; };
 		3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeSpaceTile.swift; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
+		3BDE7B4A2CA4FA18008208AC /* AlertConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertConstants.swift; sourceTree = "<group>"; };
+		3BDE7B4C2CA4FA2B008208AC /* AlertActionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertActionConfiguration.swift; sourceTree = "<group>"; };
+		3BDE7B4E2CA4FA40008208AC /* AlertButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertButtonType.swift; sourceTree = "<group>"; };
+		3BDE7B502CA4FA54008208AC /* AlertViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifier.swift; sourceTree = "<group>"; };
+		3BDE7B522CA4FA6C008208AC /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
+		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +152,7 @@
 		3B4379472C80AF7A00495EF1 /* TextFieldComponent */ = {
 			isa = PBXGroup;
 			children = (
+				3BDE7B492CA4FA03008208AC /* Alert */,
 				3B71B9A72C937D5F0058896A /* AppSheet */,
 				3B71B9A02C9349900058896A /* Resources */,
 				3B4379862C8783AE00495EF1 /* Theme */,
@@ -227,6 +240,19 @@
 				3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */,
 			);
 			path = AppSheet;
+			sourceTree = "<group>";
+		};
+		3BDE7B492CA4FA03008208AC /* Alert */ = {
+			isa = PBXGroup;
+			children = (
+				3BDE7B4A2CA4FA18008208AC /* AlertConstants.swift */,
+				3BDE7B4C2CA4FA2B008208AC /* AlertActionConfiguration.swift */,
+				3BDE7B4E2CA4FA40008208AC /* AlertButtonType.swift */,
+				3BDE7B502CA4FA54008208AC /* AlertViewModifier.swift */,
+				3BDE7B522CA4FA6C008208AC /* ButtonStyles.swift */,
+				3BDE7B562CA4FAB1008208AC /* AlertView.swift */,
+			);
+			path = Alert;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -363,23 +389,29 @@
 				3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */,
 				3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */,
 				3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */,
+				3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */,
 				3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */,
 				3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */,
 				3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */,
 				3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */,
 				3B43798C2C8784EB00495EF1 /* Dimens.swift in Sources */,
 				3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */,
+				3BDE7B4B2CA4FA18008208AC /* AlertConstants.swift in Sources */,
+				3BDE7B4D2CA4FA2B008208AC /* AlertActionConfiguration.swift in Sources */,
 				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
 				3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
 				3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */,
+				3BDE7B532CA4FA6C008208AC /* ButtonStyles.swift in Sources */,
 				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,
 				3B43798E2C87858100495EF1 /* Shapes.swift in Sources */,
 				3B71B9A92C937D7A0058896A /* ListCellBottomSheet.swift in Sources */,
 				3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */,
 				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
+				3BDE7B4F2CA4FA41008208AC /* AlertButtonType.swift in Sources */,
 				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
 				3B43798A2C8784B400495EF1 /* Colours.swift in Sources */,
+				3BDE7B512CA4FA54008208AC /* AlertViewModifier.swift in Sources */,
 				3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */,
 				3B71B99D2C8F8BC20058896A /* File.swift in Sources */,
 				3B4379962C87886700495EF1 /* Theme.swift in Sources */,

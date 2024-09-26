@@ -1,89 +1,215 @@
-//
-//  FigmaCode.swift
-//  TextFieldComponent
-//
-//  Created by Hiran Stephan on 29/08/24.
-//
-
-
 import SwiftUI
 
-struct ContentViewFigma: View {
-    @State var text = ""
-    @State var isError = false
-    @State var errorText = ""
+// Constants Enum
+enum AlertConstants {
+    static let backgroundOpacity: Double = 0.4
+    static let cornerRadius: CGFloat = 15
+    static let shadowRadius: CGFloat = 10
+    static let padding: CGFloat = 10
+    static let topPadding: CGFloat = 20
+    static let buttonSpacing: CGFloat = 10
+    static let alertContainerHorizontalPadding: CGFloat = 15
+    static let alertTitleFont: Font = .headline
+    static let alertMessageFont: Font = .body
+}
+
+// Struct for button configurations with auto-dismiss functionality
+struct AlertActionConfiguration {
+    let label: String
+    let type: AlertButtonType
+    let action: (() -> Void)?
+    let autoDismiss: Bool
     
-    var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .center, spacing: 0) {
-                    // Body
-                    Text("User ID")
-                        .font(.custom("Whitney", size: Constantss.FontSizeBody))
-                        .foregroundColor(Constantss.TextTextPrimary)
-                }
-                .padding(.horizontal, 0)
-                .padding(.vertical, Constantss.spacing2)
-                .cornerRadius(Constantss.size0)
+    init(label: String, type: AlertButtonType = .none, autoDismiss: Bool = true, action: (() -> Void)? = nil) {
+        self.label = label
+        self.type = type
+        self.action = action
+        self.autoDismiss = autoDismiss
+    }
+}
+
+// Enum for button roles (e.g., default, cancel, destructive)
+enum AlertButtonType {
+    case none
+    case cancel
+    case destructive
+}
+
+// Custom ViewModifier for reusable multi-button modal alert
+struct AlertViewModifier: ViewModifier {
+    @Binding var isVisible: Bool
+    let title: String?
+    let message: String?
+    let actions: [AlertActionConfiguration]
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            
+            if isVisible {
+                backgroundOverlay()
                 
-                HStack(alignment: .top, spacing: Constantss.Padding3Xs) {
-                    // Body
-                    Text("Type here")
-                        .font(.custom("Whitney", size: Constantss.FontSizeBody))
-                        .foregroundColor(Constantss.BrandDarkGrey)
-                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                    Image("profile")
-                        .frame(width: 24, height: 24)
-                        .cornerRadius(Constantss.size0)
-                }
-                .padding(Constantss.Padding2Xs)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-                .background(Constantss.BrandWhite)
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .inset(by: 0.5)
-                        .stroke(Constantss.TextTextSecondary, lineWidth: Constantss.size0)
-                )
+                alertContainer()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.easeInOut, value: isVisible)
             }
-            .padding(0)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-            .cornerRadius(Constantss.size0)
-            .padding(0)
-            .frame(maxWidth: .infinity, alignment: .top)
-            .cornerRadius(Constantss.size0)
         }
-        .padding(.horizontal, Constantss.MarginMd)
+    }
+    
+    // Background overlay for the alert
+    private func backgroundOverlay() -> some View {
+        Color.black.opacity(AlertConstants.backgroundOpacity)
+            .ignoresSafeArea()
+            .onTapGesture {
+                isVisible = false
+            }
+    }
+    
+    // Main container for the alert
+    private func alertContainer() -> some View {
+        VStack(spacing: AlertConstants.buttonSpacing) {
+            if let title = title {
+                alertTitle(title)
+            }
+            if let message = message {
+                alertMessage(message)
+            }
+            
+            alertActions()
+            
+            // Optionally you can still hardcode a "Cancel" button or pass it via the `actions` array
+            Button("Cancel") {
+                isVisible = false
+            }
+            .foregroundColor(.red)
+            .padding(.top, AlertConstants.topPadding)
+            
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(AlertConstants.cornerRadius)
+        .shadow(radius: AlertConstants.shadowRadius)
+        .padding(.horizontal, AlertConstants.alertContainerHorizontalPadding)
+    }
+    
+    // Alert title component
+    private func alertTitle(_ title: String) -> some View {
+        Text(title)
+            .font(AlertConstants.alertTitleFont)
+            .padding(.top)
+    }
+    
+    // Alert message component
+    private func alertMessage(_ message: String) -> some View {
+        Text(message)
+            .font(AlertConstants.alertMessageFont)
+            .multilineTextAlignment(.center)
+            .padding([.leading, .trailing])
+    }
+    
+    // Alert buttons container
+    private func alertActions() -> some View {
+        VStack(spacing: AlertConstants.buttonSpacing) {
+            ForEach(actions.indices, id: \.self) { index in
+                Button(actions[index].label) {
+                    handleAction(for: actions[index])
+                }
+                .buttonStyle(buttonStyle(for: actions[index].type))
+            }
+        }
+    }
+    
+    private func buttonStyle(for type: AlertButtonType) -> some ButtonStyle {
+        switch type {
+        case .destructive:
+            return DestructiveButtonStyle()
+        case .cancel:
+            return CancelButtonStyle()
+        default:
+            return DefaultButtonStyle()
+        }
+    }
+    
+    private func handleAction(for config: AlertActionConfiguration) {
+        config.action?()
+        if config.autoDismiss {
+            isVisible = false
+        }
     }
 }
 
-struct ContentViewFigma_Previews: PreviewProvider {
+// Extension for creating reusable multi-button modal alerts
+extension View {
+    func presentAlert(
+        isVisible: Binding<Bool>,
+        title: String? = nil,
+        message: String? = nil,
+        actions: [AlertActionConfiguration]
+    ) -> some View {
+        self.modifier(AlertViewModifier(isVisible: isVisible, title: title, message: message, actions: actions))
+    }
+}
+
+// Custom ButtonStyles for different roles
+struct DefaultButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.blue.opacity(configuration.isPressed ? 0.7 : 1.0))
+            .foregroundColor(.white)
+            .cornerRadius(AlertConstants.cornerRadius)
+    }
+}
+
+struct DestructiveButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.red.opacity(configuration.isPressed ? 0.7 : 1.0))
+            .foregroundColor(.white)
+            .cornerRadius(AlertConstants.cornerRadius)
+    }
+}
+
+struct CancelButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.gray.opacity(configuration.isPressed ? 0.7 : 1.0))
+            .foregroundColor(.white)
+            .cornerRadius(AlertConstants.cornerRadius)
+    }
+}
+
+// Example usage of the custom multi-button alert with improvements
+struct ContentView: View {
+    @State private var showAlert = false
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Button("Show Custom Alert with Multiple Buttons") {
+                showAlert = true
+            }
+            .presentAlert(
+                isVisible: $showAlert,
+                title: "Custom Alert",
+                message: "This is a custom alert with multiple actions.",
+                actions: [
+                    AlertActionConfiguration(label: "Option 1", action: { print("Option 1 selected") }),
+                    AlertActionConfiguration(label: "Option 2", action: { print("Option 2 selected") }),
+                    AlertActionConfiguration(label: "Delete", type: .destructive, action: { print("Delete action selected") })
+                ]
+            )
+        }
+        .padding()
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentViewFigma()
+        ContentView()
     }
-}
-
-
-struct Constantss {
-    static let size0: CGFloat = 1
-    static let size40: CGFloat = 40
-    static let spacing2: CGFloat = 8
-    static let TextTextPrimary: Color = Color(red: 0.22, green: 0.23, blue: 0.24)
-    
-    static let FontSizeBody: CGFloat = 17
-    static let Padding3Xs: CGFloat = 12
-    static let BrandWhite: Color = .white
-    static let TextTextSecondary: Color = Color(red: 0.38, green: 0.39, blue: 0.4)
-    
-    static let Padding2Xs: CGFloat = 16
-    static let BrandCharcoal: Color = Color(red: 0.22, green: 0.23, blue: 0.24)
-    
-    static let MarginXs: CGFloat = 8
-    static let MarginSm: CGFloat = 12
-    static let MarginNone: CGFloat = 0
-    static let MarginMd: CGFloat = 16
-    static let IllustrationPinkBg: Color = Color(red: 0.96, green: 0.89, blue: 0.91)
-    
-    static let MainBg: Color = .blue
-    static let BrandDarkGrey: Color = Color(red: 0.53, green: 0.53, blue: 0.54)
 }
