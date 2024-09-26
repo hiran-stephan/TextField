@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 // MARK: - Alert Constants
-/// Contains commonly used values such as padding, opacity, font sizes, and colors.
 enum AlertConstants {
+    // General UI Constants
     static let backgroundOpacity: Double = 0.4
     static let cornerRadius: CGFloat = 15
     static let shadowRadius: CGFloat = 10
@@ -29,4 +29,8 @@ enum AlertConstants {
     static let cancelButtonBackground = Color(UIColor.systemGray)
     static let buttonForegroundColor = Color.primary
     static let cancelButtonForegroundColor = Color(UIColor.systemRed)
+    
+    // Button Texts
+    static let cancelButtonText = "Cancel" // Cancel text moved to constants
 }
+

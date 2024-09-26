@@ -30,7 +30,6 @@ struct AlertViewModifier: ViewModifier {
         }
     }
     
-    // Background Overlay
     private func backgroundOverlay() -> some View {
         Color.black.opacity(AlertConstants.backgroundOpacity)
             .ignoresSafeArea()
@@ -39,7 +38,6 @@ struct AlertViewModifier: ViewModifier {
             }
     }
     
-    // Alert Container
     private func alertContainer() -> some View {
         VStack(spacing: AlertConstants.buttonSpacing) {
             if let title = title {
@@ -51,10 +49,11 @@ struct AlertViewModifier: ViewModifier {
             
             alertActions()
             
-            Button("Cancel") {
+            // Using the constant for the cancel button text
+            Button(AlertConstants.cancelButtonText) {
                 isVisible = false
             }
-            .foregroundColor(AlertConstants.cancelButtonForegroundColor)
+            .buttonStyle(CustomButtonStyle(type: .cancel))
             .padding(.top, AlertConstants.topPadding)
         }
         .padding()
@@ -64,7 +63,6 @@ struct AlertViewModifier: ViewModifier {
         .padding(.horizontal, AlertConstants.alertContainerHorizontalPadding)
     }
     
-    // Title
     private func alertTitle(_ title: String) -> some View {
         Text(title)
             .font(AlertConstants.alertTitleFont)
@@ -72,7 +70,6 @@ struct AlertViewModifier: ViewModifier {
             .foregroundColor(AlertConstants.buttonForegroundColor)
     }
     
-    // Message
     private func alertMessage(_ message: String) -> some View {
         Text(message)
             .font(AlertConstants.alertMessageFont)
@@ -81,26 +78,14 @@ struct AlertViewModifier: ViewModifier {
             .foregroundColor(AlertConstants.buttonForegroundColor)
     }
     
-    // Actions
     private func alertActions() -> some View {
         VStack(spacing: AlertConstants.buttonSpacing) {
             ForEach(actions.indices, id: \.self) { index in
                 Button(actions[index].label) {
                     handleAction(for: actions[index])
                 }
-                .buttonStyle(buttonStyle(for: actions[index].type))
+                .buttonStyle(CustomButtonStyle(type: actions[index].type))
             }
-        }
-    }
-    
-    private func buttonStyle(for type: AlertButtonType) -> some ButtonStyle {
-        switch type {
-        case .destructive:
-            return DestructiveButtonStyle()
-        case .cancel:
-            return CancelButtonStyle()
-        default:
-            return DefaultButtonStyle()
         }
     }
     

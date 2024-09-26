@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 // MARK: - ContentView (Example)
-struct AlertView: View {
+/// Example usage of the custom multi-button alert with different actions.
+struct ContentView: View {
     @State private var showAlert = false
 
     var body: some View {
@@ -34,7 +35,7 @@ struct AlertView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        AlertView()
+        ContentView()
     }
 }
 
