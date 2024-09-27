@@ -41,8 +41,9 @@ final class LoginFormViewModel: ObservableObject {
 struct LoginForm: View {
     @EnvironmentObject var theme: Theme
     @ObservedObject var viewModel: LoginFormViewModel
-    @FocusState private var focusedField: LoginFormViewModel.Field?
-    
+    @FocusState private var focusedField: LoginFormViewModel.Field? // Track focus state
+
+    let proxy: ScrollViewProxy // Pass proxy to scroll
     let data: LoginSubmitFormData
     let isLoading: Bool
     let onRecoverUsername: () -> Void
@@ -53,22 +54,18 @@ struct LoginForm: View {
         VStack {
             createUsernameField(data)
             createPasswordField(data)
-            RememberUserIdView(
-                title: data.rememberMeTitleText,
-                isRemembered: true,
-                tooltipAlertTitle: data.rememberMeDialogTitle,
-                tooltipAlertMessage: data.rememberMeDialogText,
-                tooltipAlertOkButtonLabel: data.rememberMeDialogDismiss
-            )
             createPrimaryButton(data)
         }
-        .onTapGesture {
-            UIApplication.shared.endEditing() // Dismiss the keyboard when tapping outside
+        .onChange(of: focusedField) { field in
+            // Scroll to the active field when focus changes
+            if let field = field {
+                scrollToActiveField(field)
+            }
         }
     }
-
+    
     private func createUsernameField(_ data: LoginSubmitFormData) -> some View {
-        VStack(spacing: BankingTheme.spacing.noPadding) {
+        VStack(spacing: theme.dimens.medium) {
             TextFieldGeneral(
                 text: $viewModel.username,
                 label: data.userIdTitle,
@@ -76,11 +73,9 @@ struct LoginForm: View {
                 placeholder: "Type here",
                 isError: false
             )
-            .focused($focusedField, equals: .username)
-            .id(LoginFormViewModel.Field.username) // Set unique id for scrolling
+            .focused($focusedField, equals: .username) // Bind focus to username
+            .id(LoginFormViewModel.Field.username)     // Unique ID for scrolling
 
-
-            // Recover Username and Register Links
             HStack {
                 TextLinkButton(title: data.userIdActionLinkText) { onRecoverUsername() }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,17 +87,15 @@ struct LoginForm: View {
     }
 
     private func createPasswordField(_ data: LoginSubmitFormData) -> some View {
-        VStack(spacing: BankingTheme.spacing.noPadding) {
+        VStack(spacing: theme.dimens.medium) {
             TextFieldPassword(
                 text: $viewModel.password,
                 label: data.passwordTitle,
                 isError: false
             )
-            .focused($focusedField, equals: .password)
-            .id(LoginFormViewModel.Field.password) // Set unique id for scrolling
+            .focused($focusedField, equals: .password) // Bind focus to password
+            .id(LoginFormViewModel.Field.password)     // Unique ID for scrolling
 
-
-            // Reset Password Link
             HStack {
                 TextLinkButton(title: data.resetPasswordLinkText) { onForgotPassword() }
                 Spacer()
@@ -120,7 +113,15 @@ struct LoginForm: View {
         }
         .padding(.top, theme.dimens.medium)
     }
+    
+    // Use the proxy to scroll to the active field
+    private func scrollToActiveField(_ field: LoginFormViewModel.Field) {
+        withAnimation {
+            proxy.scrollTo(field, anchor: .top)
+        }
+    }
 }
+
 
 import SwiftUI
 import Combine
