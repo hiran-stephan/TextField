@@ -128,14 +128,16 @@ struct LoginForm: View {
     }
 }
 
+import SwiftUI
+import Combine
+
 struct LoginScreen: View {
     @EnvironmentObject private var theme: Theme
     @State private var viewModel: LoginViewModel
     @StateObject private var form: LoginFormViewModel
     @ObservedObject private var model: ObservableModel<LoginUIState, LoginActionState>
     
-    @State private var keyboardHeight: CGFloat = 0 // Track keyboard height
-    @FocusState private var focusedField: LoginFormViewModel.Field?
+    @FocusState private var focusedField: LoginFormViewModel.Field? // Manage focus
     
     init(viewModel: LoginViewModel = KoinApplication.inject()) {
         self.viewModel = viewModel
@@ -147,62 +149,69 @@ struct LoginScreen: View {
     }
     
     var body: some View {
-        VStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(spacing: theme.dimens.medium) {
-                        loginGraphicContainerView
-                        LoginForm(
-                            viewModel: form,
-                            data: formData,
-                            isLoading: model.action?.isLoading ?? false,
-                            onRecoverUsername: {
-                                viewModel.onForgotPasswordClicked()
-                            },
-                            onForgotPassword: {
-                                viewModel.onForgotPasswordClicked()
-                            },
-                            onSubmitForm: {
-                                onSubmitForm()
-                            }
-                        )
-                    }
-                    .padding(.bottom, keyboardHeight)
-                    .onTapGesture {
-                        UIApplication.shared.endEditing() // Dismiss keyboard when tapping outside
-                    }
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: theme.dimens.medium) {
+                    loginGraphicContainerView
+                    
+                    // Inject ScrollViewProxy into LoginForm
+                    LoginForm(
+                        viewModel: form,
+                        data: formData,
+                        isLoading: model.action?.isLoading ?? false,
+                        onRecoverUsername: {
+                            viewModel.onForgotPasswordClicked()
+                        },
+                        onForgotPassword: {
+                            viewModel.onForgotPasswordClicked()
+                        },
+                        onSubmitForm: {
+                            onSubmitForm()
+                        }
+                    )
                 }
             }
-        }
-        .onAppear {
-            addKeyboardObservers()
-        }
-        .onDisappear {
-            removeKeyboardObservers()
-        }
-    }
-
-    private func addKeyboardObservers() {
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
-            if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                withAnimation {
-                    self.keyboardHeight = keyboardFrame.height
+            .onTapGesture {
+                UIApplication.shared.endEditing() // Dismiss keyboard when tapping outside
+            }
+            .onChange(of: focusedField) { field in
+                // Scroll to the focused field
+                if let field = field {
+                    scrollToActiveField(proxy: proxy, field: field)
                 }
             }
-        }
-        
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-            withAnimation {
-                self.keyboardHeight = 0
+            .onAppear {
+                addKeyboardObservers() // Observe keyboard appearance
+            }
+            .onDisappear {
+                removeKeyboardObservers() // Remove observers when view disappears
             }
         }
     }
     
+    // Scroll to the active field (username or password) when focused
+    private func scrollToActiveField(proxy: ScrollViewProxy, field: LoginFormViewModel.Field) {
+        withAnimation {
+            proxy.scrollTo(field, anchor: .top) // Adjust anchor as needed
+        }
+    }
+    
+    // Observe keyboard appearance to trigger scroll
+    private func addKeyboardObservers() {
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
+            // You can customize logic here if needed when the keyboard appears
+        }
+        
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+            // Handle logic when the keyboard disappears
+        }
+    }
+
     private func removeKeyboardObservers() {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
+
     private func onSubmitForm() {
         let result = viewModel.validate(username: form.username, password: form.password)
         if form.updateValidation(result) {
