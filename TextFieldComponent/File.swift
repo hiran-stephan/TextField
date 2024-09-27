@@ -238,3 +238,7 @@ private func addKeyboardObservers() {
             // Handle keyboard hiding
         }
     }
+// Remove keyboard observers
+    private func removeKeyboardObservers() {
+        cancellables.removeAll()
+    }
