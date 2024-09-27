@@ -221,7 +221,13 @@ struct LoginScreen: View {
 }
 private var cancellables = Set<AnyCancellable>()
 
-private func addKeyboardObservers() {
+// MARK: - Keyboard management
+extension LoginScreen {
+
+    /// Adds observers for keyboard show and hide notifications.
+    ///
+    /// This listens for keyboard appearance and dismissal, triggering UI updates when the keyboard state changes.
+    private func addKeyboardObservers() {
         NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
             .merge(with: NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification))
             .receive(on: RunLoop.main)
@@ -231,14 +237,29 @@ private func addKeyboardObservers() {
             .store(in: &cancellables)
     }
 
+    /// Adjusts view layout based on keyboard appearance or dismissal.
+    ///
+    /// Updates the `keyboardHeight` when the keyboard shows or hides, allowing the UI to respond appropriately.
+    /// - Parameter notification: Keyboard notification containing frame and visibility info.
     private func handleKeyboard(notification: Notification) {
         if notification.name == UIResponder.keyboardWillShowNotification {
-            // Handle keyboard showing
+            if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                withAnimation {
+                    keyboardHeight = keyboardFrame.height
+                }
+            }
         } else if notification.name == UIResponder.keyboardWillHideNotification {
-            // Handle keyboard hiding
+            withAnimation {
+                keyboardHeight = 0
+            }
         }
     }
-// Remove keyboard observers
+
+    /// Removes keyboard observers when they are no longer needed.
+    ///
+    /// Cancels all subscriptions to keyboard notifications.
     private func removeKeyboardObservers() {
         cancellables.removeAll()
     }
+}
+
