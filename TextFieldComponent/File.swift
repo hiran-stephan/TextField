@@ -5,34 +5,138 @@
 //  Created by Hiran Stephan on 09/09/24.
 //
 
-import Foundation
+final class LoginFormViewModel: ObservableObject {
+    enum Field {
+        case username
+        case password
+    }
+    
+    @Published var editingField: Field?
+    
+    @Published var username = "" {
+        didSet {
+            if username != oldValue {
+                validationUsername = nil
+            }
+        }
+    }
+    
+    @Published var password = "" {
+        didSet {
+            if password != oldValue {
+                validationPassword = nil
+            }
+        }
+    }
+    
+    @Published var validationUsername: ValidationRule?
+    @Published var validationPassword: ValidationRule?
+    
+    // This helps keep track of the field being edited
+    func edit(field: Field) {
+        editingField = field
+    }
+}
 
-import SwiftUI
-import Umbrella
-import Components
-import Theme
-import Koin
+struct LoginForm: View {
+    @EnvironmentObject var theme: Theme
+    @ObservedObject var viewModel: LoginFormViewModel
+    @FocusState private var focusedField: LoginFormViewModel.Field?
+    
+    let data: LoginSubmitFormData
+    let isLoading: Bool
+    let onRecoverUsername: () -> Void
+    let onForgotPassword: () -> Void
+    let onSubmitForm: () -> Void
+    
+    var body: some View {
+        VStack {
+            createUsernameField(data)
+            createPasswordField(data)
+            RememberUserIdView(
+                title: data.rememberMeTitleText,
+                isRemembered: true,
+                tooltipAlertTitle: data.rememberMeDialogTitle,
+                tooltipAlertMessage: data.rememberMeDialogText,
+                tooltipAlertOkButtonLabel: data.rememberMeDialogDismiss
+            )
+            createPrimaryButton(data)
+        }
+        .onTapGesture {
+            UIApplication.shared.endEditing() // Dismiss the keyboard when tapping outside
+        }
+    }
 
-import SwiftUI
-import Combine
+    private func createUsernameField(_ data: LoginSubmitFormData) -> some View {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
+            TextFieldGeneral(
+                text: $viewModel.username,
+                label: data.userIdTitle,
+                trailingIcon: ComponentConstants.Images.profile,
+                placeholder: "Type here",
+                isError: false
+            )
+            .focused($focusedField, equals: .username)
+            .onChange(of: focusedField) { newField in
+                if newField == .username {
+                    viewModel.edit(field: .username)
+                }
+            }
+
+            // Recover Username and Register Links
+            HStack {
+                TextLinkButton(title: data.userIdActionLinkText) { onRecoverUsername() }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                TextLinkButton(title: data.notRegisteredLinkText) { onForgotPassword() }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+        }
+    }
+
+    private func createPasswordField(_ data: LoginSubmitFormData) -> some View {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
+            TextFieldPassword(
+                text: $viewModel.password,
+                label: data.passwordTitle,
+                isError: false
+            )
+            .focused($focusedField, equals: .password)
+            .onChange(of: focusedField) { newField in
+                if newField == .password {
+                    viewModel.edit(field: .password)
+                }
+            }
+
+            // Reset Password Link
+            HStack {
+                TextLinkButton(title: data.resetPasswordLinkText) { onForgotPassword() }
+                Spacer()
+            }
+        }
+    }
+
+    private func createPrimaryButton(_ data: LoginSubmitFormData) -> some View {
+        VStack {
+            PrimaryButton {
+                Text(data.signonButtonLabel)
+            }
+            .isDisabled(isLoading)
+            .onSubmitForm()
+        }
+        .padding(.top, theme.dimens.medium)
+    }
+}
 
 struct LoginScreen: View {
     @EnvironmentObject private var theme: Theme
     @State private var viewModel: LoginViewModel
     @StateObject private var form: LoginFormViewModel
     @ObservedObject private var model: ObservableModel<LoginUIState, LoginActionState>
-    @StateObject var coordinator = BottomSheetCoordinator<ListCellBottomSheet>()
     
-    // State to track the keyboard height and focus field
-    @State private var keyboardHeight: CGFloat = 0
-    @FocusState private var focusedField: Field?
+    @State private var keyboardHeight: CGFloat = 0 // Track keyboard height
+    @FocusState private var focusedField: LoginFormViewModel.Field?
     
-    // Field enum to track active TextField focus
-    enum Field: Hashable {
-        case username
-        case password
-    }
-
     init(viewModel: LoginViewModel = KoinApplication.inject()) {
         self.viewModel = viewModel
         self.model = ObservableModel(
@@ -43,82 +147,62 @@ struct LoginScreen: View {
     }
     
     var body: some View {
-        LoadingContentLayout(
-            state: model.state,
-            error: {
-                errorContentView
-            }
-        ) {
-            contentView
-        }
-        .onAppear {
-            viewModel.attachViewModel(navigator: LoginPageNavigatorImpl())
-        }
-        .onReceive(Publishers.keyboardHeight) { height in
-            withAnimation {
-                self.keyboardHeight = height
-            }
-        }
-        .padding(.bottom, keyboardHeight) // Adjust padding for keyboard
-    }
-
-    private var contentView: some View {
         VStack {
             ScrollViewReader { proxy in
                 ScrollView {
-                    VStack(spacing: BankingTheme.dimens.medium) {
+                    VStack(spacing: theme.dimens.medium) {
                         loginGraphicContainerView
-                        loginFormView(proxy: proxy)
+                        LoginForm(
+                            viewModel: form,
+                            data: formData,
+                            isLoading: model.action?.isLoading ?? false,
+                            onRecoverUsername: {
+                                viewModel.onForgotPasswordClicked()
+                            },
+                            onForgotPassword: {
+                                viewModel.onForgotPasswordClicked()
+                            },
+                            onSubmitForm: {
+                                onSubmitForm()
+                            }
+                        )
+                    }
+                    .padding(.bottom, keyboardHeight)
+                    .onTapGesture {
+                        UIApplication.shared.endEditing() // Dismiss keyboard when tapping outside
                     }
                 }
             }
-            Spacer()
-            bottomSafeSpaceTileView
         }
-        .edgesIgnoringSafeArea(.bottom)
-        .onTapGesture {
-            UIApplication.shared.endEditing() // Dismiss the keyboard on tap
+        .onAppear {
+            addKeyboardObservers()
+        }
+        .onDisappear {
+            removeKeyboardObservers()
+        }
+    }
+
+    private func addKeyboardObservers() {
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
+            if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                withAnimation {
+                    self.keyboardHeight = keyboardFrame.height
+                }
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+            withAnimation {
+                self.keyboardHeight = 0
+            }
         }
     }
     
-    private func loginFormView(proxy: ScrollViewProxy) -> some View {
-        VStack(spacing: BankingTheme.dimens.medium) {
-            // Username TextField
-            TextField("Username", text: $form.username)
-                .focused($focusedField, equals: .username)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-                .onChange(of: focusedField) { newField in
-                    if newField == .username {
-                        scrollToActiveField(proxy: proxy, field: .username)
-                    }
-                }
-
-            // Password TextField
-            SecureField("Password", text: $form.password)
-                .focused($focusedField, equals: .password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-                .onChange(of: focusedField) { newField in
-                    if newField == .password {
-                        scrollToActiveField(proxy: proxy, field: .password)
-                    }
-                }
-
-            // Submit Button
-            Button("Login") {
-                onSubmitForm()
-            }
-            .padding(.top, theme.dimens.large)
-        }
+    private func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-
-    private func scrollToActiveField(proxy: ScrollViewProxy, field: Field) {
-        withAnimation {
-            proxy.scrollTo(field, anchor: .top)
-        }
-    }
-
+    
     private func onSubmitForm() {
         let result = viewModel.validate(username: form.username, password: form.password)
         if form.updateValidation(result) {
@@ -129,30 +213,5 @@ struct LoginScreen: View {
                 encrypted: false
             )
         }
-    }
-    
-    // Error content and bottomSafeSpaceTileView are as before.
-}
-
-// Utility publisher for observing keyboard height changes using Combine
-extension Publishers {
-    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-        let willShow = NotificationCenter.default
-            .publisher(for: UIResponder.keyboardWillShowNotification)
-            .map { ($0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0 }
-        
-        let willHide = NotificationCenter.default
-            .publisher(for: UIResponder.keyboardWillHideNotification)
-            .map { _ in CGFloat(0) }
-        
-        return MergeMany(willShow, willHide)
-            .eraseToAnyPublisher()
-    }
-}
-
-// Utility to dismiss the keyboard
-extension UIApplication {
-    func endEditing() {
-        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
