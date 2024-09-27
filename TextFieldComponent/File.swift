@@ -219,3 +219,21 @@ struct LoginScreen: View {
         }
     }
 }
+
+private func addKeyboardObservers() {
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .merge(with: NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification))
+            .receive(on: RunLoop.main)
+            .sink { notification in
+                self.handleKeyboard(notification: notification)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func handleKeyboard(notification: Notification) {
+        if notification.name == UIResponder.keyboardWillShowNotification {
+            // Handle keyboard showing
+        } else if notification.name == UIResponder.keyboardWillHideNotification {
+            // Handle keyboard hiding
+        }
+    }
