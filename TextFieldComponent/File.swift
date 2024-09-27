@@ -77,11 +77,8 @@ struct LoginForm: View {
                 isError: false
             )
             .focused($focusedField, equals: .username)
-            .onChange(of: focusedField) { newField in
-                if newField == .username {
-                    viewModel.edit(field: .username)
-                }
-            }
+            .id(LoginFormViewModel.Field.username) // Set unique id for scrolling
+
 
             // Recover Username and Register Links
             HStack {
@@ -102,11 +99,8 @@ struct LoginForm: View {
                 isError: false
             )
             .focused($focusedField, equals: .password)
-            .onChange(of: focusedField) { newField in
-                if newField == .password {
-                    viewModel.edit(field: .password)
-                }
-            }
+            .id(LoginFormViewModel.Field.password) // Set unique id for scrolling
+
 
             // Reset Password Link
             HStack {
