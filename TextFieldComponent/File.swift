@@ -219,6 +219,7 @@ struct LoginScreen: View {
         }
     }
 }
+private var cancellables = Set<AnyCancellable>()
 
 private func addKeyboardObservers() {
         NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
