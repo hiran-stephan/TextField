@@ -38,6 +38,7 @@
 		3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B112C9AE3F9008208AC /* Mapper.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
+		3BDE7BD82CA75E5C008208AC /* AlertBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
+		3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertBanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,7 @@
 				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
 				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
 				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
+				3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -388,6 +391,7 @@
 				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
 				3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
+				3BDE7BD82CA75E5C008208AC /* AlertBanner.swift in Sources */,
 				3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */,
 				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,
 				3B43798E2C87858100495EF1 /* Shapes.swift in Sources */,
