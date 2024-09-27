@@ -6,14 +6,34 @@
 //
 
 import Foundation
+import SwiftUI
 
+/// A reusable view component that displays an alert message with an optional retry button and a result message.
+/// It is designed to be flexible and customizable for various alerting use cases.
 struct AlertBanner: View {
+    // MARK: - Properties
+    
+    /// The main alert message to be displayed in the banner.
     let alertMessage: String
+    
+    /// The result message to be shown below the alert content, typically a code or secondary status.
     let resultMessage: String
+    
+    /// The title of the retry button. Defaults to "Retry" if not provided.
     let retryTitle: String
+    
+    /// The action to be executed when the retry button is tapped.
     let retryAction: () -> Void
-
-    // Default retry title if not provided
+    
+    // MARK: - Initializer
+    
+    /// Initializes the `AlertBanner` component with the given parameters.
+    ///
+    /// - Parameters:
+    ///   - alertMessage: The main alert message to display.
+    ///   - resultMessage: A secondary message or code.
+    ///   - retryTitle: The label for the retry button. Defaults to "Retry".
+    ///   - retryAction: The action triggered when the retry button is pressed.
     init(alertMessage: String,
          resultMessage: String,
          retryTitle: String = "Retry",
@@ -23,6 +43,8 @@ struct AlertBanner: View {
         self.retryTitle = retryTitle
         self.retryAction = retryAction
     }
+    
+    // MARK: - Body
     
     var body: some View {
         VStack(alignment: .center, spacing: BankingTheme.dimens.small) {
@@ -42,8 +64,9 @@ struct AlertBanner: View {
         .accessibilityLabel("\(alertMessage). \(retryTitle)")
     }
     
-    // Subcomponents
-
+    // MARK: - Subcomponents
+    
+    /// A horizontal stack containing the alert icon and the alert message with the retry button.
     private var alertContentStack: some View {
         HStack(alignment: .top, spacing: BankingTheme.dimens.smallMedium) {
             Image("alert-general-filled")
@@ -73,6 +96,7 @@ struct AlertBanner: View {
         }
     }
     
+    /// A horizontal stack containing the result message, typically displayed at the bottom of the alert banner.
     private var captionText: some View {
         HStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
             Text(resultMessage)
