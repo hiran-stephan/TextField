@@ -111,13 +111,44 @@ struct AlertBanner: View {
     }
 }
 
+// MARK: - View Extension
+
+/// An extension to present an `AlertBanner` in SwiftUI.
+///
+/// This extension allows you to easily present an `AlertBanner` by calling the `presentAlertBanner` method on any SwiftUI `View`.
+extension View {
+    func presentAlertBanner(
+        isPresented: Binding<Bool>,
+        alertMessage: String,
+        resultMessage: String,
+        retryTitle: String = "Retry",
+        retryAction: @escaping () -> Void
+    ) -> some View {
+        ZStack {
+            self
+            if isPresented.wrappedValue {
+                AlertBanner(alertMessage: alertMessage,
+                            resultMessage: resultMessage,
+                            retryTitle: retryTitle,
+                            retryAction: {
+                    retryAction()
+                    isPresented.wrappedValue = false
+                })
+            }
+        }
+    }
+}
+
 // Example Usage:
 /*
- AlertBanner(
-     alertMessage: "We've encountered an unexpected error. Please try again later.",
-     resultMessage: "Result #0008",
+ .presentAlertBanner(
+     isPresented: $showAlertBanner,
+     alertMessage: "An error occurred!",
+     resultMessage: "Error Code: 123",
+     retryTitle: "Try Again",
      retryAction: {
-         print("Retry tapped")
-     }
- )
+         print("Retry action triggered!")
+         
+     })
  */
+
