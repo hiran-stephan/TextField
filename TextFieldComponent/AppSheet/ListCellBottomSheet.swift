@@ -87,35 +87,35 @@ enum ListCellBottomSheet: String, Identifiable, BottomSheetEnum {
 
 
 
-
-
-
-/// A container view for displaying a list of `ListCellItemView` components, which are rendered
-/// from the provided list of `ListCellItemData`.
-public struct ListCellContainerView: View {
-    // An array of data objects representing each list cell.
-    let listCellItemData: [ListCellItemData]
-    
-    // A closure that is called when a cell is selected.
-    let onSelect: (ListCellItemData) -> Void
-    
-    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData` and a selection callback.
-    /// - Parameter listCellItemData: The array of data for each list cell.
-    /// - Parameter onSelect: A closure to be called when a cell is selected.
-    public init(listCellItemData: [ListCellItemData], onSelect: @escaping (ListCellItemData) -> Void) {
-        self.listCellItemData = listCellItemData
-        self.onSelect = onSelect
-    }
-    
-    /// The body of the view that renders each list cell using a `ForEach` loop.
-    public var body: some View {
-        ForEach(listCellItemData) { itemData in
-            ListCellItemView(listCellItemData: itemData) { selectedItem in
-                onSelect(selectedItem)
-            }
-        }
-    }
-}
+//
+//
+//
+///// A container view for displaying a list of `ListCellItemView` components, which are rendered
+///// from the provided list of `ListCellItemData`.
+//public struct ListCellContainerView: View {
+//    // An array of data objects representing each list cell.
+//    let listCellItemData: [ListCellItemData]
+//    
+//    // A closure that is called when a cell is selected.
+//    let onSelect: (ListCellItemData) -> Void
+//    
+//    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData` and a selection callback.
+//    /// - Parameter listCellItemData: The array of data for each list cell.
+//    /// - Parameter onSelect: A closure to be called when a cell is selected.
+//    public init(listCellItemData: [ListCellItemData], onSelect: @escaping (ListCellItemData) -> Void) {
+//        self.listCellItemData = listCellItemData
+//        self.onSelect = onSelect
+//    }
+//    
+//    /// The body of the view that renders each list cell using a `ForEach` loop.
+//    public var body: some View {
+//        ForEach(listCellItemData) { itemData in
+//            ListCellItemView(listCellItemData: itemData) { selectedItem in
+//                onSelect(selectedItem)
+//            }
+//        }
+//    }
+//}
 
 public struct ListCellItemData: Identifiable {
     // Unique identifier for each list cell item.
@@ -195,85 +195,85 @@ public struct ListCellItemData: Identifiable {
         }
     }
 }
-/// A view representing an individual list cell, displaying primary text, optional secondary text,
-/// and optional icons with customizable badges.
-public struct ListCellItemView: View {
-    // Data for the specific list cell.
-    let listCellItemData: ListCellItemData
-    
-    // A closure that is called when the button is tapped.
-    let onSelect: (ListCellItemData) -> Void
-    
-    /// Initializes the `ListCellItemView` with its corresponding data.
-    /// - Parameter listCellItemData: The data object containing details for this list cell.
-    /// - Parameter onSelect: A closure to be called when the cell is selected.
-    public init(listCellItemData: ListCellItemData, onSelect: @escaping (ListCellItemData) -> Void) {
-        self.listCellItemData = listCellItemData
-        self.onSelect = onSelect
-    }
-    
-    /// The body of the list cell, displaying its content within a button.
-    public var body: some View {
-        Button {
-            // Trigger the callback when the button is tapped.
-            onSelect(listCellItemData)
-        } label: {
-            VStack(spacing: BankingTheme.spacing.noPadding) {
-                HStack(alignment: .center, spacing: BankingTheme.dimens.small) {
-                    // Leading Image Placeholder
-                    ListCellIconView(imageName: "chevron", padding: BankingTheme.dimens.small)
-                    
-                    // Primary and Secondary Text
-                    listCellTextContent(listCellItemData: listCellItemData)
-                    
-                    Spacer()
-                    
-                    // Badge or Count Indicator View
-                    listCellBadgeIndicatorView(listCellItemData: listCellItemData)
-
-                    // Trailing Image Placeholder
-                    ListCellIconView(imageName: "chevron")
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(BankingTheme.dimens.medium)
-            }
-        }
-        .buttonStyle(ListCellButtonModifier())
-        .ignoresSafeArea()
-    }
-    
-    /// A subview that renders the primary and optional secondary text for the list cell.
-    @ViewBuilder
-    private func listCellTextContent(listCellItemData: ListCellItemData) -> some View {
-        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            Text(listCellItemData.textPrimary)
-                .typography(BankingTheme.typography.body)
-                .foregroundColor(BankingTheme.colors.textPrimary)
-                .frame(maxHeight: listCellItemData.textSecondary == nil ? .infinity : nil)
-            
-            if let textSecondary = listCellItemData.textSecondary {
-                Text(textSecondary)
-                    .typography(BankingTheme.typography.bodySmall)
-                    .foregroundColor(BankingTheme.colors.textSecondary)
-            }
-        }
-    }
-    
-    /// A subview that renders a badge or count indicator for the list cell, if available.
-    @ViewBuilder
-    private func listCellBadgeIndicatorView(listCellItemData: ListCellItemData) -> some View {
-        if let trailingNumber = listCellItemData.actionCount {
-            HStack {
-                Text(trailingNumber)
-                    .font(BankingTheme.typography.caption.font)
-                    .frame(width: BankingTheme.dimens.mediumLarge, height: BankingTheme.dimens.medium)
-                    .foregroundColor(BankingTheme.colors.textPrimary)
-                    .background(Color(hex: 0xFFFCCDDF2))
-                    .cornerRadius(BankingTheme.dimens.mediumLarge)
-            }
-        }
-    }
-}
+///// A view representing an individual list cell, displaying primary text, optional secondary text,
+///// and optional icons with customizable badges.
+//public struct ListCellItemView: View {
+//    // Data for the specific list cell.
+//    let listCellItemData: ListCellItemData
+//
+//    // A closure that is called when the button is tapped.
+//    let onSelect: (ListCellItemData) -> Void
+//
+//    /// Initializes the `ListCellItemView` with its corresponding data.
+//    /// - Parameter listCellItemData: The data object containing details for this list cell.
+//    /// - Parameter onSelect: A closure to be called when the cell is selected.
+//    public init(listCellItemData: ListCellItemData, onSelect: @escaping (ListCellItemData) -> Void) {
+//        self.listCellItemData = listCellItemData
+//        self.onSelect = onSelect
+//    }
+//
+//    /// The body of the list cell, displaying its content within a button.
+//    public var body: some View {
+//        Button {
+//            // Trigger the callback when the button is tapped.
+//            onSelect(listCellItemData)
+//        } label: {
+//            VStack(spacing: BankingTheme.spacing.noPadding) {
+//                HStack(alignment: .center, spacing: BankingTheme.dimens.small) {
+//                    // Leading Image Placeholder
+//                    ListCellIconView(imageName: "chevron", padding: BankingTheme.dimens.small)
+//
+//                    // Primary and Secondary Text
+//                    listCellTextContent(listCellItemData: listCellItemData)
+//
+//                    Spacer()
+//
+//                    // Badge or Count Indicator View
+//                    listCellBadgeIndicatorView(listCellItemData: listCellItemData)
+//
+//                    // Trailing Image Placeholder
+//                    ListCellIconView(imageName: "chevron")
+//                }
+//                .frame(maxWidth: .infinity, alignment: .center)
+//                .padding(BankingTheme.dimens.medium)
+//            }
+//        }
+//        .buttonStyle(ListCellButtonModifier())
+//        .ignoresSafeArea()
+//    }
+//
+//    /// A subview that renders the primary and optional secondary text for the list cell.
+//    @ViewBuilder
+//    private func listCellTextContent(listCellItemData: ListCellItemData) -> some View {
+//        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+//            Text(listCellItemData.textPrimary)
+//                .typography(BankingTheme.typography.body)
+//                .foregroundColor(BankingTheme.colors.textPrimary)
+//                .frame(maxHeight: listCellItemData.textSecondary == nil ? .infinity : nil)
+//
+//            if let textSecondary = listCellItemData.textSecondary {
+//                Text(textSecondary)
+//                    .typography(BankingTheme.typography.bodySmall)
+//                    .foregroundColor(BankingTheme.colors.textSecondary)
+//            }
+//        }
+//    }
+//
+//    /// A subview that renders a badge or count indicator for the list cell, if available.
+//    @ViewBuilder
+//    private func listCellBadgeIndicatorView(listCellItemData: ListCellItemData) -> some View {
+//        if let trailingNumber = listCellItemData.actionCount {
+//            HStack {
+//                Text(trailingNumber)
+//                    .font(BankingTheme.typography.caption.font)
+//                    .frame(width: BankingTheme.dimens.mediumLarge, height: BankingTheme.dimens.medium)
+//                    .foregroundColor(BankingTheme.colors.textPrimary)
+//                    .background(Color(hex: 0xFFFCCDDF2))
+//                    .cornerRadius(BankingTheme.dimens.mediumLarge)
+//            }
+//        }
+//    }
+//}
 
 /// A custom button style for the list cell button, adding a divider at the bottom and handling
 /// background color changes when pressed.

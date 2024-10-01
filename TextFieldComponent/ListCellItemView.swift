@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftUI
 
 public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
     let listCellItemData: ListCellItemData
@@ -30,18 +31,18 @@ public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
         pressedColor: Color? = BankingTheme.colors.pressed,
         defaultColor: Color? = BankingTheme.colors.surfaceVariant,
         needsLargerPadding: Bool = false,
-        onSelect: ((ListCellItemData) -> Void)? = nil,
-        @ViewBuilder badgeView: (() -> BadgeView)? = nil, // Optional badge view
-        @ViewBuilder trailingView: (() -> TrailingView)? = nil // Optional trailing view
+        badgeView: BadgeView? = nil, // Optional badge view
+        trailingView: TrailingView? = nil, // Optional trailing view
+        onSelect: ((ListCellItemData) -> Void)? = nil // Moved onSelect to the last parameter
     ) {
         self.listCellItemData = listCellItemData
         self.minCellHeight = minCellHeight
         self.pressedColor = pressedColor
         self.defaultColor = defaultColor
         self.needsLargerPadding = needsLargerPadding
+        self.badgeView = badgeView // Assign the badge view if provided
+        self.trailingView = trailingView // Assign the trailing view if provided
         self.onSelect = onSelect
-        self.badgeView = badgeView?() // Assign the badge view if provided
-        self.trailingView = trailingView?() // Assign the trailing view if provided
     }
 
     public var body: some View {
@@ -63,12 +64,16 @@ public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
                     // Optional Badge View
                     if let badgeView = badgeView {
                         badgeView
+                    } else {
+                        EmptyView() // Handle empty badge view
                     }
 
                     // Optional Trailing View
                     if let trailingView = trailingView {
                         trailingView
                             .padding(needsLargerPadding ? BankingTheme.dimens.mediumLarge : BankingTheme.dimens.medium)
+                    } else {
+                        EmptyView() // Handle empty trailing view
                     }
                 }
                 .frame(minHeight: minCellHeight)
@@ -102,6 +107,7 @@ public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
 
 
 
+
 public struct ListCellBadgeIndicatorView: View {
     let actionCount: String?
     
@@ -124,29 +130,8 @@ public struct ListCellBadgeIndicatorView: View {
     }
 }
 
-ListCellItemView(
-    listCellItemData: someData,
-    badgeView: {
-        // Use the custom ListCellBadgeIndicatorView here
-        ListCellBadgeIndicatorView(actionCount: someData.actionCount)
-    },
-    trailingView: {
-        // Custom trailing view (e.g., Chevron or any other view)
-        ListCellIconView(imageName: ComponentConstants.Images.chevron)
-    }
-)
 
-ListCellItemView(
-    listCellItemData: someData,
-    badgeView: {
-        // A custom badge view, such as a Text view
-        Text("Custom Badge")
-    },
-    trailingView: {
-        // A custom trailing view, such as a Text or other indicator
-        Text("Trailing")
-    }
-)
+
 
 import SwiftUI
 
@@ -154,29 +139,25 @@ public struct ListCellContainerView<BadgeView: View, TrailingView: View>: View {
     // An array of data objects representing each list cell.
     let listCellItemData: [ListCellItemData]
     
-    // A closure that is called when a cell is selected.
-    let onSelect: (ListCellItemData) -> Void
-    
     // Optional closures to provide badgeView and trailingView
     let badgeViewProvider: ((ListCellItemData) -> BadgeView?)? // Optional badgeView provider
     let trailingViewProvider: ((ListCellItemData) -> TrailingView?)? // Optional trailingView provider
     
-    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData`, a selection callback,
-    /// and optional views for the badge and trailing sections.
-    /// - Parameter listCellItemData: The array of data for each list cell.
-    /// - Parameter onSelect: A closure to be called when a cell is selected.
-    /// - Parameter badgeViewProvider: A closure to provide a custom badgeView for each item (optional).
-    /// - Parameter trailingViewProvider: A closure to provide a custom trailingView for each item (optional).
+    // A closure that is called when a cell is selected.
+    let onSelect: (ListCellItemData) -> Void
+
+    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData`, optional views for the badge and trailing sections,
+    /// and a selection callback.
     public init(
         listCellItemData: [ListCellItemData],
-        onSelect: @escaping (ListCellItemData) -> Void,
-        @ViewBuilder badgeViewProvider: ((ListCellItemData) -> BadgeView?)? = nil, // Optional
-        @ViewBuilder trailingViewProvider: ((ListCellItemData) -> TrailingView?)? = nil // Optional
+        badgeViewProvider: ((ListCellItemData) -> BadgeView?)? = nil, // Optional
+        trailingViewProvider: ((ListCellItemData) -> TrailingView?)? = nil, // Optional
+        onSelect: @escaping (ListCellItemData) -> Void // Moved onSelect to the last parameter
     ) {
         self.listCellItemData = listCellItemData
-        self.onSelect = onSelect
         self.badgeViewProvider = badgeViewProvider
         self.trailingViewProvider = trailingViewProvider
+        self.onSelect = onSelect
     }
     
     /// The body of the view that renders each list cell using a `ForEach` loop.
@@ -184,32 +165,13 @@ public struct ListCellContainerView<BadgeView: View, TrailingView: View>: View {
         ForEach(listCellItemData) { itemData in
             ListCellItemView(
                 listCellItemData: itemData,
-                badgeView: {
-                    // Provide the badgeView for this cell if available
-                    badgeViewProvider?(itemData) ?? EmptyView() // Provide an EmptyView if no badge is provided
-                },
-                trailingView: {
-                    // Provide the trailingView for this cell if available
-                    trailingViewProvider?(itemData) ?? EmptyView() // Provide an EmptyView if no trailing view is provided
+                badgeView: badgeViewProvider?(itemData), // Use the provided badgeView
+                trailingView: trailingViewProvider?(itemData), // Use the provided trailingView
+                onSelect: { selectedItem in
+                    onSelect(selectedItem)
                 }
-            ) { selectedItem in
-                onSelect(selectedItem)
-            }
+            )
         }
     }
 }
 
-ListCellContainerView(
-    listCellItemData: someDataList,
-    onSelect: { selectedItem in
-        // Handle selection here
-    },
-    badgeViewProvider: { itemData in
-        // Provide the custom badge view for each item, e.g., based on itemData
-        ListCellBadgeIndicatorView(actionCount: itemData.actionCount)
-    },
-    trailingViewProvider: { itemData in
-        // Provide the custom trailing view, e.g., Chevron icon
-        ListCellIconView(imageName: ComponentConstants.Images.chevron)
-    }
-)
