@@ -1,18 +1,10 @@
-//
-//  AccountDetailsCard.swift
-//  TextFieldComponent
-//
-//  Created by Hiran Stephan on 01/10/24.
-//
-
-import Foundation
 import Foundation
 import SwiftUI
 
 // MARK: - Data Model
 
 /// Represents an account with details such as balance, card information, payment information, and account type.
-struct Account {
+struct AccountDetailsCardData {
     /// Unique identifier for the account.
     let id: String
     
@@ -93,26 +85,26 @@ enum AccountType {
 
 /// ViewModel that manages and formats account data for display in a card view.
 class AccountDetailsCardViewModel: ObservableObject {
-    private let account: Account
+    private let accountDetailsCardData: AccountDetailsCardData
 
     /// Initializes the ViewModel with an `Account`.
-    init(account: Account) {
-        self.account = account
+    init(accountDetailsCardData: AccountDetailsCardData) {
+        self.accountDetailsCardData = accountDetailsCardData
     }
 
     /// The current balance formatted as a string for display.
     var formattedCurrentBalance: String? {
-        return account.currentBalance
+        return accountDetailsCardData.currentBalance
     }
 
     /// The available balance formatted as a string for display.
     var formattedAvailableBalance: String? {
-        return account.availableBalance
+        return accountDetailsCardData.availableBalance
     }
 
     /// The card number formatted as "**** XXXX" where `XXXX` is the last four digits of the card number.
     var formattedCardNumber: String? {
-        if let card = account.cardDetails {
+        if let card = accountDetailsCardData.cardDetails {
             return "**** \(card.lastFourDigits)"
         }
         return nil
@@ -120,7 +112,7 @@ class AccountDetailsCardViewModel: ObservableObject {
 
     /// The next payment details (amount and due date) formatted as a tuple.
     var formattedNextPaymentDetails: (String, String)? {
-        if let payment = account.paymentDetails {
+        if let payment = accountDetailsCardData.paymentDetails {
             let amount = payment.nextPaymentAmount
             let dueDate = AccountDetailsCardViewModel.dateFormatter.string(from: payment.nextPaymentDueDate)
             return (amount, dueDate)
@@ -130,7 +122,7 @@ class AccountDetailsCardViewModel: ObservableObject {
 
     /// The maturity date formatted as a string for display.
     var formattedMaturityDate: String? {
-        if let maturityDate = account.maturityDate {
+        if let maturityDate = accountDetailsCardData.maturityDate {
             return AccountDetailsCardViewModel.dateFormatter.string(from: maturityDate)
         }
         return nil
@@ -314,43 +306,44 @@ struct Constants {
 
 /*
  
- let depositAccount = Account(
+ // Deposit Account with Card
+ let depositAccount = AccountDetailsCardData(
      id: "1",
      currentBalance: "2500.75",
      availableBalance: "2000.50",
      cardDetails: CardDetails(lastFourDigits: "5678"),
      accountType: .depositWithCard
  )
- let depositViewModel = AccountDetailsCardViewModel(account: depositAccount)
+ let depositViewModel = AccountDetailsCardViewModel(accountDetailsCardData: depositAccount)
  AccountDetailsCard(viewType: .card, viewModel: depositViewModel)
  
  // Loan Account
- let loanAccount = Account(
+ let loanAccount = AccountDetailsCardData(
      id: "2",
      currentBalance: "10000.00",
      availableBalance: "9800.00",
      paymentDetails: PaymentDetails(nextPaymentAmount: "500.00", nextPaymentDueDate: Date().addingTimeInterval(60*60*24*7)), // Next week
      accountType: .loan
  )
- let loanViewModel = AccountDetailsCardViewModel(account: loanAccount)
+ let loanViewModel = AccountDetailsCardViewModel(accountDetailsCardData: loanAccount)
  AccountDetailsCard(viewType: .normal, viewModel: loanViewModel)
  
  // Certificate of Deposit Account
- let cdAccount = Account(
+ let cdAccount = AccountDetailsCardData(
      id: "3",
      currentBalance: "15000.00",
      maturityDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
      accountType: .certificateDeposit
  )
- let cdViewModel = AccountDetailsCardViewModel(account: cdAccount)
+ let cdViewModel = AccountDetailsCardViewModel(accountDetailsCardData: cdAccount)
  AccountDetailsCard(viewType: .normal, viewModel: cdViewModel)
  
  // Partial Error Account
- let errorAccount = Account(
+ let errorAccount = AccountDetailsCardData(
      id: "4",
      accountType: .depositWithCard
  )
- let errorViewModel = AccountDetailsCardViewModel(account: errorAccount)
+ let errorViewModel = AccountDetailsCardViewModel(accountDetailsCardData: errorAccount)
  AccountDetailsCard(viewType: .card, viewModel: errorViewModel, isError: true)
  
  */
