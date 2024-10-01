@@ -28,6 +28,7 @@
 		3B4379962C87886700495EF1 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379952C87886700495EF1 /* Theme.swift */; };
 		3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379972C87950D00495EF1 /* ComponentImage.swift */; };
 		3B647BEA2CAC58E0007D837D /* AccountDetailsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */; };
+		3B647BEC2CACB57A007D837D /* ListCellItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647BEB2CACB57A007D837D /* ListCellItemView.swift */; };
 		3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9602C89F7C30058896A /* PlaceholderView.swift */; };
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
@@ -84,6 +85,7 @@
 		3B4379952C87886700495EF1 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3B4379972C87950D00495EF1 /* ComponentImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentImage.swift; sourceTree = "<group>"; };
 		3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsCard.swift; sourceTree = "<group>"; };
+		3B647BEB2CACB57A007D837D /* ListCellItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellItemView.swift; sourceTree = "<group>"; };
 		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
 				3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */,
 				3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */,
+				3B647BEB2CACB57A007D837D /* ListCellItemView.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -403,6 +406,7 @@
 				3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */,
 				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
 				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
+				3B647BEC2CACB57A007D837D /* ListCellItemView.swift in Sources */,
 				3B43798A2C8784B400495EF1 /* Colours.swift in Sources */,
 				3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */,
 				3B71B99D2C8F8BC20058896A /* File.swift in Sources */,
