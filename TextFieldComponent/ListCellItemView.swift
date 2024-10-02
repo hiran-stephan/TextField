@@ -116,3 +116,48 @@ struct ListCellWithBadgeAndChevronView: View {
         }
     }
 }
+
+public struct ListCellContainerView: View {
+    let listCellItemData: [ListCellItemData]
+    var pressedColor: Color?
+    var defaultColor: Color?
+    
+    /// A closure that is called when a cell is selected.
+    let onSelect: ((ListCellItemData) -> Void)?
+
+    public init(
+        listCellItemData: [ListCellItemData],
+        pressedColor: Color? = BankingTheme.colors.pressed,
+        defaultColor: Color? = BankingTheme.colors.surfaceVariant,
+        onSelect: ((ListCellItemData) -> Void)? = nil
+    ) {
+        self.listCellItemData = listCellItemData
+        self.pressedColor = pressedColor
+        self.defaultColor = defaultColor
+        self.onSelect = onSelect
+    }
+
+    public var body: some View {
+        ForEach(listCellItemData) { itemData in
+            ListCellItemView(
+                listCellItemData: itemData,
+                pressedColor: pressedColor,
+                defaultColor: defaultColor
+            ) {
+                HStack {
+                    // Trailing badge view
+                    ListCellBadgeIndicatorView(actionCount: itemData.actionCount)
+                    
+                    // Trailing Image Placeholder
+                    if let listCellTernaryTextData = itemData.textTernary {
+                        ListCellTernaryView(textPrimary: listCellTernaryTextData, imageName: ComponentConstants.Images.chevron)
+                    } else {
+                        ListCellIconView(imageName: ComponentConstants.Images.chevron)
+                    }
+                }
+            } onSelect: { selectedItem in
+                onSelect?(selectedItem)
+            }
+        }
+    }
+}
