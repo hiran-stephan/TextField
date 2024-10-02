@@ -118,10 +118,23 @@ struct ListCellWithBadgeAndChevronView: View {
 }
 
 public struct ListCellContainerView: View {
+
+    // Define enum to manage cell types
+    enum CellType {
+        case normal
+        case badge
+        case text(String)
+        case toggle(Bool)
+        case data(Any) // Replace `Any` with the specific data type you're using
+    }
+
     let listCellItemData: [ListCellItemData]
     var pressedColor: Color?
     var defaultColor: Color?
     
+    // Assume you map each cell to a specific type
+    var cellType: CellType = .normal
+
     /// A closure that is called when a cell is selected.
     let onSelect: ((ListCellItemData) -> Void)?
 
@@ -129,11 +142,13 @@ public struct ListCellContainerView: View {
         listCellItemData: [ListCellItemData],
         pressedColor: Color? = BankingTheme.colors.pressed,
         defaultColor: Color? = BankingTheme.colors.surfaceVariant,
+        cellType: CellType = .normal, // Set default to `normal`
         onSelect: ((ListCellItemData) -> Void)? = nil
     ) {
         self.listCellItemData = listCellItemData
         self.pressedColor = pressedColor
         self.defaultColor = defaultColor
+        self.cellType = cellType
         self.onSelect = onSelect
     }
 
@@ -144,15 +159,25 @@ public struct ListCellContainerView: View {
                 pressedColor: pressedColor,
                 defaultColor: defaultColor
             ) {
+                // Use the enum to control the trailing view
                 HStack {
-                    // Trailing badge view
-                    ListCellBadgeIndicatorView(actionCount: itemData.actionCount)
-                    
-                    // Trailing Image Placeholder
-                    if let listCellTernaryTextData = itemData.textTernary {
-                        ListCellTernaryView(textPrimary: listCellTernaryTextData, imageName: ComponentConstants.Images.chevron)
-                    } else {
+                    switch cellType {
+                    case .normal:
                         ListCellIconView(imageName: ComponentConstants.Images.chevron)
+                    case .badge:
+                        HStack {
+                            ListCellBadgeIndicatorView(actionCount: itemData.actionCount)
+                            ListCellIconView(imageName: ComponentConstants.Images.chevron)
+                        }
+                    case .text(let text):
+                        Text(text)
+                    case .toggle(let isOn):
+                        Toggle(isOn: .constant(isOn)) {
+                            Text("Toggle")
+                        }
+                    case .data(let data):
+                        // Handle custom data view logic here
+                        Text("\(data)") // Replace with your custom data handling
                     }
                 }
             } onSelect: { selectedItem in
