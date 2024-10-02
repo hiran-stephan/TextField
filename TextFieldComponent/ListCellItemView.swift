@@ -7,42 +7,32 @@
 
 import Foundation
 import SwiftUI
-import SwiftUI
 
-public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
+public struct ListCellItemView<TrailingContent: View>: View {
     let listCellItemData: ListCellItemData
-    
-    // Optional badge and trailing views
-    let badgeView: BadgeView?
-    let trailingView: TrailingView?
-    
-    var minCellHeight: CGFloat
-    var pressedColor: Color?
-    var defaultColor: Color?
-    var needsLargerPadding: Bool = false
-
-    // A closure that is called when the button is tapped.
+    let pressedColor: Color?
+    let defaultColor: Color?
+    let needsLargerPadding: Bool
     let onSelect: ((ListCellItemData) -> Void)?
+    let trailingView: TrailingContent // Placeholder for custom trailing view
 
-    // Initializes the `ListCellItemView` with its corresponding data.
+    /// Static property remains outside the generic context
+    let minCellHeight: CGFloat = 76.0
+    
     public init(
         listCellItemData: ListCellItemData,
-        minCellHeight: CGFloat = 76.0, // Default value
         pressedColor: Color? = BankingTheme.colors.pressed,
         defaultColor: Color? = BankingTheme.colors.surfaceVariant,
-        needsLargerPadding: Bool = false,
-        badgeView: BadgeView? = nil, // Optional badge view
-        trailingView: TrailingView? = nil, // Optional trailing view
-        onSelect: ((ListCellItemData) -> Void)? = nil // Moved onSelect to the last parameter
+        needsLargerPadding: Bool? = false,
+        onSelect: ((ListCellItemData) -> Void)? = nil,
+        @ViewBuilder trailingView: () -> TrailingContent // Accepts any view for the trailing placeholder
     ) {
         self.listCellItemData = listCellItemData
-        self.minCellHeight = minCellHeight
         self.pressedColor = pressedColor
         self.defaultColor = defaultColor
-        self.needsLargerPadding = needsLargerPadding
-        self.badgeView = badgeView // Assign the badge view if provided
-        self.trailingView = trailingView // Assign the trailing view if provided
+        self.needsLargerPadding = needsLargerPadding ?? false
         self.onSelect = onSelect
+        self.trailingView = trailingView()
     }
 
     public var body: some View {
@@ -58,33 +48,23 @@ public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
                     
                     // Primary and Secondary Text
                     listCellTextContent(listCellItemData: listCellItemData)
-
+                    
                     Spacer()
-
-                    // Optional Badge View
-                    if let badgeView = badgeView {
-                        badgeView
-                    } else {
-                        EmptyView() // Handle empty badge view
-                    }
-
-                    // Optional Trailing View
-                    if let trailingView = trailingView {
-                        trailingView
-                            .padding(needsLargerPadding ? BankingTheme.dimens.mediumLarge : BankingTheme.dimens.medium)
-                    } else {
-                        EmptyView() // Handle empty trailing view
-                    }
+                    
+                    // Trailing Placeholder for Custom View
+                    trailingView
                 }
-                .frame(minHeight: minCellHeight)
-                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(needsLargerPadding ? BankingTheme.dimens.mediumLarge : BankingTheme.dimens.medium)
             }
+            .frame(minHeight: minCellHeight) // This works now
+            .fixedSize(horizontal: false, vertical: true)
+            .buttonStyle(ListCellButtonModifier(pressedColor: pressedColor, defaultColor: defaultColor))
+            .ignoresSafeArea()
         }
-        .buttonStyle(ListCellButtonModifier(pressedColor: pressedColor, defaultColor: defaultColor))
-        .ignoresSafeArea()
     }
 
-    // Text content rendering (Primary and Secondary)
+    /// A subview that renders the primary and optional secondary text for the list cell.
     @ViewBuilder
     private func listCellTextContent(listCellItemData: ListCellItemData) -> some View {
         VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
@@ -93,7 +73,7 @@ public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
                 .foregroundColor(BankingTheme.colors.textPrimary)
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
-
+            
             if let textSecondary = listCellItemData.textSecondary {
                 Text(textSecondary)
                     .typography(BankingTheme.typography.bodySmall)
@@ -105,21 +85,13 @@ public struct ListCellItemView<BadgeView: View, TrailingView: View>: View {
     }
 }
 
-
-
-
-public struct ListCellBadgeIndicatorView: View {
+struct ListCellBadgeIndicatorView: View {
     let actionCount: String?
-    
-    // Initializer to accept the action count for the badge
-    public init(actionCount: String?) {
-        self.actionCount = actionCount
-    }
 
-    public var body: some View {
-        if let count = actionCount {
+    var body: some View {
+        if let actionCount = actionCount {
             HStack {
-                Text(count)
+                Text(actionCount)
                     .font(BankingTheme.typography.caption.font)
                     .frame(width: BankingTheme.dimens.mediumLarge, height: BankingTheme.dimens.medium)
                     .foregroundColor(BankingTheme.colors.textPrimary)
@@ -131,47 +103,16 @@ public struct ListCellBadgeIndicatorView: View {
 }
 
 
-
-
-import SwiftUI
-
-public struct ListCellContainerView<BadgeView: View, TrailingView: View>: View {
-    // An array of data objects representing each list cell.
-    let listCellItemData: [ListCellItemData]
+struct ListCellWithBadgeAndChevronView: View {
+    let listCellItemData: ListCellItemData
     
-    // Optional closures to provide badgeView and trailingView
-    let badgeViewProvider: ((ListCellItemData) -> BadgeView?)? // Optional badgeView provider
-    let trailingViewProvider: ((ListCellItemData) -> TrailingView?)? // Optional trailingView provider
-    
-    // A closure that is called when a cell is selected.
-    let onSelect: (ListCellItemData) -> Void
-
-    /// Initializes the `ListCellContainerView` with a list of `ListCellItemData`, optional views for the badge and trailing sections,
-    /// and a selection callback.
-    public init(
-        listCellItemData: [ListCellItemData],
-        badgeViewProvider: ((ListCellItemData) -> BadgeView?)? = nil, // Optional
-        trailingViewProvider: ((ListCellItemData) -> TrailingView?)? = nil, // Optional
-        onSelect: @escaping (ListCellItemData) -> Void // Moved onSelect to the last parameter
-    ) {
-        self.listCellItemData = listCellItemData
-        self.badgeViewProvider = badgeViewProvider
-        self.trailingViewProvider = trailingViewProvider
-        self.onSelect = onSelect
-    }
-    
-    /// The body of the view that renders each list cell using a `ForEach` loop.
-    public var body: some View {
-        ForEach(listCellItemData) { itemData in
-            ListCellItemView(
-                listCellItemData: itemData,
-                badgeView: badgeViewProvider?(itemData), // Use the provided badgeView
-                trailingView: trailingViewProvider?(itemData), // Use the provided trailingView
-                onSelect: { selectedItem in
-                    onSelect(selectedItem)
-                }
-            )
+    var body: some View {
+        ListCellItemView(listCellItemData: listCellItemData) {
+            HStack {
+                // Trailing badge view
+                ListCellBadgeIndicatorView(actionCount: listCellItemData.actionCount)
+                ListCellIconView(imageName: ComponentConstants.Images.chevron)
+            }
         }
     }
 }
-
