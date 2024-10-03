@@ -388,3 +388,17 @@ extension DataListAccountHeader {
         }
     }
 }
+
+struct AccountHeaderData {
+    var balanceLabelText: String = ""
+    var formattedBalance: String = ""
+    var dataList: [String: String] = [:] // Equivalent to a Map in Kotlin
+}
+
+struct DebitBalanceAccountHeaderData {
+    var balanceLabelText: String = ""
+    var formattedBalance: String = ""
+    var availableBalanceText: String = ""
+    var formattedAvailableBalance: String = ""
+    var maskedAccountNumber: String = ""
+}
