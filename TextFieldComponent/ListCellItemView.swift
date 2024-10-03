@@ -120,7 +120,7 @@ struct ListCellWithBadgeAndChevronView: View {
 public struct ListCellContainerView: View {
 
     // Define enum to manage cell types
-    enum CellType {
+   public enum CellType {
         case normal
         case badge
         case text(String)
@@ -133,7 +133,7 @@ public struct ListCellContainerView: View {
     var defaultColor: Color?
     
     // Assume you map each cell to a specific type
-    var cellType: CellType = .normal
+    var cellType: CellType?
 
     /// A closure that is called when a cell is selected.
     let onSelect: ((ListCellItemData) -> Void)?
@@ -142,7 +142,7 @@ public struct ListCellContainerView: View {
         listCellItemData: [ListCellItemData],
         pressedColor: Color? = BankingTheme.colors.pressed,
         defaultColor: Color? = BankingTheme.colors.surfaceVariant,
-        cellType: CellType = .normal, // Set default to `normal`
+        cellType: CellType? = .normal, // Set default to `normal`
         onSelect: ((ListCellItemData) -> Void)? = nil
     ) {
         self.listCellItemData = listCellItemData

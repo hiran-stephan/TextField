@@ -347,3 +347,44 @@ struct Constants {
  AccountDetailsCard(viewType: .card, viewModel: errorViewModel, isError: true)
  
  */
+
+
+struct DataListAccountHeader: View {
+    var balanceLabelText: String
+    var balance: String
+    var dataList: [String: String] // Key-value list
+
+    var body: some View {
+        VStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+            balanceView(label: balanceLabelText, value: balance)
+            
+            // Iterate over the dataList and display each key-value pair
+            ForEach(dataList.keys.sorted(), id: \.self) { key in
+                if let value = dataList[key] {
+                    detailView(label: key, value: value)
+                }
+            }
+        }
+        .padding(.horizontal, BankingTheme.dimens.large)
+        .background(BankingTheme.colors.background)
+        .cornerRadius(BankingTheme.dimens.smallMedium)
+        .padding()
+    }
+}
+
+// MARK: - ViewBuilders
+extension DataListAccountHeader {
+    /// Displays a detail view with a label and value in a text-style layout.
+    @ViewBuilder
+    private func detailView(label: String, value: String) -> some View {
+        VStack(alignment: .center, spacing: BankingTheme.dimens.microSmall) {
+            Text(label)
+                .font(BankingTheme.typography.bodySmall.font)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+
+            Text(value)
+                .font(BankingTheme.typography.bodySemiBold.font)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+        }
+    }
+}
