@@ -433,3 +433,14 @@ let accountHeaderData = AccountHeaderData(
 
 DataListAccountHeader(accountHeaderData: accountHeaderData)
     .padding()
+
+let debitBalanceAccountHeaderData = DebitBalanceAccountHeaderData(
+    balanceLabelText: "Current Balance",
+    formattedBalance: "$5,000",
+    availableBalanceText: "Available Balance",
+    formattedAvailableBalance: "$4,500",
+    maskedAccountNumber: "**** **** **** 1234"
+)
+
+CardAccountHeader(debitBalanceAccountHeaderData: debitBalanceAccountHeaderData)
+    .padding()
