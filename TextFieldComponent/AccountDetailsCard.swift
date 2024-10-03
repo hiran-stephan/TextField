@@ -389,16 +389,35 @@ extension DataListAccountHeader {
     }
 }
 
+/// A struct representing account header data for display.
 struct AccountHeaderData {
+    
+    /// The label text for the balance.
     var balanceLabelText: String = ""
+    
+    /// The formatted balance value to be displayed.
     var formattedBalance: String = ""
+    
+    /// A dictionary containing additional key-value data for the account.
     var dataList: [String: String] = [:] // Equivalent to a Map in Kotlin
 }
 
+/// A struct representing detailed account header data specific to debit balances.
 struct DebitBalanceAccountHeaderData {
+    
+    /// The label text for the balance.
     var balanceLabelText: String = ""
+    
+    /// The formatted balance value to be displayed.
     var formattedBalance: String = ""
+    
+    /// The text for available balance.
     var availableBalanceText: String = ""
+    
+    /// The formatted available balance value.
     var formattedAvailableBalance: String = ""
+    
+    /// The masked account number, for security purposes.
     var maskedAccountNumber: String = ""
 }
+
