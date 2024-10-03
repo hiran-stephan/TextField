@@ -444,3 +444,5 @@ let debitBalanceAccountHeaderData = DebitBalanceAccountHeaderData(
 
 CardAccountHeader(debitBalanceAccountHeaderData: debitBalanceAccountHeaderData)
     .padding()
+
+    .padding(.horizontal, horizontalSizeClass == .compact ? BankingTheme.dimens.large : BankingTheme.dimens.xLarge)
