@@ -421,3 +421,15 @@ struct DebitBalanceAccountHeaderData {
     var maskedAccountNumber: String = ""
 }
 
+let accountHeaderData = AccountHeaderData(
+    balanceLabelText: "Balance",
+    formattedBalance: "$5,000",
+    dataList: [
+        "Interest Rate": "2.5%",
+        "Maturity Date": "01/01/2025",
+        "Year to Date Interest": "$100"
+    ]
+)
+
+DataListAccountHeader(accountHeaderData: accountHeaderData)
+    .padding()
