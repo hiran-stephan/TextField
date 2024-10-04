@@ -29,6 +29,17 @@
 		3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379972C87950D00495EF1 /* ComponentImage.swift */; };
 		3B647BEA2CAC58E0007D837D /* AccountDetailsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */; };
 		3B647BEC2CACB57A007D837D /* ListCellItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647BEB2CACB57A007D837D /* ListCellItemView.swift */; };
+		3B647C592CB09A53007D837D /* ListCellTextIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C4E2CB09A53007D837D /* ListCellTextIndicatorView.swift */; };
+		3B647C5A2CB09A53007D837D /* ListCellItemText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C4F2CB09A53007D837D /* ListCellItemText.swift */; };
+		3B647C5B2CB09A53007D837D /* ListCellItemBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C502CB09A53007D837D /* ListCellItemBase.swift */; };
+		3B647C5C2CB09A53007D837D /* ComponentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C512CB09A53007D837D /* ComponentImage.swift */; };
+		3B647C5D2CB09A53007D837D /* ListCellButtonModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C522CB09A53007D837D /* ListCellButtonModifier.swift */; };
+		3B647C5E2CB09A53007D837D /* ListCellBadgeIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C532CB09A53007D837D /* ListCellBadgeIndicatorView.swift */; };
+		3B647C5F2CB09A53007D837D /* ListCellIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C542CB09A53007D837D /* ListCellIconView.swift */; };
+		3B647C602CB09A53007D837D /* ListCellLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C552CB09A53007D837D /* ListCellLabelView.swift */; };
+		3B647C612CB09A53007D837D /* ListCardContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C562CB09A53007D837D /* ListCardContainer.swift */; };
+		3B647C622CB09A53007D837D /* ListCellItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C572CB09A53007D837D /* ListCellItem.swift */; };
+		3B647C632CB09A53007D837D /* ListCellItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C582CB09A53007D837D /* ListCellItemData.swift */; };
 		3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9602C89F7C30058896A /* PlaceholderView.swift */; };
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
@@ -86,6 +97,17 @@
 		3B4379972C87950D00495EF1 /* ComponentImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentImage.swift; sourceTree = "<group>"; };
 		3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsCard.swift; sourceTree = "<group>"; };
 		3B647BEB2CACB57A007D837D /* ListCellItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellItemView.swift; sourceTree = "<group>"; };
+		3B647C4E2CB09A53007D837D /* ListCellTextIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellTextIndicatorView.swift; sourceTree = "<group>"; };
+		3B647C4F2CB09A53007D837D /* ListCellItemText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellItemText.swift; sourceTree = "<group>"; };
+		3B647C502CB09A53007D837D /* ListCellItemBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellItemBase.swift; sourceTree = "<group>"; };
+		3B647C512CB09A53007D837D /* ComponentImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentImage.swift; sourceTree = "<group>"; };
+		3B647C522CB09A53007D837D /* ListCellButtonModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellButtonModifier.swift; sourceTree = "<group>"; };
+		3B647C532CB09A53007D837D /* ListCellBadgeIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellBadgeIndicatorView.swift; sourceTree = "<group>"; };
+		3B647C542CB09A53007D837D /* ListCellIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellIconView.swift; sourceTree = "<group>"; };
+		3B647C552CB09A53007D837D /* ListCellLabelView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellLabelView.swift; sourceTree = "<group>"; };
+		3B647C562CB09A53007D837D /* ListCardContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCardContainer.swift; sourceTree = "<group>"; };
+		3B647C572CB09A53007D837D /* ListCellItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellItem.swift; sourceTree = "<group>"; };
+		3B647C582CB09A53007D837D /* ListCellItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellItemData.swift; sourceTree = "<group>"; };
 		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -150,6 +172,7 @@
 		3B4379472C80AF7A00495EF1 /* TextFieldComponent */ = {
 			isa = PBXGroup;
 			children = (
+				3B647C4D2CB09A53007D837D /* List */,
 				3BDE7B492CA4FA03008208AC /* Alert */,
 				3B71B9A72C937D5F0058896A /* AppSheet */,
 				3B71B9A02C9349900058896A /* Resources */,
@@ -223,6 +246,24 @@
 				3B4379952C87886700495EF1 /* Theme.swift */,
 			);
 			path = Theme;
+			sourceTree = "<group>";
+		};
+		3B647C4D2CB09A53007D837D /* List */ = {
+			isa = PBXGroup;
+			children = (
+				3B647C4E2CB09A53007D837D /* ListCellTextIndicatorView.swift */,
+				3B647C4F2CB09A53007D837D /* ListCellItemText.swift */,
+				3B647C502CB09A53007D837D /* ListCellItemBase.swift */,
+				3B647C512CB09A53007D837D /* ComponentImage.swift */,
+				3B647C522CB09A53007D837D /* ListCellButtonModifier.swift */,
+				3B647C532CB09A53007D837D /* ListCellBadgeIndicatorView.swift */,
+				3B647C542CB09A53007D837D /* ListCellIconView.swift */,
+				3B647C552CB09A53007D837D /* ListCellLabelView.swift */,
+				3B647C562CB09A53007D837D /* ListCardContainer.swift */,
+				3B647C572CB09A53007D837D /* ListCellItem.swift */,
+				3B647C582CB09A53007D837D /* ListCellItemData.swift */,
+			);
+			path = List;
 			sourceTree = "<group>";
 		};
 		3B71B9A02C9349900058896A /* Resources */ = {
@@ -388,14 +429,22 @@
 				3B647BEA2CAC58E0007D837D /* AccountDetailsCard.swift in Sources */,
 				3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */,
 				3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */,
+				3B647C5C2CB09A53007D837D /* ComponentImage.swift in Sources */,
 				3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */,
 				3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */,
+				3B647C612CB09A53007D837D /* ListCardContainer.swift in Sources */,
 				3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */,
 				3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */,
 				3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */,
 				3B43798C2C8784EB00495EF1 /* Dimens.swift in Sources */,
+				3B647C5E2CB09A53007D837D /* ListCellBadgeIndicatorView.swift in Sources */,
+				3B647C622CB09A53007D837D /* ListCellItem.swift in Sources */,
 				3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */,
+				3B647C5F2CB09A53007D837D /* ListCellIconView.swift in Sources */,
+				3B647C592CB09A53007D837D /* ListCellTextIndicatorView.swift in Sources */,
 				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
+				3B647C632CB09A53007D837D /* ListCellItemData.swift in Sources */,
+				3B647C5B2CB09A53007D837D /* ListCellItemBase.swift in Sources */,
 				3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
 				3BDE7BD82CA75E5C008208AC /* AlertBanner.swift in Sources */,
@@ -408,9 +457,12 @@
 				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
 				3B647BEC2CACB57A007D837D /* ListCellItemView.swift in Sources */,
 				3B43798A2C8784B400495EF1 /* Colours.swift in Sources */,
+				3B647C5D2CB09A53007D837D /* ListCellButtonModifier.swift in Sources */,
 				3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */,
 				3B71B99D2C8F8BC20058896A /* File.swift in Sources */,
+				3B647C602CB09A53007D837D /* ListCellLabelView.swift in Sources */,
 				3B4379962C87886700495EF1 /* Theme.swift in Sources */,
+				3B647C5A2CB09A53007D837D /* ListCellItemText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
