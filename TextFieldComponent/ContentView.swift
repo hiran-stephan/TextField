@@ -134,3 +134,68 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 
+/*
+ struct ContentView: View {
+     
+     // Dummy data for demonstration
+     let items: [ListCellItemData] = [
+         ListCellItemData(
+             actionCellId: "1",
+             actionPrimaryLabel: "adfgsD DFsf",
+             actionSecondaryLabel: "SDvdv SDF AG QERG QER",
+             trailingIconName: "chevron",
+             leadingIconAccessibilityText: "Leading Icon",
+             trailingIconAccessibilityText: "Trailing Chevron",
+             actionCount: "3"
+         ),
+         ListCellItemData(
+             actionCellId: "2",
+             actionPrimaryLabel: "ASDGF ARG QERG",
+             actionSecondaryLabel: " EWGR QERH ERH ",
+             leadingIconName: "location",
+             leadingIconAccessibilityText: "Leading Icon",
+             trailingIconAccessibilityText: "Trailing Chevron"
+         ),
+         ListCellItemData(
+             actionCellId: "3",
+             actionPrimaryLabel: "QERG   ERG  EWG l",
+             actionSecondaryLabel: " WET G   QERH REH",
+             leadingIconName: "location",
+             trailingIconName: "chevron",
+             leadingIconAccessibilityText: "Leading Icon",
+             trailingIconAccessibilityText: "Trailing Chevron",
+             data: "Text"
+         )
+     ]
+     
+     var body: some View {
+         VStack {
+             ListCardContainer(
+                 hasBorder: true,
+                 isRoundedShape: true,
+                 backgroundColor: .white,
+                 hasHorizontalPadding: true
+             ) {
+                 ForEach(items, id: \.actionCellId) { actionItem in
+                     let isDividerVisible = actionItem != items.last
+
+                     // Display ListCellItem for each actionItem
+                     ListCellItemText(
+                         backgroundColor: BankingTheme.colors.background,
+                         pressedBackgroundColor: BankingTheme.colors.pressed,
+                         listCellItemData: actionItem,
+                         showDivider: isDividerVisible,
+                         dataTextStyle: BankingTheme.typography.bodySmall,
+                         onClick: { clickedItem in
+                             // Handle cell click
+                             print("ListCellItem clicked: \(clickedItem.actionPrimaryLabel)")
+                             // Simulate onDismiss behavior
+                         }
+                     )
+                 }
+             }
+         }
+         .padding()
+     }
+ }
+ */
