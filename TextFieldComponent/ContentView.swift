@@ -134,6 +134,9 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 
+static func ==(lhs: ListCellItemData, rhs: ListCellItemData) -> Bool {
+        lhs.actionCellId == rhs.actionCellId
+    }
 /*
  struct ContentView: View {
      
