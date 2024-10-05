@@ -133,10 +133,30 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
+func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+        .frame(maxWidth: .infinity)
+        .background(configuration.isPressed ? pressedBackgroundColor : backgroundColor)
+        .if(showDivider) { view in
+            view.overlay(
+                Divider()
+                    .frame(height: BankingTheme.spacing.stroke)
+                    .background(BankingTheme.colors.borderDefault)
+                    .padding(.horizontal, BankingTheme.dimens.medium),
+                alignment: .bottom
+            )
+        }
+}
 
-static func ==(lhs: ListCellItemData, rhs: ListCellItemData) -> Bool {
-        lhs.actionCellId == rhs.actionCellId
+extension View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
+}
 /*
  struct ContentView: View {
      
