@@ -67,4 +67,85 @@ public struct SecondaryTabBar: View {
         }
     }
 }
+/*
+VStack {
+    let tabs1 = ["Tab 1", "Tab 2", "Tab 3", "Tab 4"]
+    
+    SecondaryTabBar(
+        tabs: tabs1,
+        selectedTabIndex: $selectedTabIndex,
+        isScrollable: true,
+        hasBorder: false,
+        isRoundedShape: true,
+        onTabSelected: { index in
+            print("Selected tab: \(index)")
+            selectedTabIndex = index
+        }
+    )
+    .padding()
+    
+    let tabs2 = ["Tab 1 edge case of this", "Tab 2", "Tab 3", "Tab 4"]
 
+    SecondaryTabBar(
+        tabs: tabs2,
+        selectedTabIndex: $selectedTabIndex,
+        isScrollable: true,
+        hasBorder: false,
+        isRoundedShape: true,
+        onTabSelected: { index in
+            print("Selected tab: \(index)")
+            selectedTabIndex = index
+        }
+    )
+    .padding()
+    
+    let tabs3 = ["Tab 1", "Tab 2", "Tab 3", "Tab 4"]
+    
+    SecondaryTabBar(
+        tabs: tabs3,
+        selectedTabIndex: $selectedTabIndex,
+        isScrollable: true,
+        hasBorder: true,
+        isRoundedShape: true,
+        onTabSelected: { index in
+            print("Selected tab: \(index)")
+            selectedTabIndex = index
+        }
+    )
+    .padding()
+    
+    let tabs4 = ["Tab 1", "Tab 2", "Tab 3", "Tab 4"]
+    
+    SecondaryTabBar(
+        tabs: tabs4,
+        selectedTabIndex: $selectedTabIndex,
+        isScrollable: true,
+        hasBorder: false,
+        isRoundedShape: false,
+        onTabSelected: { index in
+            print("Selected tab: \(index)")
+            selectedTabIndex = index
+        }
+    )
+    .padding()
+    
+    let tabs5 = ["Tab 1", "Tab 2", "Tab 3", "Tab 4"]
+    
+    SecondaryTabBar(
+        tabs: tabs5,
+        selectedTabIndex: $selectedTabIndex,
+        isScrollable: true,
+        hasBorder: true,
+        isRoundedShape: false,
+        onTabSelected: { index in
+            print("Selected tab: \(index)")
+            selectedTabIndex = index
+        }
+    )
+    .padding()
+    
+    Spacer()
+
+}
+.background(Color(.systemGroupedBackground))
+*/
