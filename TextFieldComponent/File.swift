@@ -263,3 +263,58 @@ extension LoginScreen {
     }
 }
 
+import SwiftUI
+
+public enum ComponentConstants {
+    
+    public enum Images: String, CustomStringConvertible {
+        case chevron = "TnChevron"
+        case logoBrandCibc = "brand_logo"
+        case backButton = "back_Button"
+        case quickTip = "quick-tip"
+        case shieldHome = "shield-home"
+        case add = "add"
+        case addPerson = "add-person"
+        case errorMessageLeadingIcon = "alert-general-filled"
+        case passwordShownIcon = "quick-look"
+        case passwordHiddenIcon = "view-hide"
+        case profile = "profile"
+        case logoFdic = "fdic-logo"
+        case stopwatch = "stopwatch"
+        case user = "user"
+        case edit = "edit"
+        case mobile = "mobile"
+        case faceId = "face-id"
+        
+        // Automatically return the raw value (image name) when enum case is used
+        public var description: String {
+            return self.rawValue
+        }
+    }
+
+    public enum BottomNavBar {
+        public enum Images: String, CustomStringConvertible {
+            case homePageFilled = "home-filled"
+            case homePageUnfilled = "home-unfilled"
+            case moreFilled = "more-filled"
+            case morePageUnfilled = "more-unfilled"
+            
+            // Automatically return the raw value (image name) when enum case is used
+            public var description: String {
+                return self.rawValue
+            }
+        }
+    }
+
+    public enum AccountDetailsCard {
+        public enum Images: String, CustomStringConvertible {
+            case accountDetailsCard = "account-details-card"
+            case mastercardLogo = "mastercard-logo"
+            
+            // Automatically return the raw value (image name) when enum case is used
+            public var description: String {
+                return self.rawValue
+            }
+        }
+    }
+}
