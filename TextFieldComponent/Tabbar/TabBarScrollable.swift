@@ -26,52 +26,60 @@ struct TabBarScrollable: View {
     var isRoundedShape: Bool
     var isScrollable: Bool
     var onTabSelected: (Int) -> Void
-
+    
     /// A state variable that tracks whether content can be scrolled to the left.
     @State private var canScrollLeft: Bool = false
     
     /// A state variable that tracks whether content can be scrolled to the right.
     @State private var canScrollRight: Bool = true
-
+    
     /// Manages the visibility of scroll indicators based on the content's position.
     private let scrollIndicatorManager = ScrollableIndicatorManager()
-
+    
     var body: some View {
         // Create a tab bar style based on the parameters
         let tabBarStyle = TabBarStyle(hasBorder: hasBorder, isRoundedShape: isRoundedShape)
-
+        
         ZStack(alignment: .center) {
             VStack(spacing: BankingTheme.spacing.noPadding) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    // Layout for tabs
-                    TabLayoutView(
-                        tabs: tabs,
-                        selectedTabIndex: $selectedTabIndex,
-                        isScrollable: isScrollable,
-                        onTabSelected: onTabSelected
-                    )
-                    .background(
-                        // Track the scroll position to update scroll indicators
-                        GeometryReader { geo in
-                            Color.clear
-                                .onAppear {
-                                    scrollIndicatorManager.updateScrollIndicatorsWithoutBounce(
-                                        geo: geo,
-                                        canScrollLeft: &canScrollLeft,
-                                        canScrollRight: &canScrollRight
-                                    )
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        TabLayoutView(
+                            tabs: tabs,
+                            selectedTabIndex: $selectedTabIndex,
+                            isScrollable: isScrollable,
+                            onTabSelected: { selectedIndex in
+                                // Handle tab selection and ensure the selected tab is fully visible
+                                withAnimation {
+                                    onTabSelected(selectedIndex)
+                                    selectedTabIndex = selectedIndex
+                                    proxy.scrollTo(selectedIndex, anchor: .center)
                                 }
-                                .onChange(of: geo.frame(in: .global).minX) { _ in
-                                    scrollIndicatorManager.updateScrollIndicatorsWithoutBounce(
-                                        geo: geo,
-                                        canScrollLeft: &canScrollLeft,
-                                        canScrollRight: &canScrollRight
-                                    )
-                                }
-                        }
-                    )
-                    .padding(.horizontal, BankingTheme.dimens.smallMedium)
-                    .padding(.vertical, BankingTheme.spacing.noPadding)
+                            }
+                        )
+                        .background(
+                            // Track the scroll position to update scroll indicators
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onAppear {
+                                        scrollIndicatorManager.updateScrollIndicatorsWithoutBounce(
+                                            geo: geo,
+                                            canScrollLeft: &canScrollLeft,
+                                            canScrollRight: &canScrollRight
+                                        )
+                                    }
+                                    .onChange(of: geo.frame(in: .global).minX) { _ in
+                                        scrollIndicatorManager.updateScrollIndicatorsWithoutBounce(
+                                            geo: geo,
+                                            canScrollLeft: &canScrollLeft,
+                                            canScrollRight: &canScrollRight
+                                        )
+                                    }
+                            }
+                        )
+                        .padding(.horizontal, BankingTheme.dimens.smallMedium)
+                        .padding(.vertical, BankingTheme.spacing.noPadding)
+                    }
                 }
                 .background(
                     // Apply the background style with optional corner radius
@@ -79,7 +87,7 @@ struct TabBarScrollable: View {
                         .cornerRadius(tabBarStyle.cornerRadius)
                 )
                 .clipShape(RoundedRectangle(cornerRadius: tabBarStyle.cornerRadius))
-
+                
                 // Optional bottom border if the tab bar has a border and is not rounded
                 if isScrollable && hasBorder && !isRoundedShape {
                     Rectangle()
@@ -87,7 +95,7 @@ struct TabBarScrollable: View {
                         .foregroundColor(tabBarStyle.borderColor)
                 }
             }
-
+            
             // Left scroll indicator
             if canScrollLeft {
                 ScrollIndicator(
@@ -108,4 +116,6 @@ struct TabBarScrollable: View {
         }
     }
 }
+
+
 

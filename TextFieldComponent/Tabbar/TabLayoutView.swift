@@ -34,6 +34,7 @@ struct TabLayoutView: View {
                     onTabSelected(selectedIndex)
                     selectedTabIndex = selectedIndex
                 }
+                .id(index)
             }
         }
     }
