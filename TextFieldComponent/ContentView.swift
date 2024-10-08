@@ -222,3 +222,109 @@ extension View {
      }
  }
  */
+
+/*
+ struct ContentView: View {
+     
+     // Sample Data
+     let sampleData: [AccountSectionFieldData] = [
+         AccountSectionFieldData(
+             title: "Account Details",
+             data: [
+                 ListCellItemData(actionCellId: "1", actionPrimaryLabel: "Account number", trailingIconName: "eye", data: "1234567"),
+                 ListCellItemData(actionCellId: "2", actionPrimaryLabel: "ABA routing number", trailingIconName: "eye", data: "1234567"),
+             ]
+         ),
+         AccountSectionFieldData(
+             title: "Balance Details",
+             data: [
+                 ListCellItemData(actionCellId: "3", actionPrimaryLabel: "Starting balance", data: "10000"),
+                 ListCellItemData(actionCellId: "4", actionPrimaryLabel: "Holds", data: "1234567"),
+             ]
+         ),
+         // Add more sections as needed
+     ]
+     
+     var body: some View {
+         VStack(spacing: 0) {
+             AccountSectionListView(accountSections: sampleData)
+         }
+         .padding()
+     }
+ }
+
+ struct ContentView_Previews: PreviewProvider {
+     static var previews: some View {
+         ContentView()
+     }
+ }
+
+ struct AccountSectionFieldData {
+     let title: String
+     let data: [ListCellItemData]
+ }
+
+ struct SectionHeaderView: View {
+     let title: String
+
+     var body: some View {
+         HStack(alignment: .top, spacing: BankingTheme.spacing.noPadding) {
+             Text(title)
+                 .font(
+                     BankingTheme.typography.allCapsHeading.font
+                 )
+                 .foregroundColor(BankingTheme.colors.textPrimary)
+                 .frame(maxWidth: .infinity, alignment: .topLeading)
+         }
+         .padding(.horizontal, BankingTheme.spacing.noPadding)
+         .padding(.top, Constants.Padding4XI)
+         .padding(.bottom, BankingTheme.dimens.smallMedium)
+         .frame(maxWidth: .infinity, alignment: .topLeading)
+     }
+ }
+
+ // Constants used in the view
+ struct Constants {
+     static let Padding4XI: CGFloat = 48
+ }
+
+ struct AccountSectionListView: View {
+     let accountSections: [AccountSectionFieldData] // List of section data
+     
+     var body: some View {
+         List {
+             ForEach(accountSections, id: \.title) { section in
+                 VStack(alignment: .leading, spacing: 0) {
+                     // Non-sticky section header
+                     SectionHeaderView(title: section.title)
+                     
+                     // Card-like container for each section
+                     ListCardContainer(
+                         hasBorder: true,
+                         isRoundedShape: true,
+                         backgroundColor: .white,
+                         hasHorizontalPadding: true
+                     ) {
+                         ForEach(section.data, id: \.actionCellId) { listItem in
+                             let isDividerVisible = listItem != section.data.last
+                             ListCellItemText(
+                                 backgroundColor: .white, // Customize the background
+                                 pressedBackgroundColor: .gray, // Customize the pressed color
+                                 listCellItemData: listItem,
+                                 showDivider: isDividerVisible, // Show divider between cells
+                                 dataTextStyle: BankingTheme.typography.body, // Customize the text style for trailing text
+                                 onClick: { selectedItem in
+                                     print("Clicked on: \(selectedItem)")
+                                 }
+                             )
+                         }
+                     }
+                 }
+                 .listRowInsets(EdgeInsets()) // Removes default padding
+                 .listRowSeparator(.hidden) // Removes default separator lines
+             }
+         }
+         .listStyle(PlainListStyle()) // Removes default list style
+     }
+ }
+ */
