@@ -48,6 +48,7 @@
 		3B647CCC2CB44312007D837D /* TabLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC42CB44312007D837D /* TabLayoutView.swift */; };
 		3B647CCD2CB44312007D837D /* TabBarFixed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC52CB44312007D837D /* TabBarFixed.swift */; };
 		3B647CCE2CB44312007D837D /* TabBarScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC62CB44312007D837D /* TabBarScrollable.swift */; };
+		3B647CD02CB5CCA0007D837D /* QA Specialist - CIBC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */; };
 		3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9602C89F7C30058896A /* PlaceholderView.swift */; };
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
@@ -124,6 +125,7 @@
 		3B647CC42CB44312007D837D /* TabLayoutView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabLayoutView.swift; sourceTree = "<group>"; };
 		3B647CC52CB44312007D837D /* TabBarFixed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarFixed.swift; sourceTree = "<group>"; };
 		3B647CC62CB44312007D837D /* TabBarScrollable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarScrollable.swift; sourceTree = "<group>"; };
+		3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "QA Specialist - CIBC.pdf"; sourceTree = "<group>"; };
 		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
 				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
 				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
+				3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */,
 				3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */,
 				3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */,
 				3B647BEB2CACB57A007D837D /* ListCellItemView.swift */,
@@ -430,6 +433,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B4379502C80AF7C00495EF1 /* Preview Assets.xcassets in Resources */,
+				3B647CD02CB5CCA0007D837D /* QA Specialist - CIBC.pdf in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
 				3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */,
 			);
