@@ -226,24 +226,41 @@ extension View {
 /*
  struct ContentView: View {
      
-     // Sample Data
-     let sampleData: [AccountSectionFieldData] = [
-         AccountSectionFieldData(
-             title: "Account Details",
-             data: [
-                 ListCellItemData(actionCellId: "1", actionPrimaryLabel: "Account number", trailingIconName: "eye", data: "1234567"),
-                 ListCellItemData(actionCellId: "2", actionPrimaryLabel: "ABA routing number", trailingIconName: "eye", data: "1234567"),
-             ]
-         ),
-         AccountSectionFieldData(
-             title: "Balance Details",
-             data: [
-                 ListCellItemData(actionCellId: "3", actionPrimaryLabel: "Starting balance", data: "10000"),
-                 ListCellItemData(actionCellId: "4", actionPrimaryLabel: "Holds", data: "1234567"),
-             ]
-         ),
-         // Add more sections as needed
-     ]
+ let sampleData: [AccountSectionFieldData] = [
+     AccountSectionFieldData(
+         title: "Account Details",
+         data: [
+             ListCellItemData(actionCellId: "1", actionPrimaryLabel: "Account number", trailingIconName: "quick-look", data: "1234567"),
+             ListCellItemData(actionCellId: "2", actionPrimaryLabel: "ABA routing number", trailingIconName: "quick-look", data: "1234567"),
+             ListCellItemData(actionCellId: "3", actionPrimaryLabel: "ATM withdrawal limit", trailingIconName: "quick-look", data: "<Data>"),
+             ListCellItemData(actionCellId: "4", actionPrimaryLabel: "POS purchase limit", trailingIconName: "quick-look", data: "<Data>")
+         ]
+     ),
+     AccountSectionFieldData(
+         title: "Balance Details",
+         data: [
+             ListCellItemData(actionCellId: "5", actionPrimaryLabel: "Starting balance", data: "$<Data>"),
+             ListCellItemData(actionCellId: "6", actionPrimaryLabel: "Holds", data: "$<Data>")
+         ]
+     ),
+     AccountSectionFieldData(
+         title: "Interest Details",
+         data: [
+             ListCellItemData(actionCellId: "7", actionPrimaryLabel: "Interest rate", data: "<Data>%"),
+             ListCellItemData(actionCellId: "8", actionPrimaryLabel: "Interest YTD", data: "$<Data>"),
+             ListCellItemData(actionCellId: "9", actionPrimaryLabel: "Interest last year", data: "$<Data>")
+         ]
+     ),
+     AccountSectionFieldData(
+         title: "Statement Details",
+         data: [
+             ListCellItemData(actionCellId: "10", actionPrimaryLabel: "Last statement date", data: "<Data>"),
+             ListCellItemData(actionCellId: "11", actionPrimaryLabel: "Last statement balance", data: "$<Data>"),
+             ListCellItemData(actionCellId: "12", actionPrimaryLabel: "Last statement APY earned", data: "<Data>%")
+         ]
+     )
+ ]
+
      
      var body: some View {
          VStack(spacing: 0) {
