@@ -345,3 +345,89 @@ extension View {
      }
  }
  */
+
+/*
+ /// `AccountSectionListView` is a SwiftUI view that displays a list of account sections.
+ /// Each section includes a header and a list of data items, styled as a card-like container.
+ struct AccountSectionListView: View {
+     
+     /// The list of account sections to display.
+     let accountSections: [AccountSectionFieldData]
+
+     /// Initializes the view with a given list of account sections.
+     /// - Parameter accountSections: The account sections to display in the list.
+     init(accountSections: [AccountSectionFieldData]) {
+         self.accountSections = accountSections
+     }
+
+     /// The body of the view.
+     var body: some View {
+         List {
+             // Loop through each section in the list of account sections.
+             ForEach(accountSections, id: \.title) { section in
+                 VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+                     // Section header displaying the title of the section.
+                     SectionHeaderView(title: section.title)
+
+                     // Card-like container for each section.
+                     ListCardContainer(
+                         hasBorder: true,
+                         isRoundedShape: true,
+                         horizontalPadding: BankingTheme.dimens.smallMedium + BankingTheme.dimens.medium,
+                         verticalPadding: BankingTheme.dimens.microSmall
+                     ) {
+                         // Loop through each data item in the section.
+                         ForEach(section.data, id: \.actionCellId) { listItem in
+                             let isDividerVisible = listItem != section.data.last
+                             ListCellItemText(
+                                 pressedBackgroundColor: BankingTheme.colors.surfaceVariant,
+                                 listCellItemData: listItem,
+                                 showDivider: isDividerVisible,
+                                 dataTextStyle: BankingTheme.typography.body,
+                                 onClick: { selectedItem in
+                                     print("Clicked on: \(selectedItem)")
+                                 }
+                             )
+                         }
+                     }
+                 }
+                 // Set padding for each section's content.
+                 .padding(.horizontal, BankingTheme.dimens.smallMedium)
+                 .padding(.vertical, BankingTheme.dimens.microSmall)
+             }
+         }
+         .listRowInsets(EdgeInsets())  // Removes extra padding around list rows.
+         .listRowSeparator(.hidden)    // Hides row separators in the list.
+         .listStyle(PlainListStyle())  // Applies a plain list style.
+     }
+ }
+
+ /// `SectionHeaderView` is a SwiftUI view that displays the title of a section in the list.
+ struct SectionHeaderView: View {
+     
+     /// The title of the section to display.
+     let title: String
+
+     /// The body of the view.
+     var body: some View {
+         HStack(alignment: .top, spacing: BankingTheme.spacing.noPadding) {
+             // Displays the section title in uppercase with styling.
+             Text(title.uppercased())
+                 .font(BankingTheme.typography.allCapsHeading.font)
+                 .foregroundColor(BankingTheme.colors.textPrimary)
+                 .frame(maxWidth: .infinity, alignment: .topLeading) // Aligns title to the top left.
+         }
+         // Set padding around the header.
+         .padding(.horizontal, BankingTheme.spacing.noPadding)
+         .padding(.top, Constants.paddingTopSectionHeaderView)
+         .padding(.bottom, BankingTheme.dimens.smallMedium)
+         .frame(maxWidth: .infinity, alignment: .topLeading)
+     }
+
+     /// Constants for the header view layout.
+     private enum Constants {
+         static let paddingTopSectionHeaderView: CGFloat = 48.0
+     }
+ }
+
+ */
