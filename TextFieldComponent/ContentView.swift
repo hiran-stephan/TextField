@@ -430,4 +430,16 @@ extension View {
      }
  }
 
+ 
+ /// A data model that represents an account section. Each section contains a title and a list of items.
+ /// The items are represented by an array of `ListCellItemData`.
+ struct AccountSectionFieldData {
+     
+     /// The title of the account section. This title is used as the header for each section.
+     let title: String
+     
+     /// The data for each section. This is an array of `ListCellItemData`, which represents the items
+     /// displayed in the section.
+     let data: [ListCellItemData]
+ }
  */
