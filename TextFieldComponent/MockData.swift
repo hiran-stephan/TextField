@@ -250,3 +250,80 @@ func configureUI(with presenter: AccountDetailsHeaderPresenter) {
     }
 }
 
+
+
+extension AccountDetailsScreen {
+    
+    private func contentView() -> some View {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
+            
+            // Render the account header if available
+            if let accountHeaderData = getAccountHeaderData() {
+                renderAccountHeaderView(accountHeaderData: accountHeaderData)
+                    .padding(.bottom, sectionMarginSm)
+            }
+            
+            // Secondary tab bar
+            SecondaryTabBar(
+                tabs: ["Account Info"],
+                selectedTabIndex: $selectedTabIndex,
+                isScrollable: false,
+                hasBorder: false,
+                isRoundedShape: true
+            )
+            
+            // Render account section view if available
+            if let accountSections = getAccountSections() {
+                AccountSectionListView(accountSections: accountSections)
+                    .padding(.horizontal, BankingTheme.dimens.medium)
+                    .padding(.top, sectionMarginSm)
+                    .padding(.bottom, sectionMarginSm)
+            } else {
+                // Placeholder view for missing sections (optional improvement)
+                Text("No account sections available.")
+                    .foregroundColor(.gray)
+                    .padding()
+            }
+        }
+    }
+    
+    // Helper function to get AccountHeaderData
+    private func getAccountHeaderData() -> AccountHeaderData? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountDetailsHeaderPresenter = viewModel.createAccountDetailsHeaderPresenter(account: $0.accountDetails)
+            
+            // Check the presenter type and return the appropriate header data
+            if let debitMappable = accountDetailsHeaderPresenter as? DebitBalanceAccountHeaderMappable {
+                return debitMappable.toDebitBalanceAccountHeaderData()
+            } else if let mappable = accountDetailsHeaderPresenter as? AccountHeaderMappable {
+                return mappable.toAccountHeaderData()
+            }
+            return nil
+        }
+    }
+    
+    // Helper function to get AccountSections
+    private func getAccountSections() -> [AccountSectionFieldData]? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountInformationPresenter = viewModel.createAccountInformationPresenter(account: $0.accountDetails)
+            return accountInformationPresenter.mapToAccountSectionsFieldData()
+        }
+    }
+    
+    // Helper function to render the appropriate header view
+    @ViewBuilder
+    private func renderAccountHeaderView(accountHeaderData: AccountHeaderData) -> some View {
+        // Check for specific account header data type and render the correct view
+        if let debitBalanceHeaderData = accountHeaderData as? DebitBalanceAccountHeaderData {
+            CardAccountHeader(accountHeaderData: debitBalanceHeaderData)
+        } else if let dataListHeaderData = accountHeaderData as? DataListAccountHeaderData {
+            DataListAccountHeader(accountHeaderData: dataListHeaderData)
+        } else {
+            // Placeholder for unknown data types (optional improvement)
+            Text("Unsupported header type.")
+                .foregroundColor(.red)
+                .padding()
+        }
+    }
+}
+
