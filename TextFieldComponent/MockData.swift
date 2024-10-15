@@ -106,26 +106,28 @@ let mockLoanAccountHeader = AccountHeaderPresenter(
 
 
 extension AccountInformationPresenter {
-    
-    // Combines the result of buildSections() and buildAccountSection() into a single list of AccountSectionFieldData
-    func mapToCombinedAccountSectionsFieldData(locale: Locale) -> [AccountSectionFieldData] {
+
+    func mapToAccountSectionsFieldData() -> [AccountSectionFieldData] {
         var combinedSections: [AccountSectionFieldData] = []
         
-        // Map multiple sections from buildSections()
-        if let accountSections = buildSections() {
-            combinedSections.append(contentsOf: accountSections.compactMap { sectionData in
-                sectionData?.toAccountSectionFieldData()  // Use the helper function
-            })
-        }
-        
-        // Map the single section from buildAccountSection() and append it to the list
-        if let accountSection = buildAccountSection() {
+        // Assuming buildAccountSection() returns an AccountSectionData object
+        if let accountSection = buildAccountSection() as? AccountSectionData {
             combinedSections.append(accountSection.toAccountSectionFieldData())
         }
+
+        // Assuming buildSections() returns a list of optional AccountSectionData
+        let buildSections = buildSections().compactMap { sectionData in
+            if let sectionData = sectionData as? AccountSectionData {
+                return sectionData.toAccountSectionFieldData()
+            }
+            return nil
+        }
+        combinedSections.append(contentsOf: buildSections)
         
         return combinedSections
     }
 }
+
 
 extension AccountSectionData {
     func toAccountSectionFieldData() -> AccountSectionFieldData {
