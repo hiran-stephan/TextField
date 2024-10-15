@@ -188,3 +188,65 @@ if let debitHeader = accountHeaderData as? DebitBalanceAccountHeaderData {
 } else if let accountHeader = accountHeaderData as? AccountHeaderData {
     // Handle AccountHeaderData
 }
+
+
+
+protocol AccountHeaderMappable {
+    func toAccountHeaderData() -> AccountHeaderData
+}
+
+protocol DebitBalanceAccountHeaderMappable: AccountHeaderMappable {
+    func toDebitBalanceAccountHeaderData() -> DebitBalanceAccountHeaderData
+}
+
+
+extension DepositAccountHeaderPresenter: DebitBalanceAccountHeaderMappable {
+    func toDebitBalanceAccountHeaderData() -> DebitBalanceAccountHeaderData {
+        return DebitBalanceAccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            availableBalanceText: availableBalanceText(),
+            formattedAvailableBalance: formatAvailableBalance(),
+            maskedAccountNumber: formatAccountNumber()
+        )
+    }
+    
+    func toAccountHeaderData() -> AccountHeaderData {
+        return AccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            dataList: dataList() ?? [:]
+        )
+    }
+}
+
+extension CertificateDepositAccountHeaderPresenter: AccountHeaderMappable {
+    func toAccountHeaderData() -> AccountHeaderData {
+        return AccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            dataList: dataList() ?? [:]
+        )
+    }
+}
+
+extension LoanAccountHeaderPresenter: AccountHeaderMappable {
+    func toAccountHeaderData() -> AccountHeaderData {
+        return AccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            dataList: dataList() ?? [:]
+        )
+    }
+}
+
+func configureUI(with presenter: AccountDetailsHeaderPresenter) {
+    if let debitMappable = presenter as? DebitBalanceAccountHeaderMappable {
+        let uiModel = debitMappable.toDebitBalanceAccountHeaderData()
+        // Use `uiModel` for DebitBalanceAccountHeaderData
+    } else if let mappable = presenter as? AccountHeaderMappable {
+        let uiModel = mappable.toAccountHeaderData()
+        // Use `uiModel` for AccountHeaderData
+    }
+}
+
