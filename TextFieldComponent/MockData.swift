@@ -153,3 +153,38 @@ extension AccountSectionData {
         )
     }
 }
+
+
+extension AccountDetailsHeaderPresenter {
+    func toAccountHeaderData() -> Any {
+        if hasCard() {
+            // Map to DebitBalanceAccountHeaderData
+            return DebitBalanceAccountHeaderData(
+                balanceLabelText: balanceLabelText(),
+                formattedBalance: formatBalance(),
+                availableBalanceLabel: "Available Balance", // Adjust based on your data structure
+                formattedAvailableBalance: formatAvailableBalance(),
+                maskedAccountNumber: formatAccountNumber()
+            )
+        } else {
+            // Map to AccountHeaderData
+            return AccountHeaderData(
+                balanceLabelText: balanceLabelText(),
+                formattedBalance: formatBalance(),
+                dataList: dataList()?.map { (key, value) in
+                    return "\(key): \(value)"
+                } ?? []
+            )
+        }
+    }
+}
+
+
+let presenter: AccountDetailsHeaderPresenter = // Get your presenter
+let accountHeaderData = presenter.toAccountHeaderData()
+
+if let debitHeader = accountHeaderData as? DebitBalanceAccountHeaderData {
+    // Handle DebitBalanceAccountHeaderData
+} else if let accountHeader = accountHeaderData as? AccountHeaderData {
+    // Handle AccountHeaderData
+}
