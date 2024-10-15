@@ -103,3 +103,51 @@ let mockLoanAccountHeader = AccountHeaderPresenter(
     ),
     accountType: .loan(loanData)
 )
+
+
+extension AccountInformationPresenter {
+    
+    // Combines the result of buildSections() and buildAccountSection() into a single list of AccountSectionFieldData
+    func mapToCombinedAccountSectionsFieldData(locale: Locale) -> [AccountSectionFieldData] {
+        var combinedSections: [AccountSectionFieldData] = []
+        
+        // Map multiple sections from buildSections()
+        if let accountSections = buildSections() {
+            combinedSections.append(contentsOf: accountSections.compactMap { sectionData in
+                sectionData?.toAccountSectionFieldData()  // Use the helper function
+            })
+        }
+        
+        // Map the single section from buildAccountSection() and append it to the list
+        if let accountSection = buildAccountSection() {
+            combinedSections.append(accountSection.toAccountSectionFieldData())
+        }
+        
+        return combinedSections
+    }
+}
+
+extension AccountSectionData {
+    func toAccountSectionFieldData() -> AccountSectionFieldData {
+        let mappedData = sectionItems.map { sectionItem in
+            ListCellItemData(
+                actionCellId: sectionItem.primaryText,
+                actionPrimaryLabel: sectionItem.primaryText,
+                actionSecondaryLabel: sectionItem.secondaryText,
+                leadingIconName: nil,
+                trailingIconName: nil,
+                leadingIconAccessibilityText: nil,
+                trailingIconAccessibilityText: nil,
+                actionCount: nil,
+                data: nil,
+                route: nil,
+                shouldToggleDataVisibility: false
+            )
+        }
+
+        return AccountSectionFieldData(
+            title: headerText,
+            data: mappedData
+        )
+    }
+}
