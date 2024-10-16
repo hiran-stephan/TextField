@@ -433,3 +433,127 @@ extension AccountSectionData {
         )
     }
 }
+
+
+/// View struct for displaying the account details screen
+public struct AccountDetailsScreen: View {
+    
+    /// The view model for managing the account details view
+    @State private var viewModel: AccountDetailsViewModel
+    
+    /// Observable model state for tracking resource and UI state
+    @ObservedObject private var model: ObservableModelState<AccountDetailsResourceUiState, AccountDetailsUiState>
+    
+    /// The currently selected tab index for the secondary tab bar
+    @State private var selectedTabIndex: Int = 0
+
+    let sectionMarginSm: CGFloat = 32.0
+
+    /// Initializes the view with the provided view model, defaulting to dependency injection via Koin.
+    public init(viewModel: AccountDetailsViewModel = KoinApplication.inject()) {
+        self.viewModel = viewModel
+        self.model = ObservableModelState(
+            resourcePublisher: asPublisher(viewModel.resourceStateWrapped),
+            statePublisher: asPublisher(viewModel.accountDetailsStateWrapped)
+        )
+    }
+
+    /// The body of the view containing the account details content and loading layout.
+    public var body: some View {
+        ResourceLoadingLayout(
+            resource: model.resource,
+            state: model.state
+        ) {
+            contentView()
+        }
+        .onAppear {
+            viewModel.attachViewModel(navigator: AccountDetailsPageNavigatorImpl())
+            viewModel.getAccountDetails()
+            viewModel.fetchAccountDetailsPageContent()
+        }
+    }
+}
+
+// MARK: - Subviews
+extension AccountDetailsScreen {
+    
+    /// ViewBuilder function to render the main content view.
+    @ViewBuilder
+    private func contentView() -> some View {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
+            // Render the account header if available
+            if let accountHeaderData = getAccountHeaderData() {
+                renderAccountHeaderView(accountHeaderData: accountHeaderData)
+                    .padding(.bottom, sectionMarginSm)
+            }
+
+            // Secondary tab bar for switching between sections
+            SecondaryTabBar(
+                tabs: ["Account Info"],
+                selectedTabIndex: $selectedTabIndex,
+                isScrollable: false,
+                hasBorder: false,
+                isRoundedShape: true
+            ) { index in
+                // Handle tab switching if needed
+            }
+
+            // Render the account sections if available
+            if let accountSections = getAccountSections() {
+                AccountSectionListView(accountSections: accountSections)
+            }
+            .padding(.horizontal, BankingTheme.dimens.medium)
+            .padding(.top, sectionMarginSm)
+            .padding(.bottom, sectionMarginSm)
+        }
+    }
+}
+
+// MARK: - Helpers
+extension AccountDetailsScreen {
+    
+    /// Helper function to retrieve the account sections.
+    ///
+    /// - Returns: An array of `AccountSectionFieldData` containing the account sections data.
+    private func getAccountSections() -> [AccountSectionFieldData]? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountInformationPresenter = viewModel.createAccountInformationPresenter(account: $0.accountDetails)
+            return accountInformationPresenter.mapToAccountSectionsFieldData()
+        }
+    }
+
+    /// Helper function to retrieve the account header data.
+    ///
+    /// - Returns: The header data for the account, if available.
+    private func getAccountHeaderData() -> Any? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountDetailsHeaderPresenter = viewModel.createAccountDetailsHeaderPresenter(account: $0.accountDetails)
+            if let depositAccountHeaderPresenter = accountDetailsHeaderPresenter as? DepositAccountHeaderPresenter {
+                return depositAccountHeaderPresenter.toDebitBalanceAccountHeaderData()
+            } else if let certificateDepositAccountHeaderPresenter = accountDetailsHeaderPresenter as? CertificateDepositAccountHeaderPresenter {
+                return certificateDepositAccountHeaderPresenter.toAccountHeaderData()
+            } else if let loanAccountHeaderPresenter = accountDetailsHeaderPresenter as? LoanAccountHeaderPresenter {
+                return loanAccountHeaderPresenter.toAccountHeaderData()
+            }
+            return nil
+        }
+    }
+}
+
+// MARK: - ViewBuilders
+extension AccountDetailsScreen {
+    
+    /// ViewBuilder function to render the appropriate account header view.
+    ///
+    /// - Parameter accountHeaderData: The data used to render the header view.
+    /// - Returns: A view displaying the account header, based on the data type.
+    @ViewBuilder
+    private func renderAccountHeaderView(accountHeaderData: Any) -> some View {
+        // Check for specific account header data type and render the correct view
+        if let debitBalanceHeaderData = accountHeaderData as? DebitBalanceAccountHeaderData {
+            CardAccountHeader(debitBalanceAccountHeaderData: debitBalanceHeaderData)
+        } else if let dataListHeaderData = accountHeaderData as? AccountHeaderData {
+            DataListAccountHeader(accountHeaderData: dataListHeaderData)
+        }
+    }
+}
