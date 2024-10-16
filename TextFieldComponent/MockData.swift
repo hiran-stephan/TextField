@@ -373,3 +373,31 @@ extension LoanAccountHeaderPresenter {
         )
     }
 }
+
+/// Extension for AccountInformationPresenter to map account sections
+extension AccountInformationPresenter {
+    
+    /// Maps the account sections to `AccountSectionFieldData`
+    ///
+    /// - Returns: An array of `AccountSectionFieldData` representing the combined sections of the account information.
+    func mapToAccountSectionsFieldData() -> [AccountSectionFieldData] {
+        var combinedSections: [AccountSectionFieldData] = []
+        
+        // Build and append the primary account section
+        let accountSection = buildAccountSection()
+        combinedSections.append(accountSection.toAccountSectionFieldData())
+        
+        // Build additional sections and map them to AccountSectionFieldData
+        let buildSections = buildSections().compactMap { sectionData in
+            if let sectionData = sectionData as? AccountSectionData {
+                return sectionData.toAccountSectionFieldData()
+            }
+            return nil
+        }
+        
+        // Append all the built sections to combinedSections
+        combinedSections.append(contentsOf: buildSections)
+        
+        return combinedSections
+    }
+}
