@@ -557,3 +557,59 @@ extension AccountDetailsScreen {
         }
     }
 }
+
+
+struct AccountInformation: View {
+    let tabs: [String]
+    let presenter: AccountInformationPresenter
+
+    // Currently selected tab index for the secondary tab bar
+    @State private var selectedTabIndex: Int = 0
+    // State to hold the section list data
+    @State private var accountSectionList: [ListCellItemData] = []
+
+    var body: some View {
+        VStack {
+            // Secondary tab bar for switching between sections
+            SecondaryTabBar(
+                tabs: tabs,
+                selectedTabIndex: $selectedTabIndex,
+                isScrollable: false,
+                hasBorder: false,
+                isRoundedShape: true
+            ) { index in
+                // Handle tab switching if needed
+            }
+
+            // Check if the account section is available
+            if let accountSection = presenter.mapToAccountSection() {
+                SectionDetails(
+                    header: accountSection.title,
+                    // Use the state variable `accountSectionList` to display the updated list
+                    sectionData: accountSectionList.isEmpty ? accountSection.data : accountSectionList,
+                    onClick: { primaryText in
+                        handleOnClick(primaryText: primaryText)
+                    }
+                )
+            }
+        }
+        .onAppear {
+            // Initialize accountSectionList with the default data
+            if let accountSection = presenter.mapToAccountSection() {
+                accountSectionList = accountSection.data
+            }
+        }
+    }
+
+    /// Function to handle the onClick action similar to the Kotlin code
+    private func handleOnClick(primaryText: String) {
+        if let depositAccountPresenter = presenter as? DepositAccountInformationPresenter {
+            // Update the account section list based on the onClick event
+            accountSectionList = depositAccountPresenter.toggleMaskStateAccountDetails(
+                primaryText: primaryText,
+                currentList: accountSectionList
+            )
+        }
+        // Add any other specific logic as required for other presenter types
+    }
+}
