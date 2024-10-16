@@ -401,3 +401,35 @@ extension AccountInformationPresenter {
         return combinedSections
     }
 }
+
+/// Extension for AccountSectionData to map its data to AccountSectionFieldData
+extension AccountSectionData {
+    
+    /// Maps the section items to `AccountSectionFieldData`
+    ///
+    /// - Returns: An `AccountSectionFieldData` object containing the title and mapped data for each section item.
+    func toAccountSectionFieldData() -> AccountSectionFieldData {
+        // Map section items to ListCellItemData
+        let mappedData = sectionItems.map { sectionItem in
+            ListCellItemData(
+                actionCellId: sectionItem.primaryText,
+                actionPrimaryLabel: sectionItem.primaryText,
+                actionSecondaryLabel: nil,
+                leadingIconName: nil,
+                trailingIconName: sectionItem.primaryText == "Account number" || sectionItem.primaryText == "ABA routing number" ? ComponentConstants.Images.passwordShownIcon : nil,
+                leadingIconAccessibilityText: nil,
+                trailingIconAccessibilityText: nil,
+                actionCount: nil,
+                data: sectionItem.secondaryText,
+                role: nil,
+                shouldToggleDataVisibility: sectionItem.primaryText == "Account number" || sectionItem.primaryText == "ABA routing number" ? true : false
+            )
+        }
+        
+        // Return AccountSectionFieldData with the mapped data and header text
+        return AccountSectionFieldData(
+            title: headerText,
+            data: mappedData
+        )
+    }
+}
