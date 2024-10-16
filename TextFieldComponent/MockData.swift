@@ -656,3 +656,77 @@ extension AccountSectionItemData {
         }
     }
 }
+
+
+/// View struct for displaying section details, including a list of items and their actions
+struct SectionDetails: View {
+    let header: String // The header/title of the section
+    let sectionData: [ListCellItemData] // The data for each item in the section
+    let onClick: (String) -> Void // The action to be performed when an item is clicked
+
+    /// Initializes the view with the given header, section data, and onClick action
+    init(
+        header: String,
+        sectionData: [ListCellItemData],
+        onClick: @escaping (String) -> Void = { _ in }
+    ) {
+        self.header = header
+        self.sectionData = sectionData
+        self.onClick = onClick
+    }
+
+    /// The body of the view, displaying the section header and its items
+    var body: some View {
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+            // Section header displaying the title of the section
+            SectionHeaderView(title: header)
+
+            // Card-like container for each section
+            ListCardContainer(
+                hasBorder: true,
+                isRoundedShape: true,
+                horizontalPadding: BankingTheme.dimens.smallMedium + BankingTheme.dimens.medium,
+                verticalPadding: BankingTheme.dimens.microSmall
+            ) {
+                // Loop through each data item in the section
+                ForEach(sectionData, id: \.actionCellId) { listItem in
+                    let isDividerVisible = listItem != sectionData.last
+                    ListCellItemText(
+                        pressedBackgroundColor: BankingTheme.colors.surfaceVariant,
+                        listCellItemData: listItem,
+                        showDivider: isDividerVisible,
+                        dataTextStyle: BankingTheme.typography.body,
+                        onClick: { selectedItem in
+                            // Call the onClick action when an item is clicked
+                            onClick(selectedItem.actionPrimaryLabel)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+/// ViewBuilder function to display a section header
+///
+/// - Parameter title: The title of the section
+@ViewBuilder
+private func SectionHeaderView(title: String) -> some View {
+    HStack(alignment: .top, spacing: BankingTheme.spacing.noPadding) {
+        // Uppercase title with custom styling
+        Text(title.uppercased())
+            .font(BankingTheme.typography.allCapsHeading.font)
+            .foregroundColor(BankingTheme.colors.textPrimary)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+    // Set padding around the header
+    .padding(.horizontal, BankingTheme.spacing.noPadding)
+    .padding(.top, Constants.paddingLg)
+    .padding(.bottom, BankingTheme.dimens.smallMedium)
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+}
+
+// Constants for the header view layout
+private enum Constants {
+    static let paddingLg: CGFloat = 32.0
+}
