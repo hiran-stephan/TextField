@@ -613,3 +613,26 @@ struct AccountInformation: View {
         // Add any other specific logic as required for other presenter types
     }
 }
+
+
+// Extension for AccountSectionItemData for mapping functionality
+extension AccountSectionItemData {
+    
+    /// Maps an array of `AccountSectionItemData` to an array of `ListCellItemData`
+    ///
+    /// - Parameter items: The array of `AccountSectionItemData` to be mapped
+    /// - Returns: An array of `ListCellItemData`, or an empty array if no data is present
+    static func toListCellItemDataList(from items: [AccountSectionItemData]) -> [ListCellItemData] {
+        return items.map { sectionItem in
+            ListCellItemData(
+                actionCellId: sectionItem.primaryText,
+                actionPrimaryLabel: sectionItem.primaryText,
+                actionSecondaryLabel: sectionItem.secondaryText,
+                trailingIconName: sectionItem.showIcon ?
+                    (sectionItem.isMasked ? ComponentConstants.Images.passwordHiddenIcon : ComponentConstants.Images.passwordShownIcon)
+                    : nil,
+                data: sectionItem.secondaryText
+            )
+        }
+    }
+}
