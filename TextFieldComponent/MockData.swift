@@ -327,3 +327,49 @@ extension AccountDetailsScreen {
     }
 }
 
+/// Extension for DepositAccountHeaderPresenter to handle Debit Balance Account Header Data
+extension DepositAccountHeaderPresenter {
+    
+    /// Converts the current presenter data to `DebitBalanceAccountHeaderData`
+    ///
+    /// - Returns: A `DebitBalanceAccountHeaderData` object containing formatted balance, available balance, and masked account number.
+    func toDebitBalanceAccountHeaderData() -> DebitBalanceAccountHeaderData {
+        return DebitBalanceAccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            availableBalanceText: availableBalanceText(),
+            formattedAvailableBalance: formatAvailableBalance(),
+            maskedAccountNumber: formatAccountNumber()
+        )
+    }
+}
+
+/// Extension for CertificateDepositAccountHeaderPresenter to handle Certificate Deposit Account Header Data
+extension CertificateDepositAccountHeaderPresenter {
+    
+    /// Converts the current presenter data to `AccountHeaderData`
+    ///
+    /// - Returns: An `AccountHeaderData` object containing formatted balance and a list of data items.
+    func toAccountHeaderData() -> AccountHeaderData {
+        return AccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            dataList: dataList()
+        )
+    }
+}
+
+/// Extension for LoanAccountHeaderPresenter to handle Loan Account Header Data
+extension LoanAccountHeaderPresenter {
+    
+    /// Converts the current presenter data to `AccountHeaderData`
+    ///
+    /// - Returns: An `AccountHeaderData` object containing formatted balance and a list of data items.
+    func toAccountHeaderData() -> AccountHeaderData {
+        return AccountHeaderData(
+            balanceLabelText: balanceLabelText(),
+            formattedBalance: formatBalance(),
+            dataList: dataList()
+        )
+    }
+}
