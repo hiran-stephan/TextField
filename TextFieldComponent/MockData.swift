@@ -730,3 +730,67 @@ private func SectionHeaderView(title: String) -> some View {
 private enum Constants {
     static let paddingLg: CGFloat = 32.0
 }
+
+
+// MARK: - Helpers
+extension AccountDetailsScreen {
+
+    /// Creates an instance of `AccountInformationPresenter` if available
+    ///
+    /// - Returns: An optional `AccountInformationPresenter`
+    private func createAccountInformationPresenter() -> AccountInformationPresenter? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountInformationPresenter = viewModel.createAccountInformationPresenter(account: $0.accountDetails)
+            return accountInformationPresenter
+        }
+    }
+
+    /// Creates an instance of `AccountDetailsPresenter` if available
+    ///
+    /// - Returns: An optional `AccountDetailsPresenter`
+    private func createAccountDetailsPresenter() -> AccountDetailsPresenter? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountDetailsPresenter = viewModel.createAccountDetailsPresenter(account: $0.accountDetails)
+            return accountDetailsPresenter
+        }
+    }
+
+    /// Creates an instance of `AccountDetailsHeaderPresenter` if available
+    ///
+    /// - Returns: An optional `AccountDetailsHeaderPresenter`
+    private func createAccountDetailsHeaderPresenter() -> AccountDetailsHeaderPresenter? {
+        return model.state?.accountDetailsData.flatMap {
+            let accountDetailsHeaderPresenter = viewModel.createAccountDetailsHeaderPresenter(account: $0.accountDetails)
+            return accountDetailsHeaderPresenter
+        }
+    }
+}
+
+
+// MARK: - ViewBuilders
+extension AccountDetailsScreen {
+
+    /// A ViewBuilder function that renders the appropriate account header based on the presenter type
+    ///
+    /// - Parameter presenter: The presenter used to generate the account header view
+    /// - Returns: A view displaying the account header for the appropriate account type
+    @ViewBuilder
+    private func AccountDetailsHeader(presenter: AccountDetailsHeaderPresenter) -> some View {
+        // If the presenter is for a deposit account, render the card account header
+        if let depositAccountHeaderPresenter = presenter as? DepositAccountHeaderPresenter {
+            CardAccountHeader(
+                debitBalanceAccountHeaderData: depositAccountHeaderPresenter.toDebitBalanceAccountHeaderData()
+            )
+        // If the presenter is for a certificate deposit account, render the data list account header
+        } else if let certificateDepositAccountHeaderPresenter = presenter as? CertificateDepositAccountHeaderPresenter {
+            DataListAccountHeader(
+                accountHeaderData: certificateDepositAccountHeaderPresenter.toAccountHeaderData()
+            )
+        // If the presenter is for a loan account, render the data list account header
+        } else if let loanAccountHeaderPresenter = presenter as? LoanAccountHeaderPresenter {
+            DataListAccountHeader(
+                accountHeaderData: loanAccountHeaderPresenter.toAccountHeaderData()
+            )
+        }
+    }
+}
