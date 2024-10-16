@@ -559,17 +559,26 @@ extension AccountDetailsScreen {
 }
 
 
+/// View struct for displaying account information and managing section details
 struct AccountInformation: View {
-    let tabs: [String]
-    let presenter: AccountInformationPresenter
+    let tabs: [String] // The tabs for the secondary tab bar
+    let presenter: AccountInformationPresenter // Presenter managing account information
 
-    // Currently selected tab index for the secondary tab bar
+    /// State to track the currently selected tab in the tab bar
     @State private var selectedTabIndex: Int = 0
-    // State to hold the section list data
-    @State private var accountSectionList: [ListCellItemData] = []
 
+    /// State to hold the list of account section items
+    @State private var accountSectionList: [AccountSectionItemData] = []
+
+    /// Initializes the view with the given tabs and presenter
+    init(tabs: [String], presenter: AccountInformationPresenter) {
+        self.tabs = tabs
+        self.presenter = presenter
+    }
+
+    /// The body of the view containing the tab bar and account sections
     var body: some View {
-        VStack {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
             // Secondary tab bar for switching between sections
             SecondaryTabBar(
                 tabs: tabs,
@@ -581,36 +590,47 @@ struct AccountInformation: View {
                 // Handle tab switching if needed
             }
 
-            // Check if the account section is available
+            // If the account section is available, render the section details
             if let accountSection = presenter.mapToAccountSection() {
                 SectionDetails(
                     header: accountSection.title,
-                    // Use the state variable `accountSectionList` to display the updated list
-                    sectionData: accountSectionList.isEmpty ? accountSection.data : accountSectionList,
+                    sectionData: accountSectionList.isEmpty ? accountSection.data : AccountSectionItemData.toListCellItemDataList(from: accountSectionList),
                     onClick: { primaryText in
                         handleOnClick(primaryText: primaryText)
                     }
                 )
             }
-        }
-        .onAppear {
-            // Initialize accountSectionList with the default data
-            if let accountSection = presenter.mapToAccountSection() {
-                accountSectionList = accountSection.data
+
+            // Build and render any additional sections
+            let buildSections = presenter.mapToBuildSections()
+            ForEach(buildSections, id: \.title) { buildSection in
+                SectionDetails(
+                    header: buildSection.title,
+                    sectionData: buildSection.data
+                )
             }
         }
+        .onAppear {
+            // Set the account section list when the view appears
+            accountSectionList = presenter.buildAccountSection().sectionItems
+        }
     }
+}
 
-    /// Function to handle the onClick action similar to the Kotlin code
+// MARK: - Helpers
+extension AccountInformation {
+    
+    /// Handles the onClick action for a section item
+    ///
+    /// - Parameter primaryText: The primary text of the clicked section item
     private func handleOnClick(primaryText: String) {
+        // Update accountSectionList based on the presenter's toggle state
         if let depositAccountPresenter = presenter as? DepositAccountInformationPresenter {
-            // Update the account section list based on the onClick event
             accountSectionList = depositAccountPresenter.toggleMaskStateAccountDetails(
                 primaryText: primaryText,
-                currentList: accountSectionList
-            )
+                data: accountSectionList
+            ) ?? []
         }
-        // Add any other specific logic as required for other presenter types
     }
 }
 
