@@ -846,3 +846,15 @@ enum AlertType {
     }
 }
 
+
+enum AlertType: String {
+    case none = "None"
+    case someType = "SomeType"
+    case warning = "Warning"
+    case error = "Error"
+    case success = "Success"
+
+    static func find(formatGlobalAlertType: String) -> AlertType {
+        return AlertType(rawValue: formatGlobalAlertType) ?? .none
+    }
+}
