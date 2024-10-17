@@ -953,3 +953,11 @@ struct AccountDetailsScene_Previews: PreviewProvider {
         AccountDetailsScene()
     }
 }
+
+
+// Function to load the account details and update the title
+private func loadAccountDetails() {
+    if let accountDetailsPresenter = createAccountDetailsPresenter() {
+        titleMasthead = accountDetailsPresenter.formatTitle()
+    }
+}
