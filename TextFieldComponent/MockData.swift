@@ -894,3 +894,62 @@ private func GlobalAlertSection(presenter: AccountDetailsPresenter) -> some View
         )
     }
 }
+
+
+import SwiftUI
+
+struct AccountDetailsScene: View {
+    // Define a @State variable for the title
+    @State private var title: String = "Deposit Account"  // Initial value
+
+    var body: some View {
+        ZStack {
+            VStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
+                // Masthead for the account details
+                MastheadRegularView(
+                    title: title,  // Use the dynamic title
+                    subtitle: "123456",
+                    leftIconName: ComponentConstants.Images.backButton,
+                    upperView: MastheadFdicView(
+                        title: "fdic_title".localized
+                    ),
+                    leftAction: {
+                        // TODO: Add back action
+                    }
+                )
+                
+                Spacer()
+
+                // AccountDetailsScreen passes the title back to update it
+                AccountDetailsScreen(updateTitle: { newTitle in
+                    self.title = newTitle
+                })
+            }
+        }
+    }
+}
+
+// Assume AccountDetailsScreen has the ability to update the title
+struct AccountDetailsScreen: View {
+    var updateTitle: (String) -> Void
+
+    var body: some View {
+        VStack {
+            // Simulate changing the title after some event (e.g., API call, user action)
+            Button(action: {
+                // Update the title through the callback
+                updateTitle("Updated Title from AccountDetailsScreen")
+            }) {
+                Text("Change Title")
+            }
+            .padding()
+        }
+    }
+}
+
+// Preview
+struct AccountDetailsScene_Previews: PreviewProvider {
+    static var previews: some View {
+        AccountDetailsScene()
+    }
+}
