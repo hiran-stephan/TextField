@@ -854,7 +854,17 @@ enum AlertType: String {
     case error = "Error"
     case success = "Success"
 
+    
+    
+    
+    private static let alertTypeMapping: [String: AlertType] = [
+        "SomeType": .someType,
+        "Warning": .warning,
+        "Error": .error,
+        "Success": .success
+    ]
+    
     static func find(formatGlobalAlertType: String) -> AlertType {
-        return AlertType(rawValue: formatGlobalAlertType) ?? .none
+        return alertTypeMapping[formatGlobalAlertType] ?? .none
     }
 }
