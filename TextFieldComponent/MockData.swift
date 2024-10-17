@@ -868,3 +868,29 @@ enum AlertType: String {
         return alertTypeMapping[formatGlobalAlertType] ?? .none
     }
 }
+
+/// Displays a global alert section based on the presenter's alert information.
+///
+/// This function checks the presenter's alert type and, if the alert type is not `.none`,
+/// it renders the `AlertGlobal` view with relevant alert data.
+///
+/// - Parameter presenter: An instance of `AccountDetailsPresenter` which contains the
+///   global alert information.
+///
+/// - Returns: A `View` that represents the global alert UI, or an empty view if no alert is present.
+@ViewBuilder
+private func GlobalAlertSection(presenter: AccountDetailsPresenter) -> some View {
+    let alertType = AlertType.find(key: presenter.formatGlobalAlertType())
+    
+    if alertType != .none {
+        AlertGlobal(
+            alertType: alertType,
+            alertGlobalData: AlertGlobalData(
+                alertType: alertType,
+                alertMessage: presenter.formatGlobalAlert(),
+                actionString: presenter.formatTitle(),
+                resultText: presenter.formatErrorForGlobalAlertCode()
+            )
+        )
+    }
+}
