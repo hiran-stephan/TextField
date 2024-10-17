@@ -794,3 +794,55 @@ extension AccountDetailsScreen {
         }
     }
 }
+
+
+import SwiftUI
+
+struct GlobalAlertSection: View {
+    let accountDetailsPresenter: AccountDetailsPresenter?
+
+    var body: some View {
+        if let presenter = accountDetailsPresenter {
+            let alertType = AlertType.find(formatGlobalAlertType: presenter.formatGlobalAlertType())
+            if alertType != .none {
+                AlertGlobal(alertGlobalData: AlertGlobalData(
+                    alertType: alertType,
+                    alertMessage: presenter.formatGlobalAlert(),
+                    resultText: presenter.formatErrorForGlobalAlertCode()
+                ))
+            }
+        }
+    }
+}
+
+struct AlertGlobal: View {
+    let alertGlobalData: AlertGlobalData
+
+    var body: some View {
+        VStack {
+            Text(alertGlobalData.alertMessage)
+            Text(alertGlobalData.resultText)
+        }
+    }
+}
+
+struct AlertGlobalData {
+    let alertType: AlertType
+    let alertMessage: String
+    let resultText: String
+}
+
+enum AlertType {
+    case none
+    case someType
+
+    static func find(formatGlobalAlertType: String) -> AlertType {
+        // Define your logic for determining the alert type here
+        // For now, a placeholder example is provided:
+        if formatGlobalAlertType == "SomeType" {
+            return .someType
+        }
+        return .none
+    }
+}
+
