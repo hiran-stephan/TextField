@@ -33,16 +33,8 @@ struct AppNavigation: View {
     }
     
     private var isHomeNavigation: Bool {
-        // Access the path array through the published property wrapper
-        if let firstPathItem = navigator.path.first {
-            return firstPathItem.domain == HomeNavigationItems.Companion.shared.DOMAIN
-        }
-        return false
-    }
-    
-    private var isHomeNavigation: Bool {
-        // Access the path array through the published property wrapper
-        if let firstPathItem = $navigator.path.first {
+        let currentPath = navigator.path // Directly access the current path
+        if let firstPathItem = currentPath.first {
             return firstPathItem.domain == HomeNavigationItems.Companion.shared.DOMAIN
         }
         return false
