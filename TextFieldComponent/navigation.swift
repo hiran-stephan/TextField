@@ -33,9 +33,11 @@ struct AppNavigation: View {
     }
     
     private var isHomeNavigation: Bool {
-        // Ensure the path contains at least one item
-        if let firstPathItem = navigator.path.items.first {
-            return firstPathItem.domain == HomeNavigationItems.Companion.shared.DOMAIN
+        // Check if the path is not empty and attempt to access the first item
+        if !navigator.path.isEmpty {
+            if let firstPathItem = (navigator.path.box as? NavigationPathBackport)?.items.first {
+                return firstPathItem.domain == HomeNavigationItems.Companion.shared.DOMAIN
+            }
         }
         return false
     }
