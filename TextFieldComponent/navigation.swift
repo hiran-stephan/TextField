@@ -33,7 +33,11 @@ struct AppNavigation: View {
     }
     
     private var isHomeNavigation: Bool {
-        return navigator.path.first?.domain == HomeNavigationItems.Companion.shared.DOMAIN
+        // Access the path array directly and check the domain of the first item
+        if let firstPathItem = navigator.path.first {
+            return firstPathItem.domain == HomeNavigationItems.Companion.shared.DOMAIN
+        }
+        return false
     }
     
     func makeScreen(selectedPath: NavigationItem) -> AnyView {
