@@ -50,6 +50,7 @@
 		3B647CCE2CB44312007D837D /* TabBarScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC62CB44312007D837D /* TabBarScrollable.swift */; };
 		3B647CD02CB5CCA0007D837D /* QA Specialist - CIBC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */; };
 		3B647CD22CB82C2B007D837D /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CD12CB82C2B007D837D /* MockData.swift */; };
+		3B647CD42CCA7D4B007D837D /* navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CD32CCA7D4B007D837D /* navigation.swift */; };
 		3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9602C89F7C30058896A /* PlaceholderView.swift */; };
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
@@ -128,6 +129,7 @@
 		3B647CC62CB44312007D837D /* TabBarScrollable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarScrollable.swift; sourceTree = "<group>"; };
 		3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "QA Specialist - CIBC.pdf"; sourceTree = "<group>"; };
 		3B647CD12CB82C2B007D837D /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		3B647CD32CCA7D4B007D837D /* navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = navigation.swift; sourceTree = "<group>"; };
 		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */,
 				3B647BEB2CACB57A007D837D /* ListCellItemView.swift */,
 				3B647CD12CB82C2B007D837D /* MockData.swift */,
+				3B647CD32CCA7D4B007D837D /* navigation.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -469,6 +472,7 @@
 				3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */,
 				3B647CCD2CB44312007D837D /* TabBarFixed.swift in Sources */,
 				3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */,
+				3B647CD42CCA7D4B007D837D /* navigation.swift in Sources */,
 				3B647C5C2CB09A53007D837D /* ComponentImage.swift in Sources */,
 				3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */,
 				3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */,
