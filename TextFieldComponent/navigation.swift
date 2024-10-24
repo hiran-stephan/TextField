@@ -14,7 +14,10 @@ struct AppNavigation: View {
         ZStack {
             NavigationStackBackport.NavigationStack(path: $navigator.path) {
                 if isHomeNavigation {
-                    makeBottomNavTabBarView(createTabScreen: makeScreen(selectedPath:))
+                    makeBottomNavTabBarView(createTabScreen: { tab in
+                        // Use the correct closure expected by makeBottomNavTabBarView
+                        AnyView(HomeNavigation(item: HomeNavigationItems.Main.shared))
+                    })
                 } else {
                     SplashScene()
                         .backport.navigationDestination(for: NavigationItem.self) { value in
@@ -30,7 +33,6 @@ struct AppNavigation: View {
     }
     
     private var isHomeNavigation: Bool {
-        // Check if the first item in navigator path is related to HomeNavigation
         return navigator.path.first?.domain == HomeNavigationItems.Companion.shared.DOMAIN
     }
     
@@ -49,3 +51,4 @@ struct AppNavigation: View {
         }
     }
 }
+
