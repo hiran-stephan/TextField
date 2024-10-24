@@ -39,6 +39,7 @@ struct AppNavigation: View {
         }
         return false
     }
+
     
     func makeScreen(selectedPath: NavigationItem) -> AnyView {
         switch selectedPath.domain {
