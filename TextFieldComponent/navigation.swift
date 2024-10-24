@@ -33,8 +33,8 @@ struct AppNavigation: View {
     }
     
     private var isHomeNavigation: Bool {
-        let currentPath = navigator.path // Directly access the current path
-        if let firstPathItem = currentPath.first {
+        // Ensure the path contains at least one item
+        if let firstPathItem = navigator.path.items.first {
             return firstPathItem.domain == HomeNavigationItems.Companion.shared.DOMAIN
         }
         return false
