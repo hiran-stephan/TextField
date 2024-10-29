@@ -126,3 +126,34 @@ private extension SectionDetailsView {
             .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
+
+
+
+// Define the style with the required padding values
+let style = SectionDetailsStyle(
+    paddingTop: BankingTheme.spacing.noPadding,
+    horizontalContainerPadding: BankingTheme.dimensions.medium,
+    verticalContainerPadding: BankingTheme.dimensions.medium,
+    trailingListIconPadding: BankingTheme.spacing.noPadding,
+    leadingListIconPadding: BankingTheme.dimensions.small,
+    horizontalListSpacing: BankingTheme.dimensions.smallMedium
+)
+
+// Use the style in SectionDetailsView
+SectionDetailsView(
+    header: presenter.verificationHeader,
+    sectionData: [
+        ListCellItemData(
+            actionCellId: presenter.biometricTitle,
+            actionPrimaryLabel: presenter.biometricTitle,
+            actionSecondaryLabel: presenter.biometricDescription,
+            leadingIconName: ComponentConstants.Images.faceId,
+            trailingIconName: ComponentConstants.Images.chevron,
+            data: presenter.biometricStatus
+        )
+    ],
+    style: style, // Pass the style object here
+    onClick: { primaryText in
+        // Handle the onClick action
+    }
+)
