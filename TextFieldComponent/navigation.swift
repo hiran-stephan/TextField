@@ -102,3 +102,61 @@ struct ContentView: View {
         )
     }
 }
+
+
+struct TabContentView: View {
+    let selectedTab: NavigationItem
+    let tabData: [BottomNavTabData]
+    
+    var body: some View {
+        ForEach(tabData, id: \.tabTag.domain) { tab in
+            if tab.tabTag == selectedTab {
+                tab.content
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+    }
+}
+
+struct CustomTabBarController: View {
+    // State to track the selected tab
+    @State private var selectedTab: NavigationItem
+    
+    // Array of tab data to configure each tab
+    private let tabData: [BottomNavTabData]
+    
+    init(tabData: [BottomNavTabData], initialTab: NavigationItem) {
+        self.tabData = tabData
+        self._selectedTab = State(initialValue: initialTab)
+    }
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            // Display the selected tab content
+            TabContentView(selectedTab: selectedTab, tabData: tabData)
+            
+            // Custom tab bar overlay at the bottom
+            CustomTabBarView(selectedTab: $selectedTab, tabData: tabData)
+        }
+        .ignoresSafeArea(edges: .bottom) // Make the tab bar stick to the bottom
+    }
+}
+
+
+import SwiftUI
+
+struct NavigationItem: Hashable {
+    let domain: String
+}
+
+struct BottomNavTabData {
+    let tabItemIcon: TableItemIconData
+    let tabItemText: String
+    let tabTag: NavigationItem
+    let content: AnyView // Use `AnyView` to allow dynamic content types
+}
+
+struct TableItemIconData {
+    let imageName: String
+    let imageNameUnfilled: String
+}
