@@ -160,3 +160,63 @@ struct TableItemIconData {
     let imageName: String
     let imageNameUnfilled: String
 }
+
+
+import SwiftUI
+
+struct AppNavigation: View {
+    @EnvironmentObject private var appDelegate: MainAppDelegate
+    @EnvironmentObject private var viewModel: AppStateViewModel
+    @EnvironmentObject private var navigator: Navigator
+
+    var body: some View {
+        ZStack {
+            // Main navigation stack for the app
+            NavigationStack(path: $navigator.path) {
+                SplashScene() // Show initial splash or loading screen
+                
+                .navigationDestination(for: NavigationItem.self) { value in
+                    if let featureRouter = getRouter(for: value.domain),
+                       featureRouter.hasBottomNavigation {
+                        // Use BottomNavigationLayout if the feature requires bottom navigation
+                        BottomNavigationLayout(
+                            currentDomain: value.domain,
+                            navigateToDeeplink: { featureRouter.navigateTo($0) },
+                            bottomNavigationBarItems: featureRouter.bottomNavigationBarItems
+                        )
+                    } else {
+                        // Directly show the screen for the selected path
+                        makeScreen(selectedPath: value)
+                    }
+                }
+            }
+            .displaySessionExtensionDialog(viewModel: appDelegate.viewModel) // Custom dialog, if needed
+
+            // Display a loading view overlay if loading
+            if !viewModel.loading.isEmpty {
+                LoadingView()
+            }
+        }
+    }
+
+    // Helper method to retrieve the appropriate router for the specified domain
+    private func getRouter(for domain: String) -> FeatureRouter? {
+        return KoinApplication.findRouter(domain: "
+
+
+    import SwiftUI
+
+// MARK: - BottomNavigationLayout Component
+struct BottomNavigationLayout: View {
+    let currentDomain: String
+    let navigateToDeeplink: (NavigationItem) -> Void
+    let bottomNavigationBarItems: [BottomNavTabData]
+
+    var body: some View {
+        CustomTabBarController(
+            tabData: bottomNavigationBarItems,
+            initialTab: bottomNavigationBarItems.first?.tabTag ?? NavigationItem(domain: currentDomain)
+        )
+    }
+}
+                                          
