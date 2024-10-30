@@ -1,159 +1,104 @@
-import Foundation
-import SwiftUI
-import Theme
-import Koin
-import Umbrella
+struct AppNavigation: View {
+    @EnvironmentObject private var appDelegate: MainAppDelegate
+    @EnvironmentObject private var viewModel: AppStateViewModel
+    @EnvironmentObject private var navigator: Navigator
 
-/// A style struct to encapsulate padding and spacing options for `SectionDetailsView`
-public struct SectionDetailsStyle {
-    /// Top padding for the section header
-    let paddingTop: CGFloat?
-    /// Horizontal padding for the container around section items
-    let horizontalContainerPadding: CGFloat?
-    /// Vertical padding for the container around section items
-    let verticalContainerPadding: CGFloat?
-    /// Padding applied to the trailing icon within each list item
-    let trailingListIconPadding: CGFloat?
-    /// Padding applied to the leading icon within each list item
-    let leadingListIconPadding: CGFloat?
-    /// Horizontal spacing between elements in each list item
-    let horizontalListSpacing: CGFloat?
-
-    /// Initializes a new instance of `SectionDetailsStyle`
-    /// - Parameters:
-    ///   - paddingTop: Top padding for the section header
-    ///   - horizontalContainerPadding: Horizontal padding for the section container
-    ///   - verticalContainerPadding: Vertical padding for the section container
-    ///   - trailingListIconPadding: Padding for the trailing icon within list items
-    ///   - leadingListIconPadding: Padding for the leading icon within list items
-    ///   - horizontalListSpacing: Spacing between elements in each list item
-    public init(
-        paddingTop: CGFloat? = nil,
-        horizontalContainerPadding: CGFloat? = nil,
-        verticalContainerPadding: CGFloat? = nil,
-        trailingListIconPadding: CGFloat? = nil,
-        leadingListIconPadding: CGFloat? = nil,
-        horizontalListSpacing: CGFloat? = nil
-    ) {
-        self.paddingTop = paddingTop
-        self.horizontalContainerPadding = horizontalContainerPadding
-        self.verticalContainerPadding = verticalContainerPadding
-        self.trailingListIconPadding = trailingListIconPadding
-        self.leadingListIconPadding = leadingListIconPadding
-        self.horizontalListSpacing = horizontalListSpacing
-    }
-}
-
-/// A view for displaying section details, including a header and a list of items with actions
-public struct SectionDetailsView: View {
-    // MARK: - Properties
-    
-    /// Title or header of the section
-    let header: String
-    /// Data for each item in the section
-    let sectionData: [ListCellItemData]
-    /// Closure that handles the item click event, passing the action label
-    let onClick: (String) -> Void
-    /// Style configuration for padding and spacing in the view
-    let style: SectionDetailsStyle
-
-    // MARK: - Initializer
-    
-    /// Initializes a new instance of `SectionDetailsView`
-    /// - Parameters:
-    ///   - header: Title of the section
-    ///   - sectionData: List of items to display in the section
-    ///   - style: Style configuration for padding and spacing (default: `SectionDetailsStyle()`)
-    ///   - onClick: Closure to handle item click events
-    public init(
-        header: String,
-        sectionData: [ListCellItemData],
-        style: SectionDetailsStyle = SectionDetailsStyle(),
-        onClick: @escaping (String) -> Void
-    ) {
-        self.header = header
-        self.sectionData = sectionData
-        self.style = style
-        self.onClick = onClick
-    }
-    
-    // MARK: - Body
-    
-    /// The body of the `SectionDetailsView`
-    public var body: some View {
-        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            SectionHeaderView(title: header, paddingTop: style.paddingTop)
-            
-            ListCardContainer(
-                hasBorder: true,
-                isRoundedShape: true,
-                horizontalPadding: style.horizontalContainerPadding,
-                verticalPadding: style.verticalContainerPadding
-            ) {
-                ForEach(sectionData, id: \.actionCellId) { listItem in
-                    let isDividerVisible = listItem != sectionData.last
-                    ListCellItemText(
-                        listCellItemData: listItem,
-                        showDivider: isDividerVisible,
-                        dataTextStyle: BankingTheme.typography.body,
-                        trailingIconPadding: style.trailingListIconPadding,
-                        leadingIconPadding: style.leadingListIconPadding,
-                        horizontalSpacing: style.horizontalListSpacing,
-                        onClick: { selectedItem in
-                            onClick(selectedItem.actionPrimaryLabel)
-                        }
+    var body: some View {
+        ZStack {
+            // Define your tab items here for the CustomTabBarController
+            CustomTabBarController(
+                tabData: [
+                    BottomNavTabData(
+                        tabItemIcon: TableItemIconData(imageName: "house.fill", imageNameUnfilled: "house"),
+                        tabItemText: "Home",
+                        tabTag: NavigationItem(domain: "home"),
+                        content: AnyView(makeScreen(selectedPath: NavigationItem(domain: "home")))
+                    ),
+                    BottomNavTabData(
+                        tabItemIcon: TableItemIconData(imageName: "gearshape.fill", imageNameUnfilled: "gearshape"),
+                        tabItemText: "Settings",
+                        tabTag: NavigationItem(domain: "settings"),
+                        content: AnyView(makeScreen(selectedPath: NavigationItem(domain: "settings")))
                     )
-                }
+                    // Add more tabs as needed
+                ],
+                initialTab: NavigationItem(domain: "home")
+            )
+            .displaySessionExtensionDialog(viewModel: appDelegate.viewModel) // Custom modifier if needed
+            
+            if !viewModel.loading.isEmpty {
+                LoadingView()
             }
         }
-        .padding(.horizontal, style.horizontalContainerPadding ?? BankingTheme.spacing.noPadding)
     }
-}
-
-// MARK: - ViewBuilders
-
-private extension SectionDetailsView {
     
-    /// A helper function to display a section header with customizable padding
-    /// - Parameters:
-    ///   - title: Title of the section header
-    ///   - paddingTop: Optional top padding for the header
-    @ViewBuilder
-    func SectionHeaderView(title: String, paddingTop: CGFloat? = nil) -> some View {
-        SectionHeadingView(title)
-            .padding(.horizontal, BankingTheme.spacing.noPadding)
-            .padding(.top, paddingTop ?? BankingTheme.spacing.smallMedium)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
+    // Making the screen for the selected navigation path
+    func makeScreen(selectedPath: NavigationItem) -> AnyView {
+        switch selectedPath.domain {
+        case AuthenticationNavigationItems.Companion.shared.DOMAIN:
+            return AnyView(AuthenticationNavigation(item: selectedPath))
+        case HomeNavigationItems.Companion.shared.DOMAIN:
+            return AnyView(HomeNavigation(item: selectedPath))
+        case AccountDetailsNavigationItems.Companion.shared.DOMAIN:
+            return AnyView(AccountDetailsNavigation(item: selectedPath))
+        case SettingsNavigationItems.Companion.shared.DOMAIN:
+            return AnyView(SettingsNavigation(item: selectedPath))
+        case SecurityCenterNavigationItems.Companion.shared.DOMAIN:
+            return AnyView(SecurityCenterNavigation(item: selectedPath))
+        default:
+            return AnyView(Text("None")) // TODO: generic error screen
+        }
     }
 }
 
-
-
-// Define the style with the required padding values
-let style = SectionDetailsStyle(
-    paddingTop: BankingTheme.spacing.noPadding,
-    horizontalContainerPadding: BankingTheme.dimensions.medium,
-    verticalContainerPadding: BankingTheme.dimensions.medium,
-    trailingListIconPadding: BankingTheme.spacing.noPadding,
-    leadingListIconPadding: BankingTheme.dimensions.small,
-    horizontalListSpacing: BankingTheme.dimensions.smallMedium
-)
-
-// Use the style in SectionDetailsView
-SectionDetailsView(
-    header: presenter.verificationHeader,
-    sectionData: [
-        ListCellItemData(
-            actionCellId: presenter.biometricTitle,
-            actionPrimaryLabel: presenter.biometricTitle,
-            actionSecondaryLabel: presenter.biometricDescription,
-            leadingIconName: ComponentConstants.Images.faceId,
-            trailingIconName: ComponentConstants.Images.chevron,
-            data: presenter.biometricStatus
-        )
-    ],
-    style: style, // Pass the style object here
-    onClick: { primaryText in
-        // Handle the onClick action
+struct CustomTabBarView: View {
+    @Binding var selectedTab: NavigationItem
+    let tabData: [BottomNavTabData]
+    
+    var body: some View {
+        HStack {
+            ForEach(tabData, id: \.tabTag.domain) { tab in
+                VStack {
+                    Image(systemName: getTabImageName(for: tab))
+                    Text(tab.tabItemText)
+                        .font(.caption)
+                }
+                .padding()
+                .onTapGesture {
+                    selectedTab = tab.tabTag
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .padding()
+        .background(Color.white) // Customize the background color here
+        .shadow(radius: 5) // Optional: Add shadow for a floating effect
     }
-)
+    
+    // Helper to get the correct icon image name based on selection
+    private func getTabImageName(for tab: BottomNavTabData) -> String {
+        return tab.tabTag == selectedTab ? tab.tabItemIcon.imageName : tab.tabItemIcon.imageNameUnfilled
+    }
+}
+
+struct ContentView: View {
+    var body: some View {
+        CustomTabBarController(
+            tabData: [
+                BottomNavTabData(
+                    tabItemIcon: TableItemIconData(imageName: "house.fill", imageNameUnfilled: "house"),
+                    tabItemText: "Home",
+                    tabTag: NavigationItem(domain: "home"),
+                    content: AnyView(NavigationView { Text("Home Screen") })
+                ),
+                BottomNavTabData(
+                    tabItemIcon: TableItemIconData(imageName: "person.fill", imageNameUnfilled: "person"),
+                    tabItemText: "Profile",
+                    tabTag: NavigationItem(domain: "profile"),
+                    content: AnyView(NavigationView { Text("Profile Screen") })
+                )
+            ],
+            initialTab: NavigationItem(domain: "home")
+        )
+    }
+}
