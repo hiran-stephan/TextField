@@ -220,3 +220,20 @@ struct BottomNavigationLayout: View {
     }
 }
                                           
+struct CustomTabBarController: View {
+    @State private var selectedTab: NavigationItem
+    private let tabData: [BottomNavTabData]
+    
+    init(tabData: [BottomNavTabData], initialTab: NavigationItem) {
+        self.tabData = tabData
+        self._selectedTab = State(initialValue: initialTab)
+    }
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            TabContentView(selectedTab: selectedTab, tabData: tabData)
+            CustomTabBarView(selectedTab: $selectedTab, tabData: tabData)
+        }
+        .ignoresSafeArea(edges: .bottom)
+    }
+}
