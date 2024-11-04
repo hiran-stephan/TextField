@@ -47,3 +47,13 @@ extension PreSignonMenuPresenter {
 }
 // Usage Example
 // let bottomSheetData = presenter.toListCellBottomSheetData(locale: Locale.current)
+
+
+class SummaryViewModel(
+    private val locale: Locale
+) : ViewModel() {
+
+    fun getLocaleIdentifier(): String {
+        return locale.toString()  // Or use locale.language if you just need the language
+    }
+}
