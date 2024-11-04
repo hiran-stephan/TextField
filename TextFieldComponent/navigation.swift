@@ -17,21 +17,23 @@ struct ListCellData {
     let trailingIconAccessibilityText: String?
     let route: String
 }
-
+ 
 extension PreSignonMenuPresenter {
     func toListCellBottomSheetData(locale: Locale) -> ListCellBottomSheetData {
         return ListCellBottomSheetData(
             title: self.menuTitle.localized(locale: locale),
             titleAccessibilityText: self.menuTitleAccessibilityText.localized(locale: locale),
             menuActions: self.menuActionList.map { item in
-                ListCellData(
+                ListCellItemData(
                     actionCellId: item.id,
-                    leadingIcon: item.leadingIcon?.localized(locale: locale).flatMap { mapToDrawableResource($0) },
-                    trailingIcon: item.trailingIcon?.localized(locale: locale).flatMap { mapToDrawableResource($0) },
-                    primaryLabel: item.primaryText.localized(locale: locale),
-                    secondaryLabel: item.secondaryText?.localized(locale: locale),
+                    actionPrimaryLabel: item.primaryText.localized(locale: locale),
+                    actionSecondaryLabel: item.secondaryText?.localized(locale: locale) ?? "",
+                    leadingIconName: item.leadingIcon?.localized(locale: locale),
+                    trailingIconName: item.trailingIcon?.localized(locale: locale),
                     leadingIconAccessibilityText: item.leadingIcon?.localizedAccessibility(locale: locale),
                     trailingIconAccessibilityText: item.trailingIcon?.localizedAccessibility(locale: locale),
+                    actionCount: item.count?.localized(locale: locale),
+                    data: item.data?.localized(locale: locale),
                     route: item.actionLink
                 )
             }
@@ -43,6 +45,5 @@ extension PreSignonMenuPresenter {
         return iconName
     }
 }
-
 // Usage Example
 // let bottomSheetData = presenter.toListCellBottomSheetData(locale: Locale.current)
