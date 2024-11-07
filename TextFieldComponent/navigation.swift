@@ -26,3 +26,10 @@ override fun formatAccountDisplayName(
         else -> productName ?: ""
     }
 }
+
+override fun sortAccounts(accountList: List<HomeAccount>, contentFile: ContentFile, locale: Locale): List<HomeAccount> {
+    return accountList.sortedWith(compareBy(
+        { createDisplayName(it.nickName, it.productName, it.productLookupKey, contentFile, locale) },
+        { it.accountNumber }
+    ))
+}
