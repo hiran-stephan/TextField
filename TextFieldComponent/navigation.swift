@@ -17,11 +17,11 @@ override fun formatAccountDisplayName(
     productLookupKey: String?
 ): String {
     val localizedContent = ContentFile(products)
-    
     return when {
         !nickName.isNullOrBlank() -> nickName
         !productLookupKey.isNullOrBlank() -> {
-            localizedContent.localized(key = productLookupKey, lang = locale.lang) ?: productName ?: ""
+            val localizedValue = localizedContent.localized(key = productLookupKey, lang = locale.lang)
+            if (localizedValue == productLookupKey) productName ?: "" else localizedValue
         }
         else -> productName ?: ""
     }
