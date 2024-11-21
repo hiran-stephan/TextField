@@ -119,3 +119,9 @@
   }
 }
 
+val availableBalanceAccessibilityText: String
+    get() = if (formatAvailableAmount() == "--") {
+        displayContent(ACCOUNT_AVAILABLE_BALANCE)
+    } else {
+        ""
+    }
