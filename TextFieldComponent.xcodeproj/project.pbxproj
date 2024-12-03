@@ -132,6 +132,7 @@
 		3B647CD32CCA7D4B007D837D /* navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = navigation.swift; sourceTree = "<group>"; };
 		3B647CDE2CF8F676007D837D /* RPReplay_Final1732819761.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RPReplay_Final1732819761.MP4; sourceTree = "<group>"; };
 		3B647CDF2CF8F67D007D837D /* ScreenRecording_11-28-2024 13-57-02_1.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ScreenRecording_11-28-2024 13-57-02_1.MP4"; sourceTree = "<group>"; };
+		3B647CE02CFF7F4A007D837D /* 489.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = 489.mp4; sourceTree = "<group>"; };
 		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
 		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -220,6 +221,7 @@
 				3B647BEB2CACB57A007D837D /* ListCellItemView.swift */,
 				3B647CD12CB82C2B007D837D /* MockData.swift */,
 				3B647CD32CCA7D4B007D837D /* navigation.swift */,
+				3B647CE02CFF7F4A007D837D /* 489.mp4 */,
 				3B647CDE2CF8F676007D837D /* RPReplay_Final1732819761.MP4 */,
 				3B647CDF2CF8F67D007D837D /* ScreenRecording_11-28-2024 13-57-02_1.MP4 */,
 			);
