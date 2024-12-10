@@ -125,3 +125,9 @@ val availableBalanceAccessibilityText: String
     } else {
         ""
     }
+
+
+I have started working on Phase 3 as of yesterday.
+I would like to sincerely thank you all for your support during Phase 1.
+It has been a pleasure working with you all, and I have learned a lot.
+Please feel free to reach out if you need any assistance with Phase 1.
