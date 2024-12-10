@@ -119,15 +119,39 @@
   }
 }
 
-val availableBalanceAccessibilityText: String
-    get() = if (formatAvailableAmount() == "--") {
-        displayContent(ACCOUNT_AVAILABLE_BALANCE)
-    } else {
-        ""
+struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
+    @ObservedObject var coordinator: BottomSheetCoordinator<Sheet>
+    @Binding var sheetData: ListCellBottomSheetData
+    var onSelect: ((ListCellItemData) -> Void)?
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(item: $coordinator.currentSheet, onDismiss: {
+                coordinator.sheetDismissed()
+            }) { sheet in
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    BottomSheetView {
+                        sheet.view(
+                            coordinator: coordinator,
+                            sheetData: $sheetData,
+                            onSelect: { selectedItem in
+                                onSelect?(selectedItem)
+                                coordinator.sheetDismissed() // Dismiss the sheet
+                            }
+                        )
+                    }
+                } else {
+                    adjustBottomSheet {
+                        sheet.view(
+                            coordinator: coordinator,
+                            sheetData: $sheetData,
+                            onSelect: { selectedItem in
+                                onSelect?(selectedItem)
+                                coordinator.sheetDismissed() // Dismiss the sheet
+                            }
+                        )
+                    }
+                }
+            }
     }
-
-
-I have started working on Phase 3 as of yesterday.
-I would like to sincerely thank you all for your support during Phase 1.
-It has been a pleasure working with you all, and I have learned a lot.
-Please feel free to reach out if you need any assistance with Phase 1.
+}
