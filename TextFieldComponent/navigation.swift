@@ -1,157 +1,113 @@
 
+import SwiftUI
+import Koin
+import Umbrella
 
-{
-  "display_names": {
-    "DP.C.82001": {
-      "en": "Personal Certificate"
-    },
-    "DP.C.82002": {
-      "en": "IRA Certificate"
-    },
-    "DP.N.82163": {
-      "en": "Employee NOW"
-    },
-    "DP.N.82164": {
-      "en": "CIBC Choice NOW"
-    },
-    "DP.N.82165": {
-      "en": "Complete Checking"
-    },
-    "DP.N.82166": {
-      "en": "CIBC Personal NOW"
-    },
-    "DP.D.82168": {
-      "en": "Select Checking"
-    },
-    "DP.D.82169": {
-      "en": "Student Checking"
-    },
-    "DP.N.82171": {
-      "en": "Health Savings Account"
-    },
-    "DP.D.82172": {
-      "en": "Loyal Checking"
-    },
-    "DP.D.82174": {
-      "en": "Executive Personal Checking"
-    },
-    "DP.M.82175": {
-      "en": "CIBC Personal Money Market"
-    },
-    "DP.M.82180": {
-      "en": "Premier Money Market"
-    },
-    "DP.S.82181": {
-      "en": "CIBC Personal Savings"
-    },
-    "DP.S.82185": {
-      "en": "Personal Investment Reserve"
-    },
-    "DP.S.82186": {
-      "en": "IRA Savings"
-    },
-    "DP.S.82188": {
-      "en": "Holiday Savings Account"
-    },
-    "DP.S.82189": {
-      "en": "Sprinkler Fitter Vacation Club"
-    },
-    "DP.C.82198": {
-      "en": "Personal Jumbo Certificate"
-    },
-    "DP.C.82215": {
-      "en": "Roth IRA Certificate"
-    },
-    "LN.R.83104": {
-      "en": "Revolving Credit"
-    },
-    "LN.R.83107": {
-      "en": "Revolving Credit"
-    },
-    "LN.R.83109": {
-      "en": "Revolving Credit"
-    },
-    "LN.R.83110": {
-      "en": "Revolving Credit"
-    },
-    "LN.M.83116": {
-      "en": "Mortgage"
-    },
-    "LN.M.83118": {
-      "en": "Mortgage"
-    },
-    "LN.M.83123": {
-      "en": "Mortgage"
-    },
-    "LN.M.83124": {
-      "en": "Mortgage"
-    },
-    "LN.M.83125": {
-      "en": "Mortgage"
-    },
-    "LN.I.83132": {
-      "en": "Installment"
-    },
-    "DP.S.84371": {
-      "en": "Roth IRA Savings"
-    },
-    "DP.D.84662": {
-      "en": "EasyPath Access Account"
-    },
-    "LN.R.89079": {
-      "en": "Revolving Credit"
-    },
-    "DP.N.91168": {
-      "en": "CIBC Edge Checking"
-    },
-    "LN.R.91952": {
-      "en": "Revolving Credit"
-    },
-    "DP.D.96641": {
-      "en": "CIBC Bank USA Smart Account"
-    },
-    "DP.S.97185": {
-      "en": "CIBC Agility Savings"
-    },
-    "DP.C.99077": {
-      "en": "CIBC Agility Certificate"
+struct AccountPreferenceCard: View {
+    // Dynamic properties
+    let bodyText: String
+    let bodySecondaryText: String
+    let badgeIndicators: [BadgeIndicatorData]
+    
+    init(
+        bodyText: String,
+        bodySecondaryText: String,
+        badgeIndicators: [BadgeIndicatorData] = []
+    ) {
+        self.bodyText = bodyText
+        self.bodySecondaryText = bodySecondaryText
+        self.badgeIndicators = badgeIndicators
     }
-  }
-}
-
-struct BottomSheetManaging<Sheet: BottomSheetEnum>: ViewModifier {
-    @ObservedObject var coordinator: BottomSheetCoordinator<Sheet>
-    @Binding var sheetData: ListCellBottomSheetData
-    var onSelect: ((ListCellItemData) -> Void)?
-
-    func body(content: Content) -> some View {
-        content
-            .sheet(item: $coordinator.currentSheet, onDismiss: {
-                coordinator.sheetDismissed()
-            }) { sheet in
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    BottomSheetView {
-                        sheet.view(
-                            coordinator: coordinator,
-                            sheetData: $sheetData,
-                            onSelect: { selectedItem in
-                                onSelect?(selectedItem)
-                                coordinator.sheetDismissed() // Dismiss the sheet
-                            }
-                        )
-                    }
-                } else {
-                    adjustBottomSheet {
-                        sheet.view(
-                            coordinator: coordinator,
-                            sheetData: $sheetData,
-                            onSelect: { selectedItem in
-                                onSelect?(selectedItem)
-                                coordinator.sheetDismissed() // Dismiss the sheet
-                            }
-                        )
-                    }
+    
+    var body: some View {
+        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+            VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
+                // Primary and secondary text
+                BodyTextView(
+                    primaryText: bodyText,
+                    secondaryText: bodySecondaryText
+                )
+                
+                // Badge indicators
+                if !badgeIndicators.isEmpty {
+                    BadgeIndicatorsView(badgeIndicators: badgeIndicators)
                 }
             }
+            .padding(BankingTheme.dimens.medium)
+            .background(BankingTheme.colors.surface)
+            .cornerRadius(BankingTheme.dimens.smallMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
+
+// Subview for primary and secondary text
+struct BodyTextView: View {
+    let primaryText: String
+    let secondaryText: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
+            // Primary body text
+            Text(primaryText)
+                .typography(BankingTheme.typography.body)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+            
+            // Secondary body text
+            Text(secondaryText)
+                .typography(BankingTheme.typography.bodySmall)
+                .foregroundColor(BankingTheme.colors.textSecondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(BankingTheme.spacing.noPadding)
+    }
+}
+
+// Subview for badge indicators
+struct BadgeIndicatorsView: View {
+    let badgeIndicators: [BadgeIndicatorData]
+    
+    var body: some View {
+        ForEach(badgeIndicators, id: \.id) { badge in
+            BadgeIndicator(
+                badgeIndicatorType: badge.type,
+                labelText: badge.labelText
+            )
+            .padding(.vertical, BankingTheme.spacing.noPadding)
+        }
+    }
+}
+
+// Supporting model for badge indicators
+struct BadgeIndicatorData: Identifiable {
+    let id = UUID()
+    let type: BadgeIndicatorType
+    let labelText: String
+}
+
+// Example BadgeIndicator component
+struct BadgeIndicator: View {
+    let badgeIndicatorType: BadgeIndicatorType
+    let labelText: String
+    
+    var body: some View {
+        Text(labelText)
+            .padding(8)
+            .background(badgeIndicatorType == .passiveReversed ? Color.gray : Color.blue)
+            .cornerRadius(4)
+    }
+}
+
+enum BadgeIndicatorType {
+    case passiveReversed
+    case active
+}
+
+AccountPreferenceCard(
+    bodyText: "Account Overview",
+    bodySecondaryText: "Lorem ipsum **0001**",
+    badgeIndicators: [
+        BadgeIndicatorData(type: .passiveReversed, labelText: "Hidden"),
+        BadgeIndicatorData(type: .active, labelText: "Visible")
+    ]
+)
