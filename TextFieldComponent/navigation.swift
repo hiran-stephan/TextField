@@ -172,3 +172,24 @@ let exampleData = AccountPreferenceCardData(
 )
 
 AccountPreferenceCard(data: exampleData)
+
+
+struct BadgeIndicatorsView: View {
+    let badgeIndicators: [BadgeIndicatorData]
+
+    let columns = [
+        GridItem(.adaptive(minimum: 100, maximum: .infinity), spacing: 8) // Adjust the size as needed
+    ]
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 8) {
+            ForEach(badgeIndicators, id: \.id) { badge in
+                BadgeIndicator(
+                    badgeIndicatorType: badge.type,
+                    labelText: badge.labelText
+                )
+            }
+        }
+        .padding(.vertical, BankingTheme.spacing.noPadding)
+    }
+}
