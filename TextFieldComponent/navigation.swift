@@ -111,3 +111,64 @@ AccountPreferenceCard(
         BadgeIndicatorData(type: .active, labelText: "Visible")
     ]
 )
+
+
+struct AccountPreferenceCardData {
+    let bodyText: String
+    let bodySecondaryText: String
+    let badgeIndicators: [BadgeIndicatorData]
+    
+    init(
+        bodyText: String,
+        bodySecondaryText: String,
+        badgeIndicators: [BadgeIndicatorData] = []
+    ) {
+        self.bodyText = bodyText
+        self.bodySecondaryText = bodySecondaryText
+        self.badgeIndicators = badgeIndicators
+    }
+}
+
+
+
+struct AccountPreferenceCard: View {
+    // Data class instance
+    let data: AccountPreferenceCardData
+    
+    init(data: AccountPreferenceCardData) {
+        self.data = data
+    }
+    
+    var body: some View {
+        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+            VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
+                // Primary and secondary text
+                BodyTextView(
+                    primaryText: data.bodyText,
+                    secondaryText: data.bodySecondaryText
+                )
+                
+                // Badge indicators
+                if !data.badgeIndicators.isEmpty {
+                    BadgeIndicatorsView(badgeIndicators: data.badgeIndicators)
+                }
+            }
+            .padding(BankingTheme.dimens.medium)
+            .background(BankingTheme.colors.surface)
+            .cornerRadius(BankingTheme.dimens.smallMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+
+let exampleData = AccountPreferenceCardData(
+    bodyText: "Account Overview",
+    bodySecondaryText: "Lorem ipsum **0001**",
+    badgeIndicators: [
+        BadgeIndicatorData(type: .passiveReversed, labelText: "Hidden"),
+        BadgeIndicatorData(type: .active, labelText: "Visible")
+    ]
+)
+
+AccountPreferenceCard(data: exampleData)
