@@ -256,3 +256,54 @@ struct BadgeIndicatorsView: View {
         .padding()
     }
 }
+
+
+struct BadgeIndicatorsView: View {
+    let badgeIndicators: [BadgeIndicatorData]
+    let horizontalSpacing: CGFloat = 8
+    let verticalSpacing: CGFloat = 8
+
+    var body: some View {
+        GeometryReader { geometry in
+            let rows = calculateRows(for: badgeIndicators, in: geometry.size.width)
+            
+            VStack(alignment: .leading, spacing: verticalSpacing) {
+                ForEach(rows, id: \.self) { row in
+                    HStack(spacing: horizontalSpacing) {
+                        ForEach(row, id: \.id) { badge in
+                            BadgeIndicator(
+                                badgeIndicatorType: badge.type,
+                                labelText: badge.labelText
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+    
+    private func calculateRows(for badges: [BadgeIndicatorData], in availableWidth: CGFloat) -> [[BadgeIndicatorData]] {
+        var rows: [[BadgeIndicatorData]] = [[]]
+        var currentRowWidth: CGFloat = 0
+
+        for badge in badges {
+            let badgeWidth = estimatedBadgeWidth(for: badge.labelText)
+            if currentRowWidth + badgeWidth + horizontalSpacing > availableWidth {
+                rows.append([badge])
+                currentRowWidth = badgeWidth
+            } else {
+                rows[rows.count - 1].append(badge)
+                currentRowWidth += badgeWidth + horizontalSpacing
+            }
+        }
+
+        return rows
+    }
+    
+    private func estimatedBadgeWidth(for text: String) -> CGFloat {
+        // Approximate badge width based on text length; adjust as needed
+        let baseWidth = text.count * 10
+        return CGFloat(max(baseWidth, 50)) // Minimum width of 50
+    }
+}
