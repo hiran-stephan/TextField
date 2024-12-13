@@ -107,3 +107,124 @@ extension String {
     }
 }
 
+
+
+
+
+
+import SwiftUI
+
+// BadgeIndicatorData Model
+struct BadgeIndicatorData: Identifiable, Hashable {
+    var id = UUID().uuidString
+    var type: BadgeIndicatorType
+    var labelText: String
+    var showLeadingIcon: Bool
+    var size: CGFloat
+
+    init(type: BadgeIndicatorType, labelText: String, showLeadingIcon: Bool = false, size: CGFloat = 0) {
+        self.type = type
+        self.labelText = labelText
+        self.showLeadingIcon = showLeadingIcon
+        self.size = size
+    }
+}
+
+// BadgeIndicatorType Enum (example, modify as per your requirements)
+enum BadgeIndicatorType {
+    case passiveReversed
+}
+
+// BadgeIndicatorsView
+struct BadgeIndicatorsView: View {
+    @StateObject var viewModel = BadgeIndicatorsViewModel()
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(viewModel.rows, id: \.self) { row in
+                HStack(spacing: 6) {
+                    ForEach(row, id: \.id) { tag in
+                        HStack(spacing: 8) {
+                            if tag.showLeadingIcon {
+                                Image(systemName: "star.fill") // Replace with your icon logic
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(.blue)
+                            }
+                            Text(tag.labelText)
+                                .font(.system(size: 16))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(Capsule().fill(Color.gray.opacity(0.3)))
+                                .frame(height: 28)
+                        }
+                        .padding(.bottom, 10)
+                    }
+                }
+            }
+        }
+        .padding(24)
+    }
+}
+
+// BadgeIndicatorsViewModel
+class BadgeIndicatorsViewModel: ObservableObject {
+    @Published var rows: [[BadgeIndicatorData]] = []
+    @Published var badges: [BadgeIndicatorData] = [
+        BadgeIndicatorData(type: .passiveReversed, labelText: "XCode"),
+        BadgeIndicatorData(type: .passiveReversed, labelText: "iOS"),
+        BadgeIndicatorData(type: .passiveReversed, labelText: "iOS App Development"),
+        BadgeIndicatorData(type: .passiveReversed, labelText: "Swift"),
+        BadgeIndicatorData(type: .passiveReversed, labelText: "Custom Layouts")
+    ]
+
+    init() {
+        calculateRows()
+    }
+
+    func calculateRows() {
+        var rows: [[BadgeIndicatorData]] = []
+        var currentRow: [BadgeIndicatorData] = []
+        var totalWidth: CGFloat = 0
+        let screenWidth = UIScreen.screenWidth - 10
+        let tagSpacing: CGFloat = 6
+
+        // Update badge sizes
+        for index in badges.indices {
+            badges[index].size = badges[index].labelText.getSize(withIcon: badges[index].showLeadingIcon)
+        }
+
+        // Arrange badges into rows
+        badges.forEach { badge in
+            totalWidth += badge.size + tagSpacing
+
+            if totalWidth > screenWidth {
+                rows.append(currentRow)
+                currentRow.removeAll()
+                totalWidth = badge.size + tagSpacing
+            }
+            currentRow.append(badge)
+        }
+
+        if !currentRow.isEmpty {
+            rows.append(currentRow)
+        }
+
+        self.rows = rows
+    }
+}
+
+// Extensions for Size Calculation and Screen Width
+extension UIScreen {
+    static let screenWidth = UIScreen.main.bounds.width
+}
+
+extension String {
+    func getSize(withIcon hasIcon: Bool = false) -> CGFloat {
+        let font = UIFont.systemFont(ofSize: 16)
+        let attributes = [NSAttributedString.Key.font: font]
+        let size = (self as NSString).size(withAttributes: attributes)
+        return size.width + (hasIcon ? 24 : 0) // Add space for the icon if present
+    }
+}
