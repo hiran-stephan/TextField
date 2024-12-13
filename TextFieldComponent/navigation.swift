@@ -390,3 +390,8 @@ struct AccountPreferenceCard: View {
         }
     }
 }
+
+
+    .onChange(of: containerWidth) { newWidth in
+                viewModel.updateContainerWidth(newWidth)
+            }
