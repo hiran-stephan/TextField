@@ -228,3 +228,84 @@ extension String {
         return size.width + (hasIcon ? 24 : 0) // Add space for the icon if present
     }
 }
+
+
+
+class BadgeIndicatorsViewModel: ObservableObject {
+    @Published var rows: [[BadgeIndicatorData]] = []
+    @Published var badges: [BadgeIndicatorData]
+
+    init(badges: [BadgeIndicatorData]) {
+        self.badges = badges
+        calculateRows()
+    }
+
+    func calculateRows() {
+        var rows: [[BadgeIndicatorData]] = []
+        var currentRow: [BadgeIndicatorData] = []
+        var totalWidth: CGFloat = 0
+        let screenWidth = UIScreen.screenWidth - 10
+        let tagSpacing: CGFloat = 6
+
+        // Update badge sizes
+        for index in badges.indices {
+            badges[index].size = badges[index].labelText.getSize(withIcon: badges[index].showLeadingIcon)
+        }
+
+        // Arrange badges into rows
+        badges.forEach { badge in
+            totalWidth += badge.size + tagSpacing
+
+            if totalWidth > screenWidth {
+                rows.append(currentRow)
+                currentRow.removeAll()
+                totalWidth = badge.size + tagSpacing
+            }
+            currentRow.append(badge)
+        }
+
+        if !currentRow.isEmpty {
+            rows.append(currentRow)
+        }
+
+        self.rows = rows
+    }
+}
+
+
+struct BadgeIndicatorsView: View {
+    @StateObject private var viewModel: BadgeIndicatorsViewModel
+
+    init(badges: [BadgeIndicatorData]) {
+        _viewModel = StateObject(wrappedValue: BadgeIndicatorsViewModel(badges: badges))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(viewModel.rows, id: \.self) { row in
+                HStack(spacing: 6) {
+                    ForEach(row, id: \.id) { tag in
+                        HStack(spacing: 8) {
+                            if tag.showLeadingIcon {
+                                Image(systemName: "star.fill") // Replace with your icon logic
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(.blue)
+                            }
+                            Text(tag.labelText)
+                                .font(.system(size: 16))
+                                .lineLimit(2) // Allow up to two lines
+                                .multilineTextAlignment(.leading)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(Capsule().fill(Color.gray.opacity(0.3)))
+                        }
+                        .padding(.bottom, 10)
+                    }
+                }
+            }
+        }
+        .padding(24)
+    }
+}
