@@ -311,13 +311,82 @@ struct BadgeIndicatorsView: View {
 }
 
 
-// Badge indicators with dynamic width
-                if !data.badgeIndicators.isEmpty {
-                    GeometryReader { geometry in
-                        BadgeIndicatorsView(
-                            badges: data.badgeIndicators,
-                            containerWidth: geometry.size.width
-                        )
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+struct BodyTextView: View {
+    let primaryText: String
+    let secondaryText: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+            // Primary body text
+            Text(primaryText)
+                .typography(BankingTheme.typography.body)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+
+            // Secondary body text
+            Text(secondaryText)
+                .typography(BankingTheme.typography.bodySmall)
+                .foregroundColor(BankingTheme.colors.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+        }
+        .background(
+            GeometryReader { geometry in
+                Color.clear
+                    .preference(
+                        key: ViewFramePreferenceKey.self,
+                        value: geometry.frame(in: .global)
+                    )
+            }
+        )
+    }
+}
+
+
+struct ViewFramePreferenceKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
+}
+
+
+struct AccountPreferenceCard: View {
+    let data: AccountPreferenceCardData
+    @State private var bodyTextWidth: CGFloat = 0
+
+    var body: some View {
+        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+            VStack(alignment: .leading, spacing: BankingTheme.dimens.smallMedium) {
+                // Primary and secondary text
+                BodyTextView(
+                    primaryText: data.primaryText,
+                    secondaryText: data.secondaryText
+                )
+                .onPreferenceChange(ViewFramePreferenceKey.self) { frame in
+                    bodyTextWidth = frame.width
                 }
+
+                // Badge indicators
+                if !data.badgeIndicators.isEmpty {
+                    BadgeIndicatorsView(
+                        badges: data.badgeIndicators,
+                        containerWidth: bodyTextWidth
+                    )
+                }
+
+                // Mini card if applicable
+                if data.showMiniCard {
+                    MiniCard()
+                }
+            }
+            .padding(BankingTheme.dimens.medium)
+            .background(BankingTheme.colors.surface)
+            .cornerRadius(BankingTheme.dimens.smallMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Chevron icon
+            ListCellIconView(imageName: ComponentConstants.Images.chevron)
+        }
+    }
+}
