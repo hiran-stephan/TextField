@@ -1,49 +1,79 @@
-/// A SwiftUI view that displays a list of badge indicators arranged in rows.
-/// The layout dynamically adjusts based on the available container width and badge sizes.
-struct BadgeIndicatorListView: View {
-    // View model for managing badge indicators and their layout
-    @StateObject private var viewModel: BadgeIndicatorListViewModel
+/// A SwiftUI view that represents a card displaying account preferences, including primary text, secondary text, and optional badge indicators.
+struct AccountPreferenceCard: View {
+    // Data source for configuring the card content
+    let data: AccountPreferenceCardData
     
-    // Dynamic container width for calculating row layout
-    var containerWidth: CGFloat {
-        didSet {
-            viewModel.updateContainerWidth(containerWidth)
-        }
+    // Tracks the width of the primary text container
+    @State private var bodyTextWidth: CGFloat = 0
+    
+    /// Initializes the account preference card with provided data.
+    /// - Parameter data: The data used to populate the card's content.
+    init(data: AccountPreferenceCardData) {
+        self.data = data
     }
     
-    // Vertical spacing between rows
-    private let verticalSpacing: CGFloat = BankingTheme.dimens.small
-    // Horizontal spacing between badges within a row
-    private let horizontalSpacing: CGFloat = BankingTheme.dimens.small
-    
-    /// Initializes the `BadgeIndicatorListView`.
-    /// - Parameters:
-    ///   - badges: An array of `BadgeIndicatorData` to display in the view.
-    ///   - containerWidth: The width of the container, used for layout calculations.
-    init(badges: [BadgeIndicatorData], containerWidth: CGFloat) {
-        _viewModel = StateObject(
-            wrappedValue: BadgeIndicatorListViewModel(
-                badges: badges,
-                containerWidth: containerWidth
-            )
-        )
-        self.containerWidth = containerWidth
-    }
-    
-    /// The content and layout of the badge indicator list.
+    /// The main layout of the account preference card.
     var body: some View {
-        VStack(alignment: .leading, spacing: verticalSpacing) {
-            ForEach(viewModel.rows, id: \.self) { row in
-                HStack(spacing: horizontalSpacing) {
-                    ForEach(row, id: \.id) { data in
-                        BadgeIndicator(badgeIndicatorData: data)
+        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+            VStack(alignment: .leading, spacing: BankingTheme.dimens.smallMedium) {
+                // Displays the primary and secondary text
+                AccountTextSection(
+                    primaryText: data.primaryText,
+                    secondaryText: data.secondaryText
+                )
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .preference(
+                                key: ViewFramePreferenceKey.self,
+                                value: geometry.frame(in: .global)
+                            )
                     }
+                )
+                .onPreferenceChange(ViewFramePreferenceKey.self) { frame in
+                    bodyTextWidth = frame.width
+                }
+                
+                // Displays badge indicators if available
+                if !data.badgeIndicators.isEmpty {
+                    BadgeIndicatorListView(
+                        badges: data.badgeIndicators,
+                        containerWidth: bodyTextWidth
+                    )
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            // Displays a chevron icon on the right
+            ListCellIconView(imageName: ComponentConstants.Images.chevron)
+        }
+        .padding(BankingTheme.dimens.medium)
+        .background(BankingTheme.colors.surface)
+        .cornerRadius(BankingTheme.dimens.smallMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// A SwiftUI view displaying primary and secondary text with a vertical layout.
+struct AccountTextSection: View {
+    let primaryText: String
+    let secondaryText: String
+    
+    /// The layout of primary and secondary text.
+    var body: some View {
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+            // Primary body text
+            Text(primaryText)
+                .typography(BankingTheme.typography.body)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+            
+            // Secondary body text
+            Text(secondaryText)
+                .typography(BankingTheme.typography.bodySmall)
+                .foregroundColor(BankingTheme.colors.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .onPreferenceChange(BadgeWidthPreferenceKey.self) { widths in
-            viewModel.updateBadgeSizes(widths: widths)
-        }
     }
 }
