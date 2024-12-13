@@ -400,3 +400,124 @@ func updateContainerWidth(_ newWidth: CGFloat) {
         self.containerWidth = newWidth
         calculateRows()
     }
+
+
+struct BadgeWidthPreferenceKey: PreferenceKey {
+    static var defaultValue: [CGFloat] = []
+
+    static func reduce(value: inout [CGFloat], nextValue: () -> [CGFloat]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+
+struct BadgeIndicator: View {
+    let badgeIndicatorType: BadgeIndicatorType
+    let labelText: String
+    let hasIcon: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
+            if hasIcon {
+                Image(systemName: "star.fill") // Example icon
+                    .frame(width: 24, height: 24)
+            }
+            Text(labelText)
+                .font(.system(size: 16))
+        }
+        .padding(8)
+        .background(Color.gray.opacity(0.2))
+        .cornerRadius(8)
+        .overlay(
+            GeometryReader { geometry in
+                Color.clear
+                    .preference(key: BadgeWidthPreferenceKey.self, value: [geometry.size.width])
+            }
+        )
+    }
+}
+
+
+
+struct BadgeIndicatorsView: View {
+    @StateObject private var viewModel: BadgeIndicatorsViewModel
+    let verticalSpacing: CGFloat = 10.0
+    let horizontalSpacing: CGFloat = 10.0
+    var containerWidth: CGFloat
+
+    init(badges: [BadgeIndicatorData], containerWidth: CGFloat) {
+        self._viewModel = StateObject(wrappedValue: BadgeIndicatorsViewModel(badges: badges, containerWidth: containerWidth))
+        self.containerWidth = containerWidth
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: verticalSpacing) {
+            ForEach(viewModel.rows, id: \.self) { row in
+                HStack(spacing: horizontalSpacing) {
+                    ForEach(row, id: \.id) { tag in
+                        BadgeIndicator(badgeIndicatorType: tag.type, labelText: tag.labelText, hasIcon: tag.showLeadingIcon)
+                    }
+                }
+            }
+        }
+        .onPreferenceChange(BadgeWidthPreferenceKey.self) { widths in
+            viewModel.updateBadgeSizes(widths: widths)
+        }
+        .onChange(of: containerWidth) { newWidth in
+            viewModel.updateContainerWidth(newWidth)
+        }
+    }
+}
+
+
+
+class BadgeIndicatorsViewModel: ObservableObject {
+    @Published var rows: [[BadgeIndicatorData]] = []
+    @Published var badges: [BadgeIndicatorData] = []
+    private var containerWidth: CGFloat
+
+    init(badges: [BadgeIndicatorData], containerWidth: CGFloat) {
+        self.badges = badges
+        self.containerWidth = containerWidth
+        calculateRows()
+    }
+
+    func updateBadgeSizes(widths: [CGFloat]) {
+        for (index, width) in widths.enumerated() where index < badges.count {
+            badges[index].size = width
+        }
+        calculateRows()
+    }
+
+    func calculateRows() {
+        var rows: [[BadgeIndicatorData]] = []
+        var currentRow: [BadgeIndicatorData] = []
+        var totalWidth: CGFloat = 0
+        let tagSpacing: CGFloat = 10
+
+        // Arrange badges into rows
+        badges.forEach { badge in
+            totalWidth += badge.size + tagSpacing
+
+            if totalWidth > containerWidth {
+                rows.append(currentRow)
+                currentRow.removeAll()
+                totalWidth = badge.size + tagSpacing
+            }
+
+            currentRow.append(badge)
+        }
+
+        if !currentRow.isEmpty {
+            rows.append(currentRow)
+        }
+
+        self.rows = rows
+    }
+
+    func updateContainerWidth(_ newWidth: CGFloat) {
+        self.containerWidth = newWidth
+        calculateRows()
+    }
+}
+
