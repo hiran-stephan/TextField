@@ -395,3 +395,8 @@ struct AccountPreferenceCard: View {
     .onChange(of: containerWidth) { newWidth in
                 viewModel.updateContainerWidth(newWidth)
             }
+
+func updateContainerWidth(_ newWidth: CGFloat) {
+        self.containerWidth = newWidth
+        calculateRows()
+    }
