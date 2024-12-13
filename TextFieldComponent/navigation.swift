@@ -1,309 +1,109 @@
-
-import SwiftUI
-import Koin
-import Umbrella
-
-struct AccountPreferenceCard: View {
-    // Dynamic properties
-    let bodyText: String
-    let bodySecondaryText: String
-    let badgeIndicators: [BadgeIndicatorData]
-    
-    init(
-        bodyText: String,
-        bodySecondaryText: String,
-        badgeIndicators: [BadgeIndicatorData] = []
-    ) {
-        self.bodyText = bodyText
-        self.bodySecondaryText = bodySecondaryText
-        self.badgeIndicators = badgeIndicators
-    }
-    
-    var body: some View {
-        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
-            VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
-                // Primary and secondary text
-                BodyTextView(
-                    primaryText: bodyText,
-                    secondaryText: bodySecondaryText
-                )
-                
-                // Badge indicators
-                if !badgeIndicators.isEmpty {
-                    BadgeIndicatorsView(badgeIndicators: badgeIndicators)
-                }
-            }
-            .padding(BankingTheme.dimens.medium)
-            .background(BankingTheme.colors.surface)
-            .cornerRadius(BankingTheme.dimens.smallMedium)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-// Subview for primary and secondary text
-struct BodyTextView: View {
-    let primaryText: String
-    let secondaryText: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
-            // Primary body text
-            Text(primaryText)
-                .typography(BankingTheme.typography.body)
-                .foregroundColor(BankingTheme.colors.textPrimary)
-            
-            // Secondary body text
-            Text(secondaryText)
-                .typography(BankingTheme.typography.bodySmall)
-                .foregroundColor(BankingTheme.colors.textSecondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(BankingTheme.spacing.noPadding)
-    }
-}
-
-// Subview for badge indicators
-struct BadgeIndicatorsView: View {
-    let badgeIndicators: [BadgeIndicatorData]
-    
-    var body: some View {
-        ForEach(badgeIndicators, id: \.id) { badge in
-            BadgeIndicator(
-                badgeIndicatorType: badge.type,
-                labelText: badge.labelText
-            )
-            .padding(.vertical, BankingTheme.spacing.noPadding)
-        }
-    }
-}
-
-// Supporting model for badge indicators
-struct BadgeIndicatorData: Identifiable {
-    let id = UUID()
-    let type: BadgeIndicatorType
-    let labelText: String
-}
-
-// Example BadgeIndicator component
-struct BadgeIndicator: View {
-    let badgeIndicatorType: BadgeIndicatorType
-    let labelText: String
-    
-    var body: some View {
-        Text(labelText)
-            .padding(8)
-            .background(badgeIndicatorType == .passiveReversed ? Color.gray : Color.blue)
-            .cornerRadius(4)
-    }
-}
-
-enum BadgeIndicatorType {
-    case passiveReversed
-    case active
-}
-
-AccountPreferenceCard(
-    bodyText: "Account Overview",
-    bodySecondaryText: "Lorem ipsum **0001**",
-    badgeIndicators: [
-        BadgeIndicatorData(type: .passiveReversed, labelText: "Hidden"),
-        BadgeIndicatorData(type: .active, labelText: "Visible")
-    ]
-)
-
-
-struct AccountPreferenceCardData {
-    let bodyText: String
-    let bodySecondaryText: String
-    let badgeIndicators: [BadgeIndicatorData]
-    
-    init(
-        bodyText: String,
-        bodySecondaryText: String,
-        badgeIndicators: [BadgeIndicatorData] = []
-    ) {
-        self.bodyText = bodyText
-        self.bodySecondaryText = bodySecondaryText
-        self.badgeIndicators = badgeIndicators
-    }
-}
-
-
-
-struct AccountPreferenceCard: View {
-    // Data class instance
-    let data: AccountPreferenceCardData
-    
-    init(data: AccountPreferenceCardData) {
-        self.data = data
-    }
-    
-    var body: some View {
-        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
-            VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
-                // Primary and secondary text
-                BodyTextView(
-                    primaryText: data.bodyText,
-                    secondaryText: data.bodySecondaryText
-                )
-                
-                // Badge indicators
-                if !data.badgeIndicators.isEmpty {
-                    BadgeIndicatorsView(badgeIndicators: data.badgeIndicators)
-                }
-            }
-            .padding(BankingTheme.dimens.medium)
-            .background(BankingTheme.colors.surface)
-            .cornerRadius(BankingTheme.dimens.smallMedium)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-
-let exampleData = AccountPreferenceCardData(
-    bodyText: "Account Overview",
-    bodySecondaryText: "Lorem ipsum **0001**",
-    badgeIndicators: [
-        BadgeIndicatorData(type: .passiveReversed, labelText: "Hidden"),
-        BadgeIndicatorData(type: .active, labelText: "Visible")
-    ]
-)
-
-AccountPreferenceCard(data: exampleData)
-
-
-struct BadgeIndicatorsView: View {
-    let badgeIndicators: [BadgeIndicatorData]
-
-    let columns = [
-        GridItem(.adaptive(minimum: 100, maximum: .infinity), spacing: 8) // Adjust the size as needed
-    ]
-
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(badgeIndicators, id: \.id) { badge in
-                BadgeIndicator(
-                    badgeIndicatorType: badge.type,
-                    labelText: badge.labelText
-                )
-            }
-        }
-        .padding(.vertical, BankingTheme.spacing.noPadding)
-    }
-}
-
-
 import SwiftUI
 
-struct FlowLayout: View {
-    let badges: [BadgeIndicatorData]
-    let horizontalSpacing: CGFloat
-    let verticalSpacing: CGFloat
+struct ContentView: View {
+
+    @StateObject var viewModel = ContentViewModel()
 
     var body: some View {
-        var widthAccumulator: CGFloat = 0
-        var rows: [[BadgeIndicatorData]] = [[]]
-        
-        GeometryReader { geometry in
-            let availableWidth = geometry.size.width
-            
-            ForEach(badges, id: \.id) { badge in
-                let badgeWidth = estimatedBadgeWidth(for: badge.labelText)
-                
-                if widthAccumulator + badgeWidth > availableWidth {
-                    rows.append([badge])
-                    widthAccumulator = badgeWidth + horizontalSpacing
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(viewModel.rows, id: \.self) { row in
+                HStack(spacing: 6) {
+                    ForEach(row) { tag in
+                        HStack(spacing: 8) {
+                            if let iconName = tag.icon {
+                                Image(systemName: iconName) // Use SF Symbols as the icon
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(.blue)
+                            }
+                            Text(tag.name)
+                                .font(.system(size: 16))
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(Color.gray.opacity(0.3)))
+                    }
+                }
+                .frame(height: 28)
+                .padding(.bottom, 10)
+            }
+        }
+        .padding(24)
+    }
+}
+
+struct Tag: Identifiable, Hashable {
+    var id = UUID().uuidString
+    var name: String
+    var icon: String? // Optional icon (SF Symbol name)
+    var size: CGFloat = 0
+}
+
+class ContentViewModel: ObservableObject {
+
+    @Published var rows: [[Tag]] = []
+    @Published var tags: [Tag] = [
+        Tag(name: "XCode", icon: "hammer.fill"),
+        Tag(name: "iOS", icon: "iphone"),
+        Tag(name: "iOS App Development", icon: "app"),
+        Tag(name: "Swift", icon: "swift"),
+        Tag(name: "SwiftUI", icon: nil),
+        Tag(name: "Custom Layouts", icon: "rectangle.grid.1x2.fill")
+    ]
+
+    init() {
+        calculateRows()
+    }
+
+    func calculateRows() {
+        var rows: [[Tag]] = []
+        var currentRow: [Tag] = []
+        var totalWidth: CGFloat = 0
+
+        let screenWidth = UIScreen.screenWidth - 10
+        let tagSpacing: CGFloat = 56
+
+        if !tags.isEmpty {
+            for index in 0..<tags.count {
+                self.tags[index].size = tags[index].name.getSize(withIcon: tags[index].icon != nil)
+            }
+
+            tags.forEach { tag in
+                totalWidth += (tag.size + tagSpacing)
+
+                if totalWidth > screenWidth {
+                    totalWidth = (tag.size + tagSpacing)
+                    rows.append(currentRow)
+                    currentRow.removeAll()
+                    currentRow.append(tag)
                 } else {
-                    rows[rows.count - 1].append(badge)
-                    widthAccumulator += badgeWidth + horizontalSpacing
+                    currentRow.append(tag)
                 }
             }
-            
-            VStack(alignment: .leading, spacing: verticalSpacing) {
-                ForEach(0..<rows.count, id: \.self) { rowIndex in
-                    HStack(spacing: horizontalSpacing) {
-                        ForEach(rows[rowIndex]) { badge in
-                            BadgeIndicator(
-                                badgeIndicatorType: badge.type,
-                                labelText: badge.labelText
-                            )
-                        }
-                    }
-                }
+
+            if !currentRow.isEmpty {
+                rows.append(currentRow)
+                currentRow.removeAll()
             }
+
+            self.rows = rows
+        } else {
+            self.rows = []
         }
-    }
-    
-    private func estimatedBadgeWidth(for text: String) -> CGFloat {
-        // Approximate the badge width; adjust based on design
-        let baseWidth = text.count * 10
-        return CGFloat(max(baseWidth, 50)) // Minimum badge width of 50
     }
 }
 
+extension UIScreen {
+    static let screenWidth = UIScreen.main.bounds.width
+}
 
-struct BadgeIndicatorsView: View {
-    let badgeIndicators: [BadgeIndicatorData]
-
-    var body: some View {
-        FlowLayout(
-            badges: badgeIndicators,
-            horizontalSpacing: 8, // Fixed horizontal spacing
-            verticalSpacing: 8   // Fixed vertical spacing
-        )
-        .padding()
+extension String {
+    func getSize(withIcon hasIcon: Bool = false) -> CGFloat {
+        let font = UIFont.systemFont(ofSize: 16)
+        let attributes = [NSAttributedString.Key.font: font]
+        let size = (self as NSString).size(withAttributes: attributes)
+        return size.width + (hasIcon ? 24 : 0) // Add space for the icon if present
     }
 }
 
-
-struct BadgeIndicatorsView: View {
-    let badgeIndicators: [BadgeIndicatorData]
-    let horizontalSpacing: CGFloat = 8
-    let verticalSpacing: CGFloat = 8
-
-    var body: some View {
-        GeometryReader { geometry in
-            let rows = calculateRows(for: badgeIndicators, in: geometry.size.width)
-            
-            VStack(alignment: .leading, spacing: verticalSpacing) {
-                ForEach(rows, id: \.self) { row in
-                    HStack(spacing: horizontalSpacing) {
-                        ForEach(row, id: \.id) { badge in
-                            BadgeIndicator(
-                                badgeIndicatorType: badge.type,
-                                labelText: badge.labelText
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        .padding()
-    }
-    
-    private func calculateRows(for badges: [BadgeIndicatorData], in availableWidth: CGFloat) -> [[BadgeIndicatorData]] {
-        var rows: [[BadgeIndicatorData]] = [[]]
-        var currentRowWidth: CGFloat = 0
-
-        for badge in badges {
-            let badgeWidth = estimatedBadgeWidth(for: badge.labelText)
-            if currentRowWidth + badgeWidth + horizontalSpacing > availableWidth {
-                rows.append([badge])
-                currentRowWidth = badgeWidth
-            } else {
-                rows[rows.count - 1].append(badge)
-                currentRowWidth += badgeWidth + horizontalSpacing
-            }
-        }
-
-        return rows
-    }
-    
-    private func estimatedBadgeWidth(for text: String) -> CGFloat {
-        // Approximate badge width based on text length; adjust as needed
-        let baseWidth = text.count * 10
-        return CGFloat(max(baseWidth, 50)) // Minimum width of 50
-    }
-}
