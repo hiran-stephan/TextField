@@ -309,3 +309,15 @@ struct BadgeIndicatorsView: View {
         .padding(24)
     }
 }
+
+
+// Badge indicators with dynamic width
+                if !data.badgeIndicators.isEmpty {
+                    GeometryReader { geometry in
+                        BadgeIndicatorsView(
+                            badges: data.badgeIndicators,
+                            containerWidth: geometry.size.width
+                        )
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
