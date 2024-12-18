@@ -1,66 +1,54 @@
-public enum BadgeIndicatorType: String {
-    case info = "Info"
-    case success = "Success"
-    case error = "Error"
-    case passive = "Passive"
-    case passiveReversed = "PassiveReversed"
-    case promotion = "Promotion"
+import SwiftUI
 
-    /// Returns the name of the leading image asset associated with the badge type.
-    public var leadingImage: any FunctionalIcon {
-        switch self {
-        case .promotion:
-            return BankingTheme.icons.functional.star
-        default:
-            return BankingTheme.icons.functional.pending
-        }
+struct HeaderContentView<Content: View>: View {
+    let headerText: String
+    let content: Content
+
+    init(headerText: String, @ViewBuilder content: () -> Content) {
+        self.headerText = headerText
+        self.content = content()
     }
 
-    /// Returns the foreground color of the icon associated with the badge type.
-    public var iconForegroundColor: Color {
-        switch self {
-        case .info:
-            return BankingTheme.colors.onInfo
-        case .success:
-            return BankingTheme.colors.onSuccess
-        case .error:
-            return BankingTheme.colors.error
-        case .passive, .passiveReversed:
-            return BankingTheme.colors.textSecondary
-        case .promotion:
-            return BankingTheme.colors.error
-        }
-    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(headerText)
+                .font(.headline)
+                .padding(.vertical, 4)
 
-    /// Returns the text color associated with the badge type.
-    public var textColor: Color {
-        switch self {
-        case .info:
-            return BankingTheme.colors.onInfo
-        case .success:
-            return BankingTheme.colors.onSuccess
-        case .error:
-            return BankingTheme.colors.error
-        case .passive, .passiveReversed:
-            return BankingTheme.colors.textSecondary
-        case .promotion:
-            return BankingTheme.colors.error
+            content
+                .padding(.horizontal)
         }
+        .background(Color.white)
+        .cornerRadius(8)
+        .shadow(radius: 2)
+        .padding(.horizontal)
     }
+}
 
-    /// Returns the background color associated with the badge type.
-    public var backgroundColor: Color {
-        switch self {
-        case .info:
-            return BankingTheme.colors.illustrationBlueShadow
-        case .success:
-            return BankingTheme.colors.success
-        case .error:
-            return BankingTheme.colors.errorContainer
-        case .passive:
-            return BankingTheme.colors.illustrationGrey
-        case .passiveReversed, .promotion:
-            return BankingTheme.colors.background
+
+struct ContentView: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                HeaderContentView(headerText: "Account Group 1") {
+                    VStack(alignment: .leading) {
+                        Text("Account 1: Savings")
+                        Text("Account 2: Checking")
+                    }
+                }
+
+                HeaderContentView(headerText: "Account Group 2") {
+                    VStack(alignment: .leading) {
+                        Text("Account 3: Business Account")
+                        Text("Account 4: Investment Account")
+                    }
+                }
+
+                HeaderContentView(headerText: "Empty Group") {
+                    Text("No accounts available.")
+                        .foregroundColor(.gray)
+                }
+            }
         }
     }
 }
