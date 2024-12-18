@@ -1,9 +1,21 @@
-@ViewBuilder
-private func accountList(for accounts: [Account]) -> some View {
-    VStack(alignment: .leading, spacing: BankingTheme.spacing.small) { // Adjust spacing here
-        ForEach(accounts, id: \.self) { account in
-            let presenter = viewModel.createAccountPresenter(account: account)
-            AccountPreferenceCard(data: presenter.toAccountPreferenceCardData())
-        }
+import Foundation
+import SwiftUI
+import Umbrella
+import Theme
+import Components
+import Koin
+
+extension AccountPreferencesAccountPresenter {
+    func toAccountPreferenceCardData() -> AccountPreferenceCardData {
+        let badgeIndicators: [BadgeIndicatorData] = isHidden
+            ? []
+            : [BadgeIndicatorData(type: .passiveReversed, text: "Hidden")]
+
+        return AccountPreferenceCardData(
+            primaryText: itemFirstRowLabel,
+            secondaryText: itemSecondRowLabel,
+            showMiniCard: shouldShowMiniCard,
+            badgeIndicators: badgeIndicators
+        )
     }
 }
