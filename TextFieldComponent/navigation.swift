@@ -1,37 +1,58 @@
-//
-// AccountPreferencesAccountPresenterMapper.swift
-//
-// Created by Stephan, Hiran on 2024-12-18.
-//
+struct AccountPreferenceCard: View {
+    /// Data source for configuring the card content
+    private let data: AccountPreferenceCardData
 
-import Umbrella
-import Components
-
-/// Extension to map `AccountPreferencesAccountPresenter` to `AccountPreferenceCardData`.
-extension AccountPreferencesAccountPresenter {
+    /// Tracks the width of the primary text container
+    @State private var containerWidth: CGFloat = 0
     
-    /// Maps the account presenter to a data model `AccountPreferenceCardData`.
-    ///
-    /// This function converts the presenter's properties into a structured `AccountPreferenceCardData`.
-    /// It conditionally includes a badge indicator if the `isHidden` property is `true`.
-    ///
-    /// - Returns: An instance of `AccountPreferenceCardData` containing:
-    ///   - `primaryText`: The first row of label text.
-    ///   - `secondaryText`: The second row of label text.
-    ///   - `showMiniCard`: A boolean indicating if a mini card should be displayed.
-    ///   - `badgeIndicators`: An optional badge indicator for "Hidden" state.
-    func toAccountPreferenceCardData() -> AccountPreferenceCardData {
-        /// Badge indicators array, conditionally populated if `isHidden` is `true`.
-        let badgeIndicators: [BadgeIndicatorData] = isHidden
-            ? [BadgeIndicatorData(type: .passiveReversed, text: "Hidden")]
-            : []
-        
-        /// Constructs and returns the account preference card data.
-        return AccountPreferenceCardData(
-            primaryText: itemFirstRowLabel,
-            secondaryText: itemSecondRowLabel,
-            showMiniCard: shouldShowMiniCard,
-            badgeIndicators: badgeIndicators
-        )
+    /// Action handler for the card tap
+    let onTap: () -> Void
+
+    /// Initializes the account preference card with provided data.
+    /// - Parameter data: The data used to populate the card's content.
+    init(data: AccountPreferenceCardData, onTap: @escaping () -> Void) {
+        self.data = data
+        self.onTap = onTap
+    }
+
+    /// The main layout of the account preference card.
+    var body: some View {
+        HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+            VStack(alignment: .leading, spacing: BankingTheme.dimens.smallMedium) {
+                /// Displays the primary and secondary text
+                AccountTextSection(
+                    primaryText: data.primaryText,
+                    secondaryText: data.secondaryText
+                )
+                .onPreferenceChange(ContainerFramePreferenceKey.self) { frame in
+                    containerWidth = frame.width
+                }
+
+                /// Displays badge indicators if available
+                if !data.badgeIndicators.isEmpty {
+                    BadgeIndicatorListView(
+                        badges: data.badgeIndicators,
+                        containerWidth: containerWidth
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            /// Displays a debit card if available
+            if data.showMiniCard {
+                MiniCardView()
+            }
+
+            /// Displays a chevron icon on the right
+            ListCellIconView(imageName: BankingTheme.icons.functional.chevronRight.rawValue)
+        }
+        .padding(BankingTheme.dimens.medium)
+        .background(BankingTheme.colors.surface)
+        .cornerRadius(BankingTheme.dimens.smallMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .onTapGesture {
+            /// Trigger the tap action
+            onTap()
+        }
     }
 }
