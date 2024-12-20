@@ -1,61 +1,53 @@
 //
-//  AccountPreferencesDetailsScene.swift
+//  AccountPreferencesDetailsScreen.swift
 //  Created by Stephan, Hiran on 2024-12-19.
 //
 
 import SwiftUI
-import Components
-import Theme
 import Umbrella
+import Theme
+import Components
 import Koin
 
-/// A view representing the Account Preferences Details scene.
-public struct AccountPreferencesDetailsScene: View {
+/// A SwiftUI view that displays the details of account preferences.
+struct AccountPreferencesDetailsScreen: View {
     // MARK: - Properties
     
-    /// The view model for the Account Preferences Details scene.
-    let viewModel: AccountPreferencesDetailsViewModel
+    /// The view model for managing the account preferences details.
+    @State private var viewModel: AccountPreferencesDetailsViewModel
+
+    /// An observed object to handle state updates for resource and UI states.
+    @ObservedObject private var model: ObservableModelState<AccountPreferencesDetailsResourceUiState, AccountPreferencesDetailsUiState>
 
     // MARK: - Initializer
     
-    /// Initializes the `AccountPreferencesDetailsScene` with an optional dependency injection.
-    /// - Parameter viewModel: The view model for this scene, injected via Koin by default.
-    public init(viewModel: AccountPreferencesDetailsViewModel = KoinApplication.inject()) {
-        self.viewModel = viewModel
+    /// Initializes the screen with the provided view model.
+    /// - Parameter viewModel: The view model for this screen, injected by default.
+    init(viewModel: AccountPreferencesDetailsViewModel) {
+        self._viewModel = State(initialValue: viewModel)
+        self._model = ObservedObject(
+            initialValue: ObservableModelState(
+                resourcePublisher: asPublisher(viewModel.resourceStateWrapped),
+                statePublisher: asPublisher(viewModel.uiStateWrapped)
+            )
+        )
     }
 
     // MARK: - Body
     
-    public var body: some View {
-        ZStack {
-            VStack {
-                // Retrieve and use the screen presenter from the view model.
-                let presenter = viewModel.createScreenPresenter()
-                
-                // Display the masthead with a title and back button.
-                MastheadRegularView(
-                    title: presenter.screenTitle,
-                    leadingView: BackButton()
-                )
-                
-                Spacer()
-                
-                // The main content of the screen.
-                AccountPreferencesDetailsScreen(
-                    viewModel: viewModel
-                )
-            }
-        }
-        .onAppear {
-            // Attach the view model to the view lifecycle.
-            viewModel.attachViewModel()
+    var body: some View {
+        VStack {
+            // Placeholder for the screen content.
+            Text("AccountPreferencesDetailsScreen")
+            
+            Spacer()
         }
     }
 }
 
 // MARK: - Preview
 
-/// A preview for the `AccountPreferencesDetailsScene`.
+/// A preview for the `AccountPreferencesDetailsScreen`.
 #Preview {
-    AccountPreferencesDetailsScene()
+    AccountPreferencesDetailsScreen(viewModel: AccountPreferencesDetailsViewModel())
 }
