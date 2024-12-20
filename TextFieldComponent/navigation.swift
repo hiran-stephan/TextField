@@ -33,3 +33,8 @@ private func contentView() -> some View {
 private var accountGroups: [AccountGroup] {
     model.state?.accountsSummary?.accountGroups ?? []
 }
+
+
+private func createGroupPresenter(for accountGroup: AccountGroup) -> GroupPresenterType {
+    viewModel.createAccountGroupPresenter(accountGroup: accountGroup)
+}
