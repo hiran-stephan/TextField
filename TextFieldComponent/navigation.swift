@@ -30,4 +30,6 @@ private func contentView() -> some View {
     
 }
 
-
+private var accountGroups: [AccountGroup] {
+    model.state?.accountsSummary?.accountGroups ?? []
+}
