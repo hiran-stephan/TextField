@@ -1,80 +1,68 @@
-@ViewBuilder
-private func contentView() -> some View {
-    guard let accountGroups = model.state?.accountsSummary?.accountGroups else {
-        return EmptyView()
-    }
+import SwiftUI
+
+/// A reusable component for displaying a section with primary and secondary text.
+struct AccountTextSection: View {
+    /// The primary text to be displayed.
+    let primaryText: String
     
-    VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-        ForEach(accountGroups, id: \.self) { accountGroup in
-            let groupPresenter = viewModel.createAccountGroupPresenter(accountGroup: accountGroup)
-            let groupAccounts = groupPresenter.sortedAccountsList()
-            GroupSectionContainerView(groupPresenter: groupPresenter) {
-                ForEach(groupAccounts, id: \.self) { account in
-                    makeAccountRow(account)
-                }
-            }
+    /// The secondary text to be displayed.
+    let secondaryText: String
+    
+    /// Styling for the text section.
+    let style: AccountTextSectionStyle
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: style.spacing) {
+            Text(primaryText)
+                .font(style.primaryTextFont)
+                .foregroundColor(style.primaryTextColor)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Text(secondaryText)
+                .font(style.secondaryTextFont)
+                .foregroundColor(style.secondaryTextColor)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        
-        makeLastOnlineView()
-        
-        // Apply padding to the entire VStack
-        Spacer() // Add spacing if needed
+        .padding(style.padding)
+        .background(
+            GeometryReader { geometry in
+                Color.clear
+                    .preference(
+                        key: ContainerFramePreferenceKey.self,
+                        value: geometry.frame(in: .global)
+                    )
+            }
+        )
     }
-    .padding(.horizontal, BankingTheme.dimens.medium)
-    .padding(.bottom, BankingTheme.dimens.medium)
-    
-    VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-        // Other content
-        makeBottomSection()
-    }
-    
 }
 
-private var accountGroups: [AccountGroup] {
-    model.state?.accountsSummary?.accountGroups ?? []
+/// A struct to define the styling for `AccountTextSection`.
+struct AccountTextSectionStyle {
+    let primaryTextFont: Font
+    let secondaryTextFont: Font
+    let primaryTextColor: Color
+    let secondaryTextColor: Color
+    let spacing: CGFloat
+    let padding: EdgeInsets
+    
+    /// Default styling for the section.
+    static let `default` = AccountTextSectionStyle(
+        primaryTextFont: BankingTheme.typography.headingSmall,
+        secondaryTextFont: BankingTheme.typography.bodySmall,
+        primaryTextColor: BankingTheme.colors.textPrimary,
+        secondaryTextColor: BankingTheme.colors.textSecondary,
+        spacing: BankingTheme.spacing.noPadding,
+        padding: EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+    )
 }
 
-
-private func createGroupPresenter(for accountGroup: AccountGroup) -> GroupPresenterType {
-    viewModel.createAccountGroupPresenter(accountGroup: accountGroup)
+/// A preference key to pass frame data up the view hierarchy.
+struct ContainerFramePreferenceKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+    
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
 }
-
-
-
-
-
-
-
-@ViewBuilder
-    private func contentView() -> some View {
-        if let accountGroups = getAccountGroups(), !accountGroups.isEmpty {
-            VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-                ForEach(accountGroups, id: \.self) { accountGroup in
-                    createGroupSection(for: accountGroup)
-                }
-                makeLastOnlineView()
-            }
-            .padding(.horizontal, BankingTheme.dimens.medium)
-            .padding(.bottom, BankingTheme.dimens.medium)
-
-            makeBottomSection()
-        } else {
-            EmptyView()
-        }
-    }
-
-    /// Retrieves account groups or returns `nil` if unavailable.
-    private func getAccountGroups() -> [AccountGroup]? {
-        model.state?.accountsSummary?.accountGroups
-    }
-
-    /// Creates a group section view for a given account group.
-    private func createGroupSection(for accountGroup: AccountGroup) -> some View {
-        let groupPresenter = viewModel.createAccountGroupPresenter(accountGroup: accountGroup)
-        let groupAccounts = groupPresenter.sortedAccountsList()
-        return GroupSectionContainerView(groupPresenter: groupPresenter) {
-            ForEach(groupAccounts, id: \.self) { account in
-                makeAccountRow(account)
-            }
-        }
-    }
