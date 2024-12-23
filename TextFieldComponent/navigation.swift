@@ -1,46 +1,30 @@
-import SwiftUI
-import Umbrella
-import CustomizeBankingUI
-import BiometricsSetupUI
-import CustomerServiceUI
-import SecurityCenterUI
-import AccountPreferencesUI
+data class AccountPreferencesDetails(
+    val id: String
+) : SettingsNavigationItems(path = "account-preferences-details") {
+    override val route: String
+        get() = "/$domain/$path?id=$id"
 
-public struct SettingsNavigation: View {
-    private let item: NavigationItem
+    override val deepLink: String
+        get() = "/$domain/$path?id=$id"
 
-    public init(item: NavigationItem) {
-        self.item = item
-    }
-
-    public var body: some View {
-        switch item.route {
-        case SettingsNavigationItems.Main.shared.route:
-            Text("TBD") // Placeholder for Main Scene
-        case SettingsNavigationItems.Customize.shared.route:
-            CustomizeBankingScene()
-                .navigationBarBackButtonHidden()
-        case SettingsNavigationItems.BiometricsSetup.shared.route:
-            BiometricsSetupInstructionsScene()
-                .navigationBarBackButtonHidden()
-        case SettingsNavigationItems.BiometricsSetupPassword.shared.route:
-            BiometricsSetupPasswordScene()
-                .navigationBarBackButtonHidden()
-        case SettingsNavigationItems.SecurityCenterSetup.shared.route:
-            SecurityCenterScene()
-                .navigationBarBackButtonHidden()
-        case SettingsNavigationItems.AccountPreferences.shared.route:
-            AccountPreferencesScene()
-                .navigationBarBackButtonHidden()
-        case let route where route.starts(with: SettingsNavigationItems.AccountPreferencesDetails.shared.route):
-            if let detailsItem = item as? SettingsNavigationItems.AccountPreferencesDetails {
-                AccountPreferencesDetailsScene(navigationItem: detailsItem)
-                    .navigationBarBackButtonHidden()
-            } else {
-                Text("Invalid Details Route")
-            }
-        default:
-            Text("No scene found")
+    companion object {
+        // Base route for comparisons
+        const val baseRoute = "/$DOMAIN/account-preferences-details"
+        
+        fun parse(url: String): AccountPreferencesDetails {
+            val params = url.parseQueryString()
+            return AccountPreferencesDetails(
+                id = params["id"]?.firstOrNull() ?: "missing"
+            )
         }
     }
 }
+
+
+case let route where route.starts(with: SettingsNavigationItems.AccountPreferencesDetails.baseRoute):
+    if let detailsItem = item as? SettingsNavigationItems.AccountPreferencesDetails {
+        AccountPreferencesDetailsScene(navigationItem: detailsItem)
+            .navigationBarBackButtonHidden()
+    } else {
+        Text("Invalid Details Route")
+    }
