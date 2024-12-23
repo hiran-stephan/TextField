@@ -1,95 +1,56 @@
-package com.cibc.account.preferences.data.datasources
+extension AccountPreferencesDetailsScreen {
+    /// A view that displays an account nickname with a button.
+    ///
+    /// This view is used to show a label (account nickname) and a button for further actions.
+    /// The button can trigger a specific function passed as a closure.
+    private struct AccountNicknameView: View {
+        /// The label to display as the account nickname.
+        let label: String
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+        /// The text to display on the button.
+        let buttonText: String
 
-class AccountPreferencesRepositoryMock : AccountPreferencesRepository {
+        /// The action to perform when the button is tapped.
+        let onButtonTap: () -> Void
 
-    override suspend fun loadAccounts(): Flow<NetworkResultState<List<AccountPreferencesAccountGroup>>> {
-        return flow {
-            emit(NetworkResultState.Loading)
-            delay(1000) // Simulate API call delay
-
-            // Mocked account preference groups
-            val accountGroups = listOf(
-                getDepositAccountGroup(),
-                getLoanAccountGroup(),
-                getCreditAccountGroup()
-            )
-
-            emit(NetworkResultState.Success(accountGroups))
+        /// Initializes the `AccountNicknameView`.
+        ///
+        /// - Parameters:
+        ///   - label: The label to display as the account nickname.
+        ///   - buttonText: The text to display on the button.
+        ///   - onButtonTap: The closure to execute when the button is tapped.
+        init(label: String, buttonText: String, onButtonTap: @escaping () -> Void) {
+            self.label = label
+            self.buttonText = buttonText
+            self.onButtonTap = onButtonTap
         }
-    }
 
-    override suspend fun loadResources(): Flow<NetworkResultState<ContentResources>> {
-        return flow {
-            emit(NetworkResultState.Loading)
-            delay(500) // Simulate API call delay
+        var body: some View {
+            HStack(alignment: .top, spacing: BankingTheme.dimensions.mediumLarge) {
+                VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+                    Text(label)
+                        .typography(BankingTheme.typography.bodySmall)
+                        .foregroundColor(BankingTheme.colors.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                }
 
-            val customerServiceContent = ContentFile(
-                id = "123",
-                content = "Mock customer service content"
-            )
-
-            emit(NetworkResultState.Success(ContentResources(content = customerServiceContent)))
+                HStack(alignment: .center, spacing: BankingTheme.dimensions.small) {
+                    TextLinkButton(
+                        title: buttonText,
+                        type: .default,
+                        removePadding: true
+                    ) {
+                        onButtonTap()
+                    }
+                }
+                .padding(.vertical, BankingTheme.dimensions.small)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.vertical, BankingTheme.dimensions.mediumLarge)
+            .padding(.horizontal, BankingTheme.dimensions.mediumLarge)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .background(BankingTheme.colors.illustrationGrey)
+            .cornerRadius(BankingTheme.dimensions.smallMedium)
         }
-    }
-
-    private fun getDepositAccountGroup(): AccountPreferencesAccountGroup {
-        val depositAccounts = listOf(
-            AccountPreferencesAccount(
-                id = "1",
-                group = "DEPOSIT",
-                accountNumber = "12345",
-                maskedAccountNumber = "*12345",
-                productName = "Savings Account",
-                currentBalance = "500.00",
-                availableBalance = "400.00",
-                accountStatus = "ACTIVE"
-            )
-        )
-        return AccountPreferencesAccountGroup(
-            group = "DEPOSIT",
-            accounts = depositAccounts
-        )
-    }
-
-    private fun getLoanAccountGroup(): AccountPreferencesAccountGroup {
-        val loanAccounts = listOf(
-            AccountPreferencesAccount(
-                id = "2",
-                group = "LOAN",
-                accountNumber = "67890",
-                maskedAccountNumber = "*67890",
-                productName = "Personal Loan",
-                currentBalance = "2000.00",
-                availableBalance = null,
-                accountStatus = "ACTIVE"
-            )
-        )
-        return AccountPreferencesAccountGroup(
-            group = "LOAN",
-            accounts = loanAccounts
-        )
-    }
-
-    private fun getCreditAccountGroup(): AccountPreferencesAccountGroup {
-        val creditAccounts = listOf(
-            AccountPreferencesAccount(
-                id = "3",
-                group = "CREDIT",
-                accountNumber = "11111",
-                maskedAccountNumber = "*11111",
-                productName = "Credit Card",
-                currentBalance = "3000.00",
-                availableBalance = "1000.00",
-                accountStatus = "ACTIVE"
-            )
-        )
-        return AccountPreferencesAccountGroup(
-            group = "CREDIT",
-            accounts = creditAccounts
-        )
     }
 }
