@@ -1,104 +1,68 @@
-struct AccountPreferencesDetailsScreen: View {
-    @State private var isToggled: Bool = false
-    private let viewModel: AccountPreferencesDetailsViewModel
-    @ObservedObject private var model: ObservableModelState<AccountPreferencesDetailsResourceUIState>
-    
-    init(viewModel: AccountPreferencesDetailsViewModel) {
-        self.viewModel = viewModel
-        self.model = ObservableModelState(
-            resourcePublisher: asPublisher(viewModel.resourceStateWrapped),
-            statePublisher: asPublisher(viewModel.uiStateWrapped)
-        )
+private func createPreferenceCard<Content: View>(
+    headerText: String,
+    infoIconAccessibilityText: String,
+    infoIconDialogBodyText: String,
+    infoIconDialogCancelButtonText: String,
+    content: @escaping () -> Content
+) -> some View {
+    AccountPreferenceCardContainerView(
+        headerText: headerText,
+        infoIconAccessibilityText: infoIconAccessibilityText,
+        infoIconDialogBodyText: infoIconDialogBodyText,
+        infoIconDialogCancelButtonText: infoIconDialogCancelButtonText
+    ) {
+        content()
     }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            // Header Section
-            AccountPreferenceHeader(
-                data: AccountPreferenceHeaderData(
-                    primaryText: "Account name",
-                    secondaryText: "(••••0001)",
-                    badgeIndicators: Array(repeating: BadgeIndicatorData(type: .passive, text: "Hidden"), count: 3)
-                )
-            )
-            
-            // Account Control Section
-            createPreferenceCard(
-                headerText: presenter.accountControlHeaderTitle,
-                infoIconAccessibilityText: presenter.accountControlInfoIconAccessibilityText,
-                infoIconDialogBodyText: presenter.accountControlInfoIconDialogBodyText,
-                infoIconDialogCancelButtonText: presenter.infoIconDialogCloseButtonText,
-                items: [
-                    ListCellItemData(
-                        actionCellId: "1",
-                        actionPrimaryLabel: presenter.accountControlHideThisAccountText,
-                        actionPrimaryLabelAccessibilityText: presenter.accountControlHideThisAccountText
-                    )
-                ],
-                toggleAction: { isToggled.toggle() }
-            )
-            
-            // Account Nickname Section
-            createPreferenceCard(
-                headerText: presenter.accountNicknameHeaderTitle,
-                infoIconAccessibilityText: presenter.accountNicknameInfoIconAccessibilityText,
-                infoIconDialogBodyText: presenter.accountNicknameInfoIconDialogBodyText,
-                infoIconDialogCancelButtonText: presenter.infoIconDialogCloseButtonText
-            ) {
-                AccountNicknameView(
-                    label: presenter.accountNicknameText,
-                    buttonText: presenter.accountNicknameAddNicknameButtonText
-                )
-            }
-            
-            Spacer()
-                .padding(.horizontal, BankingTheme.dimens.medium)
-        }
-        .padding()
-    }
-    
-    private func createPreferenceCard(
-        headerText: String,
-        infoIconAccessibilityText: String,
-        infoIconDialogBodyText: String,
-        infoIconDialogCancelButtonText: String,
-        items: [ListCellItemData] = [],
-        toggleAction: (() -> Void)? = nil,
-        content: (() -> AnyView)? = nil
-    ) -> some View {
-        AccountPreferenceCardContainerView(
-            headerText: headerText,
-            infoIconAccessibilityText: infoIconAccessibilityText,
-            infoIconDialogBodyText: infoIconDialogBodyText,
-            infoIconDialogCancelButtonText: infoIconDialogCancelButtonText
-        ) {
-            if let toggleAction = toggleAction {
-                ForEach(items, id: \.actionCellId) { item in
-                    ListCellItemToggle(
-                        backgroundColor: BankingTheme.colors.illustrationGrey,
-                        listCellItemData: item,
-                        showDivider: false,
-                        onAction: toggleAction,
-                        isToggled: $isToggled
-                    )
-                }
-            } else if let content = content {
-                content()
-            }
-        }
+}
+
+createPreferenceCard(
+    headerText: presenter.accountNicknameHeaderTitle,
+    infoIconAccessibilityText: presenter.accountNicknameInfoIconAccessibilityText,
+    infoIconDialogBodyText: presenter.accountNicknameInfoIconDialogBodyText,
+    infoIconDialogCancelButtonText: presenter.infoIconDialogCloseButtonText
+) {
+    AccountNicknameView(
+        label: presenter.accountNicknameText,
+        buttonText: presenter.accountNicknameAddNicknameButtonText
+    ) {
+        // Perform action when the button is tapped
+        print("Nickname button tapped")
     }
 }
 
 private struct AccountNicknameView: View {
     let label: String
     let buttonText: String
-    
+    let onButtonTap: () -> Void
+
+    init(label: String, buttonText: String, onButtonTap: @escaping () -> Void) {
+        self.label = label
+        self.buttonText = buttonText
+        self.onButtonTap = onButtonTap
+    }
+
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(label)
-                .font(BankingTheme.typography.body)
-            Button(buttonText, action: {})
-                .buttonStyle(PrimaryButtonStyle())
+        VStack(alignment: .leading, spacing: BankingTheme.dimens.mediumLarge) {
+            VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+                Text(label)
+                    .typography(BankingTheme.typography.bodySmall)
+                    .foregroundColor(BankingTheme.colors.textSecondary)
+            }
+
+            HStack(alignment: .center, spacing: BankingTheme.dimens.small) {
+                TextLinkButton(
+                    title: buttonText,
+                    type: .default,
+                    removePadding: true,
+                    onButtonTap: onButtonTap
+                )
+            }
+            .padding(.vertical, BankingTheme.dimens.small)
+
+            Spacer()
         }
+        .padding(BankingTheme.dimens.mediumLarge)
+        .background(BankingTheme.colors.illustrationGrey)
+        .cornerRadius(8) // Optionally, add corner radius for better styling
     }
 }
