@@ -4,58 +4,40 @@ extension AccountPreferencesDetailsScreen {
     private struct AccountNicknameFormView: View {
         // MARK: - Properties
 
-        /// The label to display as the account nickname.
         let label: String
-
-        /// The text to display on the button.
         @State var buttonText: String
-
-        /// The inline message text to display under the field.
         let inlineMessageText: String
-
-        /// The primary button's title.
         let primaryButtonText: String
-
-        /// The secondary button's title.
         let secondaryButtonText: String
-
-        /// The action to perform when the button is tapped.
-        let onButtonTap: () -> Void
-
-        // MARK: - Initializer
-
-        init(
-            label: String,
-            buttonText: String,
-            inlineMessageText: String,
-            primaryButtonText: String,
-            secondaryButtonText: String,
-            onButtonTap: @escaping () -> Void
-        ) {
-            self.label = label
-            self._buttonText = State(initialValue: buttonText)
-            self.inlineMessageText = inlineMessageText
-            self.primaryButtonText = primaryButtonText
-            self.secondaryButtonText = secondaryButtonText
-            self.onButtonTap = onButtonTap
-        }
+        let onTextFieldCloseButtonTap: () -> Void
+        let onPrimaryButtonTap: () -> Void
+        let onSecondaryButtonTap: () -> Void
 
         // MARK: - Body
 
         var body: some View {
-            VStack(alignment: .leading, spacing: BankingTheme.dimensions.medium) {
+            VStack(spacing: BankingTheme.dimensions.medium) {
+                formSection()
+                buttonSection()
+            }
+            .padding(.horizontal, BankingTheme.dimensions.microSmall)
+        }
+
+        // MARK: - Methods
+
+        /// Builds the form section with the text field and inline message.
+        private func formSection() -> some View {
+            VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
                 // TextField with trailing icon
-                HStack(spacing: BankingTheme.spacing.noPadding) {
-                    TextFieldGeneral(
-                        text: $buttonText,
-                        label: label,
-                        trailingIcon: BankingTheme.icons.functional.close.rawValue,
-                        trailingIconForegroundColor: BankingTheme.colors.textPrimary,
-                        isError: false,
-                        onTrailingIconClicked: onButtonTap
-                    )
-                    .padding(.horizontal, BankingTheme.dimensions.medium)
-                }
+                TextFieldGeneral(
+                    text: $buttonText,
+                    label: label,
+                    trailingIcon: BankingTheme.icons.functional.close.rawValue,
+                    trailingIconForegroundColor: BankingTheme.colors.textPrimary,
+                    isError: false,
+                    onTrailingIconClicked: onTextFieldCloseButtonTap
+                )
+                .padding(.horizontal, BankingTheme.dimensions.medium)
 
                 // Inline message
                 Text(inlineMessageText)
@@ -64,38 +46,37 @@ extension AccountPreferencesDetailsScreen {
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding(.top, BankingTheme.dimensions.small)
                     .padding(.horizontal, BankingTheme.dimensions.mediumLarge)
-
-                // Primary and Secondary Buttons
-                VStack(alignment: .leading, spacing: BankingTheme.dimensions.medium) {
-                    PrimaryButton(
-                        content: {
-                            Text(primaryButtonText)
-                        },
-                        buttonPaddingHorizontal: ButtonPaddingHorizontal(
-                            leadingLength: 0,
-                            trailingLength: 0
-                        )
-                    ) {
-                        // Primary button action
-                        onButtonTap()
-                    }
-
-                    SecondaryButton(
-                        content: {
-                            Text(secondaryButtonText)
-                        },
-                        buttonPaddingHorizontal: ButtonPaddingHorizontal(
-                            leadingLength: 0,
-                            trailingLength: 0
-                        )
-                    ) {
-                        // Secondary button action
-                        onButtonTap()
-                    }
-                }
-                .padding(.top, BankingTheme.dimensions.extraLarge)
+                    .background(BankingTheme.colors.illustrationGrey)
+                    .cornerRadius(BankingTheme.dimensions.smallMedium)
             }
-            .padding(.horizontal, BankingTheme.dimensions.microSmall)
+        }
+
+        /// Builds the button section with primary and secondary buttons.
+        private func buttonSection() -> some View {
+            VStack(alignment: .leading, spacing: BankingTheme.dimensions.medium) {
+                PrimaryButton(
+                    content: {
+                        Text(primaryButtonText)
+                    },
+                    buttonPaddingHorizontal: ButtonPaddingHorizontal(
+                        leadingLength: 0,
+                        trailingLength: 0
+                    ),
+                    action: onPrimaryButtonTap
+                )
+
+                SecondaryButton(
+                    content: {
+                        Text(secondaryButtonText)
+                    },
+                    buttonPaddingHorizontal: ButtonPaddingHorizontal(
+                        leadingLength: 0,
+                        trailingLength: 0
+                    ),
+                    action: onSecondaryButtonTap
+                )
+            }
+            .padding(.top, BankingTheme.dimensions.extraLarge)
         }
     }
 }
