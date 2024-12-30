@@ -51,3 +51,12 @@ extension View {
         )
     }
 }
+ 
+Text("Custom Card Style")
+    .backgroundCardStyle(
+        horizontalPadding: 16,
+        verticalPadding: 20,
+        cornerRadius: 15,
+        backgroundColor: Color.blue,
+        outerPadding: 24
+    )
