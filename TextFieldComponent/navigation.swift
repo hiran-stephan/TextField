@@ -1,56 +1,44 @@
-@ViewBuilder
-private func HStackOrVStack<Content: View>(
-    isPad: Bool,
-    alignment: HorizontalAlignment = .center,
-    spacing: CGFloat? = nil,
-    @ViewBuilder content: () -> Content
-) -> some View {
-    if isPad {
-        HStack(alignment: .top, spacing: spacing) {
-            content()
-        }
-    } else {
-        VStack(alignment: alignment, spacing: spacing) {
-            content()
-        }
-    }
-}
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
-private func buttonSection() -> some View {
-    let isPad = UIDevice.current.userInterfaceIdiom == .pad
+@Serializable
+data class AccountPreferencesRequest(
+    @SerialName("accounts")
+    val accounts: List<AccountPreferences>,
 
-    return HStackOrVStack(isPad: isPad, alignment: .leading, spacing: BankingTheme.dimens.medium) {
-        if isPad {
-            SecondaryButton(
-                content: {
-                    Text(secondaryButtonText)
-                },
-                buttonPaddingHorizontal: .zero,
-                onSecondaryButtonTap
-            )
-            PrimaryButton(
-                content: {
-                    Text(primaryButtonText)
-                },
-                buttonPaddingHorizontal: .zero,
-                onPrimaryButtonTap
-            )
-        } else {
-            PrimaryButton(
-                content: {
-                    Text(primaryButtonText)
-                },
-                buttonPaddingHorizontal: .zero,
-                onPrimaryButtonTap
-            )
-            SecondaryButton(
-                content: {
-                    Text(secondaryButtonText)
-                },
-                buttonPaddingHorizontal: .zero,
-                onSecondaryButtonTap
-            )
-        }
-    }
-    .padding(.top, BankingTheme.dimens.extraLarge)
-}
+    @SerialName("consent")
+    val consent: Consent
+)
+
+@Serializable
+data class AccountPreferences(
+    @SerialName("id")
+    val id: String,
+
+    @SerialName("preferences")
+    val preferences: Preferences
+)
+
+@Serializable
+data class Preferences(
+    @SerialName("estatement")
+    val estatement: Boolean,
+
+    @SerialName("nickname")
+    val nickname: String,
+
+    @SerialName("visibility")
+    val visibility: Boolean
+)
+
+@Serializable
+data class Consent(
+    @SerialName("type")
+    val type: String,
+
+    @SerialName("version")
+    val version: String,
+
+    @SerialName("acceptTimestamp")
+    val acceptTimestamp: String
+)
