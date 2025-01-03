@@ -1,39 +1,32 @@
-final class AccountNicknameFormViewModel: ObservableObject {
-    enum Field {
-        case nickname
-    }
+data class FormValidationResults(
+    val nickname: ValidationResult
+)
 
-    @Published var nickname: String = "" {
-        didSet {
-            if nickname != oldValue {
-                validateNickname()
-            }
-        }
-    }
-    @Published var editingNickname = false
-    @Published var validationNickname: ValidationRule?
+fun AccountPreferencesDetailsViewModel.validateForm(nickname: String): FormValidationResults {
+    val nicknameFieldRules = listOf(
+        ValidationRule.Required(),
+        ValidationRule.MaxLength(20)
+    )
 
-    func edit(field: Field) {
-        editingNickname = field == .nickname
-    }
+    return FormValidationResults(
+        nickname = nicknameFieldRules.validate(nickname)
+    )
+}
 
-    private func validateNickname() {
-        let maxLengthRule = MaxLength(maximum: 20, message: "Nickname cannot exceed 20 characters.") // Adjust maximum as needed
-        if !maxLengthRule.isValid(nickname) {
-            validationNickname = maxLengthRule
-        } else {
-            validationNickname = nil
-        }
+private val _uiState = MutableStateFlow(AccountPreferencesDetailsUiState(validationMessage = null))
+val uiState = _uiState.asStateFlow()
+
+fun validateNickname(nickname: String) {
+    val validationResults = validateForm(nickname)
+    val nicknameResult = validationResults.nickname
+
+    if (!nicknameResult.isValid) {
+        _uiState.value = _uiState.value.copy(validationMessage = nicknameResult.message)
+    } else {
+        _uiState.value = _uiState.value.copy(validationMessage = null)
     }
 }
 
-sealed class MaxLength(
-    private val maximum: Int,
-    override val message: String
-) : ValidationRule(id = VALIDATE_LENGTH_MAX) {
-    override fun <T> isValid(item: T?): Boolean {
-        return (item as? CharSequence)?.length ?: 0 <= maximum
-    }
-}
-
-
+data class AccountPreferencesDetailsUiState(
+    val validationMessage: String? = null
+)
