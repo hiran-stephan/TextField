@@ -1,46 +1,55 @@
-override suspend fun updateAccountPreferences(
-    estatement: Boolean,
+private fun prepareRequestData(
     accountId: String,
-    nickname: String,
-    visibility: Boolean?,
-    consentType: String,
-    consentVersion: String,
-    consentTimestamp: String
-): AccountPreferencesResponse {
-    // Create Preferences object
-    val preferences = Preferences(
-        estatement = estatement,
-        nickname = nickname,
-        visibility = visibility ?: false
-    )
-
-    // Create AccountPreferences object
-    val accountPreferences = AccountPreferences(
+    preferences: PreferencesApiData
+): AccountPreferencesRequestApiData {
+    val accountPreferences = AccountPreferencesApiData(
         id = accountId,
         preferences = preferences
     )
-
-    // Create Consent object
-    val consent = Consent(
-        type = consentType,
-        version = consentVersion,
-        acceptTimestamp = consentTimestamp
+    return AccountPreferencesRequestApiData(
+        accounts = listOf(accountPreferences)
     )
+}
 
-    // Create the request object
-    val requestData = AccountPreferencesRequest(
-        accounts = listOf(accountPreferences),
-        consent = consent
-    )
 
-    // Make the API call
-    return builder.safeClientCall(referenceId) {
-        client.post {
+private suspend fun performApiCall(
+    referenceId: String,
+    requestData: AccountPreferencesRequestApiData
+): AccountPreferencesResponseApiData {
+    return builder.safeClientCall<AccountPreferencesResponseApiData>(referenceId, {
+        cache.clear()
+    }) {
+        client.patch {
             url {
-                path(API_ACCOUNTS_UPDATE_PREFERENCES)
+                path(API_UBS_AI_ACCOUNT_PREFERENCES)
+                appendSessionToken()
+                headers.append(HttpHeaders.ContentType, ContentType.Application.Json)
             }
-            headers.append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             setBody(requestData)
         }
     }
+}
+
+
+
+
+override suspend fun updateAccountNickname(
+    referenceId: String,
+    accountId: String,
+    nickname: String
+): AccountPreferencesResponseApiData {
+    val preferences = PreferencesApiData(nickname = nickname)
+    val requestData = prepareRequestData(accountId, preferences)
+    return performApiCall(referenceId, requestData)
+}
+
+
+override suspend fun updateAccountVisibility(
+    referenceId: String,
+    accountId: String,
+    visibility: Boolean?
+): AccountPreferencesResponseApiData {
+    val preferences = PreferencesApiData(visibility = visibility ?: false)
+    val requestData = prepareRequestData(accountId, preferences)
+    return performApiCall(referenceId, requestData)
 }
