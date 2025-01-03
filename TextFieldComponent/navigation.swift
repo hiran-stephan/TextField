@@ -1,34 +1,12 @@
-final class AccountNicknameFormViewModel: ObservableObject {
-    // Shared ViewModel from the KMP module
-    let sharedViewModel: SharedViewModel
+val REGEX_ALPHANUMERIC_WITH_SPECIAL_CHARS = "^[a-zA-Z0-9'& ,.-]*$".toRegex()
 
-    @Published var nickname: String = "" {
-        didSet {
-            if nickname != oldValue {
-                validationNickname = nil
-            }
-        }
-    }
+data class AlphanumericWithSpecialCharsValidation(
+    override val message: String
+) : PatternValidationRule(
+    id = VALIDATE_PATTERN_ALPHANUMERIC_WITH_SPECIAL_CHARS,
+    message = message,
+    pattern = RegExPatterns.REGEX_ALPHANUMERIC_WITH_SPECIAL_CHARS
+)
 
-    @Published var validationNickname: ValidationResult?
-    @Published var isNicknameValid: Bool = true
+const val VALIDATE_PATTERN_ALPHANUMERIC_WITH_SPECIAL_CHARS = "VALIDATE_PATTERN_ALPHANUMERIC_WITH_SPECIAL_CHARS"
 
-    init(sharedViewModel: SharedViewModel) {
-        self.sharedViewModel = sharedViewModel
-    }
-
-    func submitForm() {
-        let validationResult = sharedViewModel.validateForm(nickname: nickname)
-        updateValidation(result: validationResult.nickname)
-    }
-
-    private func updateValidation(result: ValidationResult) {
-        if !result.isValid {
-            validationNickname = result
-            isNicknameValid = false
-        } else {
-            validationNickname = nil
-            isNicknameValid = true
-        }
-    }
-}
