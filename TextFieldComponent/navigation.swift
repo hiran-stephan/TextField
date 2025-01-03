@@ -1,32 +1,34 @@
-data class FormValidationResults(
-    val nickname: ValidationResult
-)
+final class AccountNicknameFormViewModel: ObservableObject {
+    // Shared ViewModel from the KMP module
+    let sharedViewModel: SharedViewModel
 
-fun AccountPreferencesDetailsViewModel.validateForm(nickname: String): FormValidationResults {
-    val nicknameFieldRules = listOf(
-        ValidationRule.Required(),
-        ValidationRule.MaxLength(20)
-    )
+    @Published var nickname: String = "" {
+        didSet {
+            if nickname != oldValue {
+                validationNickname = nil
+            }
+        }
+    }
 
-    return FormValidationResults(
-        nickname = nicknameFieldRules.validate(nickname)
-    )
-}
+    @Published var validationNickname: ValidationResult?
+    @Published var isNicknameValid: Bool = true
 
-private val _uiState = MutableStateFlow(AccountPreferencesDetailsUiState(validationMessage = null))
-val uiState = _uiState.asStateFlow()
+    init(sharedViewModel: SharedViewModel) {
+        self.sharedViewModel = sharedViewModel
+    }
 
-fun validateNickname(nickname: String) {
-    val validationResults = validateForm(nickname)
-    val nicknameResult = validationResults.nickname
+    func submitForm() {
+        let validationResult = sharedViewModel.validateForm(nickname: nickname)
+        updateValidation(result: validationResult.nickname)
+    }
 
-    if (!nicknameResult.isValid) {
-        _uiState.value = _uiState.value.copy(validationMessage = nicknameResult.message)
-    } else {
-        _uiState.value = _uiState.value.copy(validationMessage = null)
+    private func updateValidation(result: ValidationResult) {
+        if !result.isValid {
+            validationNickname = result
+            isNicknameValid = false
+        } else {
+            validationNickname = nil
+            isNicknameValid = true
+        }
     }
 }
-
-data class AccountPreferencesDetailsUiState(
-    val validationMessage: String? = null
-)
