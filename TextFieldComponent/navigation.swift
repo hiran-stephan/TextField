@@ -1,55 +1,39 @@
-private fun prepareRequestData(
-    accountId: String,
-    preferences: PreferencesApiData
-): AccountPreferencesRequestApiData {
-    val accountPreferences = AccountPreferencesApiData(
-        id = accountId,
-        preferences = preferences
-    )
-    return AccountPreferencesRequestApiData(
-        accounts = listOf(accountPreferences)
-    )
-}
+final class AccountNicknameFormViewModel: ObservableObject {
+    enum Field {
+        case nickname
+    }
 
-
-private suspend fun performApiCall(
-    referenceId: String,
-    requestData: AccountPreferencesRequestApiData
-): AccountPreferencesResponseApiData {
-    return builder.safeClientCall<AccountPreferencesResponseApiData>(referenceId, {
-        cache.clear()
-    }) {
-        client.patch {
-            url {
-                path(API_UBS_AI_ACCOUNT_PREFERENCES)
-                appendSessionToken()
-                headers.append(HttpHeaders.ContentType, ContentType.Application.Json)
+    @Published var nickname: String = "" {
+        didSet {
+            if nickname != oldValue {
+                validateNickname()
             }
-            setBody(requestData)
+        }
+    }
+    @Published var editingNickname = false
+    @Published var validationNickname: ValidationRule?
+
+    func edit(field: Field) {
+        editingNickname = field == .nickname
+    }
+
+    private func validateNickname() {
+        let maxLengthRule = MaxLength(maximum: 20, message: "Nickname cannot exceed 20 characters.") // Adjust maximum as needed
+        if !maxLengthRule.isValid(nickname) {
+            validationNickname = maxLengthRule
+        } else {
+            validationNickname = nil
         }
     }
 }
 
-
-
-
-override suspend fun updateAccountNickname(
-    referenceId: String,
-    accountId: String,
-    nickname: String
-): AccountPreferencesResponseApiData {
-    val preferences = PreferencesApiData(nickname = nickname)
-    val requestData = prepareRequestData(accountId, preferences)
-    return performApiCall(referenceId, requestData)
+sealed class MaxLength(
+    private val maximum: Int,
+    override val message: String
+) : ValidationRule(id = VALIDATE_LENGTH_MAX) {
+    override fun <T> isValid(item: T?): Boolean {
+        return (item as? CharSequence)?.length ?: 0 <= maximum
+    }
 }
 
 
-override suspend fun updateAccountVisibility(
-    referenceId: String,
-    accountId: String,
-    visibility: Boolean?
-): AccountPreferencesResponseApiData {
-    val preferences = PreferencesApiData(visibility = visibility ?: false)
-    val requestData = prepareRequestData(accountId, preferences)
-    return performApiCall(referenceId, requestData)
-}
