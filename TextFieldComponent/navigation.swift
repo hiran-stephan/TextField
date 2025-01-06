@@ -1,9 +1,13 @@
-/// Creates an instance of `AccountPreferencesDetailsAccountPresenter` if available
-///
-/// - Returns: An optional `AccountPreferencesDetailsAccountPresenter`
-private func createAccountPresenter() -> AccountPreferencesDetailsAccountPresenter? {
-    guard let account = model?.state?.accountPreferencesAccountDetails else {
-        return nil
-    }
-    return viewModel.createAccountPresenter(account: account)
-}
+SectionHeadingView(
+               heading: "Profile Settings",
+               imageName: "person.fill",
+               imageAccessibilityText: "Profile Icon",
+               trailingIcon: "chevron.right",
+               trailingIconForegroundColor: .gray,
+               trailingIconAction: {
+                   print("Chevron tapped")
+               },
+               action: {
+                   print("Heading tapped")
+               }
+           )
