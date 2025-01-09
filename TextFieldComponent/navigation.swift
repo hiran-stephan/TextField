@@ -65,3 +65,5 @@ override suspend fun updateAccountNickname(
         )
     )
 }
+ 
+val matchingAccount = allAccounts.firstOrNull { it.id == accountId }
