@@ -67,3 +67,15 @@ override suspend fun updateAccountNickname(
 }
  
 val matchingAccount = allAccounts.firstOrNull { it.id == accountId }
+
+accounts
+    .indexOfFirst { it.id == accountId }
+    .takeIf { it != -1 }
+    ?.let { idx ->
+        accounts[idx] = accounts[idx].copy(nickname = newNickname)
+    }
+
+accounts.find { it.id == accountId }?.let { oldAccount ->
+    val idx = accounts.indexOf(oldAccount)
+    accounts[idx] = oldAccount.copy(nickname = newNickname)
+}
