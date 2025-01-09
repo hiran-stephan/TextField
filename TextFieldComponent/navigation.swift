@@ -1,77 +1,67 @@
-import SwiftUI
+private val allAccounts = mutableListOf(
+    AccountPreferencesAccount(
+        id = "af9f1f3...1",
+        productName = "EASYPATH ACCESS ACCOUNT",
+        nickname = "Sync Meeting Demo",
+        groupType = AccountGroupType.DEPOSIT,
+        // ...
+    ),
+    AccountPreferencesAccount(
+        id = "5114618...2",
+        productName = "SMALL BUSINESS BANKING",
+        groupType = AccountGroupType.DEPOSIT,
+        // ...
+    ),
+    AccountPreferencesAccount(
+        id = "3af506a...3",
+        productName = "INSTALLMENT",
+        groupType = AccountGroupType.LOAN,
+        // ...
+    ),
+    AccountPreferencesAccount(
+        id = "db0f305...4",
+        productName = "REVOLVING CREDIT",
+        groupType = AccountGroupType.CREDIT,
+        // ...
+    ),
+    // ... more accounts ...
+)
 
-struct TextFieldGeneral: View {
-    @Binding var text: String
-    var enabled: Bool = true
-    var label: String
-    var labelIcon: String?
-    var leadingIcon: String?
-    var trailingIcon: String?
-    var trailingIconForegroundColor: Color?
-    var placeholder: String?
-    var isError: Bool = false
-    var errorMessage: String? // Use raw error message text
-    var infoMessage: String? // Use raw info message text
-    var trailingIconAccessibilityLabel: String?
-    var onTrailingIconClicked: (() -> Void)?
-    var onQuickTipClicked: (() -> Void)?
-    
-    public init(
-        text: Binding<String>,
-        enabled: Bool = true,
-        label: String,
-        labelIcon: String? = nil,
-        leadingIcon: String? = nil,
-        trailingIcon: String? = nil,
-        trailingIconForegroundColor: Color? = nil,
-        placeholder: String? = nil,
-        isError: Bool = false,
-        errorMessage: String? = nil,
-        infoMessage: String? = nil,
-        trailingIconAccessibilityLabel: String? = nil,
-        onTrailingIconClicked: (() -> Void)? = nil,
-        onQuickTipClicked: (() -> Void)? = nil
-    ) {
-        self._text = text
-        self.enabled = enabled
-        self.label = label
-        self.labelIcon = labelIcon
-        self.leadingIcon = leadingIcon
-        self.trailingIcon = trailingIcon
-        self.trailingIconForegroundColor = trailingIconForegroundColor
-        self.placeholder = placeholder
-        self.isError = isError
-        self.errorMessage = errorMessage
-        self.infoMessage = infoMessage
-        self.trailingIconAccessibilityLabel = trailingIconAccessibilityLabel
-        self.onTrailingIconClicked = onTrailingIconClicked
-        self.onQuickTipClicked = onQuickTipClicked
+
+override suspend fun loadAccounts(): Flow<NetworkResultState<List<AccountPreferencesAccountGroup>>> = flow {
+    val depositAccounts = allAccounts.filter { it.groupType == AccountGroupType.DEPOSIT }
+    val loanAccounts = allAccounts.filter { it.groupType == AccountGroupType.LOAN }
+    val creditAccounts = allAccounts.filter { it.groupType == AccountGroupType.CREDIT }
+
+    emit(
+        NetworkResultState.Success(
+            listOf(
+                AccountPreferencesAccountGroup(label = "DEPOSIT", accounts = depositAccounts),
+                AccountPreferencesAccountGroup(label = "LOAN",    accounts = loanAccounts),
+                AccountPreferencesAccountGroup(label = "CREDIT",  accounts = creditAccounts)
+            )
+        )
+    )
+}
+
+
+
+override suspend fun updateAccountNickname(
+    accountId: String,
+    nickname: String
+): Flow<NetworkResultState<AccountPreferencesData>> = flow {
+    val idx = allAccounts.indexOfFirst { it.id == accountId }
+    if (idx != -1) {
+        val oldAccount = allAccounts[idx]
+        allAccounts[idx] = oldAccount.copy(nickname = nickname)
     }
-    
-    public var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Text Field and Other Content
-            TextField(placeholder ?? "", text: $text)
-                .disabled(!enabled)
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 8).stroke(isError ? Color.red : Color.gray))
 
-            // Error Message
-            if let errorMessage = errorMessage, isError {
-                InlineAlert(
-                    statusMessage: errorMessage,
-                    statusType: "error"
-                )
-            }
-
-            // Info Message
-            if let infoMessage = infoMessage, !isError {
-                InlineAlert(
-                    statusMessage: infoMessage,
-                    statusType: "information"
-                )
-            }
-        }
-        .padding()
-    }
+    emit(
+        NetworkResultState.Success(
+            AccountPreferencesData(
+                status = "SUCCESS",
+                problems = listOf(/* ... */)
+            )
+        )
+    )
 }
