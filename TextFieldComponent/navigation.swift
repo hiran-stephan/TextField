@@ -1,105 +1,38 @@
-/// Displays the view for editing the account nickname.
-/// - Returns: A view representing the edit nickname screen.
-@ViewBuilder
-private func editNicknameView() -> some View {
-    if let accountNicknameFormViewModel = self.accountNicknameFormViewModel {
-        AccountNicknameFormView(
-            viewModel: accountNicknameFormViewModel,
-            isEditingNickname: Binding(
-                get: { isEditingNickname },
-                set: { newValue in
-                    viewModel.onEditingNickname(isEditingNickname: newValue)
-                }
-            ),
-            onSave: handleSaveNickname
-        )
-    }
+/// The view model managing the account preferences details screen.
+@State private var viewModel: AccountPreferencesDetailsViewModel
+
+/// Observed object to handle state updates for resource and UI states.
+@ObservedObject private var model: ObservableModelState<AccountPreferencesDetailsResourceUiState, AccountPreferencesDetailsUiState>
+
+/// Observed object to handle state updates for actions.
+@ObservedObject private var actionModel: ObservableState<AccountPreferencesDetailsActionState>
+
+/// The view model for managing the account nickname form.
+@State private var accountNicknameFormViewModel: AccountNicknameFormViewModel? = nil
+
+/// Indicates whether a toggle is switched on or off. (To be moved to KMP)
+@State var isToggled: Bool = false
+
+/// Indicates whether the user is currently editing the account nickname.
+private var isEditingNickname: Bool {
+    model.state?.isEditingNickname ?? false
 }
 
-
-/// Displays the view for showing the account nickname.
-/// - Returns: A view representing the display nickname screen.
-@ViewBuilder
-private func displayNicknameView() -> some View {
-    let presenter = viewModel.createScreenPresenter()
-    if let accountPresenter = createAccountPresenter() {
-        AccountNicknameView(
-            label: presenter.accountNicknameText,
-            hasNickname: accountPresenter.hasNickname,
-            nickname: accountPresenter.nickname ?? "",
-            buttonText: presenter.accountNicknameAddNicknameButtonText,
-            onButtonTap: handleAddNickname
-        )
-    }
+/// Determines if the trailing icon in the header should be shown.
+private var showHeaderTrailingIcon: Bool {
+    createAccountPresenter()?.hasNickname ?? false
 }
 
-
-/// Handles the save action for the account nickname.
-private func handleSaveNickname() {
-    let presenter = viewModel.createScreenPresenter()
-
-    // Validate nickname
-    let validationResult = viewModel.validateForm(
-        nickname: nickname,
-        charLimit: nicknameCharLimit,
-        message: presenter.accountNicknameInlineMessageText
-    )
-
-    // Perform save if valid
-    if let id = model.state?.accountPreferencesAccountDetails?.id {
-        if let result = accountNicknameFormViewModel?.updateValidation(result: validationResult, resultText: nickname) {
-            viewModel.updateAccountNickname(
-                accountId: id,
-                nickname: nickname
-            )
-        }
-    }
+/// Indicates whether the account preferences update is complete.
+private var accountPreferencesUpdateComplete: Bool {
+    self.actionModel.state?.accountPreferencesUpdateComplete ?? false
 }
 
-
-
-/// Handles the add nickname action.
-private func handleAddNickname() {
-    accountNicknameFormViewModel = createAccountNicknameFormViewModel()
-    viewModel.onEditingNickname(isEditingNickname: true)
+/// The nickname entered by the user.
+private var nickname: String {
+    accountNicknameFormViewModel?.viewData.nickname ?? ""
 }
 
-
-
-/// Checks the status of account preferences update completion.
-/// - Returns: A boolean indicating whether the account preferences update is complete.
-func checkAccountPreferencesUpdateCompleteStatus() -> Bool {
-    DispatchQueue.main.async {
-        if accountPreferencesUpdateComplete {
-            viewModel.onEditingNickname(isEditingNickname: false)
-            accountNicknameFormViewModel?.clearNickname()
-        }
-    }
-    return accountPreferencesUpdateComplete
-}
-
-
-/// Creates a view model for the account nickname form.
-/// - Returns: An optional `AccountNicknameFormViewModel` instance.
-func createAccountNicknameFormViewModel() -> AccountNicknameFormViewModel? {
-    if let accountPresenter = createAccountPresenter() {
-        let viewData = AccountNicknameFormViewModelMapper.mapToAccountNicknameFormViewData(
-            presenter: viewModel.createScreenPresenter(),
-            accountPresenter: accountPresenter
-        )
-        return AccountNicknameFormViewModel(viewData: viewData)
-    }
-    return nil
-}
-
-
-/// Creates an instance of `AccountPreferencesDetailsAccountPresenter` if available.
-/// - Returns: An optional `AccountPreferencesDetailsAccountPresenter` instance.
-private func createAccountPresenter() -> AccountPreferencesDetailsAccountPresenter? {
-    guard let account = model.state?.accountPreferencesAccountDetails else {
-        return nil
-    }
-    return viewModel.createAccountPresenter(account: account)
-}
-
+/// The maximum character limit for the nickname.
+let nicknameCharLimit: Int32 = 20
 
