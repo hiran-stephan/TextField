@@ -143,3 +143,23 @@ TextFieldGeneral(
     }
 )
 
+
+
+TextField(
+    placeholder ?? "",
+    text: Binding(
+        get: { text }, // Get the current value of `text`
+        set: { newValue in
+            if let validation = textValidation {
+                // Validate the entire text
+                if validation(newValue) {
+                    text = newValue // Update only if valid
+                }
+                // Otherwise, silently ignore the invalid input
+            } else {
+                text = newValue // If no validation is provided, accept the input
+            }
+        }
+    )
+)
+.disabl
