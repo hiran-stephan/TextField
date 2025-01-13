@@ -1,25 +1,12 @@
-override suspend fun updateAccountNickname(
-    accountId: String,
+fun AccountPreferencesDetailsViewModel.isNicknameValid(
     nickname: String,
-): Flow<NetworkResultState<AccountPreferencesData>> {
-    return safeApiCall {
-        accounts
-            .indexOfFirst { it.id == accountId }
-            .takeIf { it != -1 }
-            ?.let { id ->
-                accounts[id] = accounts[id].copy(
-                    nickname = if (nickname.isBlank()) null else nickname
-                )
-            }
+): String {
+    val charLimit: Int = 20
+    val pattern = RegExPatterns.REGEX_ALPHANUMERIC_WITH_SPECIAL_CHARS
 
-        AccountPreferencesData(
-            status = "SUCCESS",
-            problems = listOf(
-                ProblemApiData(
-                    type = "error",
-                    id = "strategic"
-                )
-            )
-        )
-    }
+    // Step 1: Trim and filter in one go
+    val validNickname = nickname.take(charLimit).filter { pattern.matches(it.toString()) }
+
+    // Step 2: Return the valid nickname or empty string if it becomes invalid
+    return validNickname
 }
