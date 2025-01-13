@@ -112,3 +112,34 @@ TextFieldGeneral(
         character.isLetter
     }
 )
+
+
+TextField(placeholder ?? "", text: $text)
+    .disabled(!enabled)
+    .font(TextFieldGeneralTheme.Fonts.labelFont)
+    .foregroundColor(enabled ? BankingTheme.colors.textPrimary : TextFieldGeneralTheme.Colors.disabledTextColor)
+    .background(Color.clear)
+    .frame(height: TextFieldGeneralTheme.Spacing.textFieldHeight)
+    .onChange(of: text) { newValue in
+        if let validation = characterValidation {
+            if validation(newValue) {
+                // If the entire text passes validation, update it
+                text = newValue
+            } else {
+                // Revert to the previous valid text
+                text = text
+            }
+        }
+    }
+
+var textValidation: ((String) -> Bool)?
+
+TextFieldGeneral(
+    text: $inputText,
+    label: "Enter Text",
+    textValidation: { input in
+        // Allow only text with alphabetic characters and a max length of 10
+        input.allSatisfy { $0.isLetter } && input.count <= 10
+    }
+)
+
