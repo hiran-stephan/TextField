@@ -39,3 +39,5 @@ override suspend fun updateAccountNickname(
         }
     }
 }
+
+val referenceId = UUID.randomUUID().toString() // Generate a unique ID for tracking
