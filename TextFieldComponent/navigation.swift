@@ -1,49 +1,19 @@
-override suspend fun updateAccountNickname(
-    accountId: String,
-    nickname: String,
-): Flow<NetworkResultState<AccountPreferencesData>> {
-    return flow {
-        // Emit Loading state
-        emit(NetworkResultState.Loading("referenceId"))
-
-        // Simulate different responses
-        val simulateError = true // Change to 'false' to simulate success
-
-        if (simulateError) {
-            // Emit Failure state with ProblemsException
-            emit(
-                NetworkResultState.Failure(
-                    referenceId = "referenceId",
-                    exception = ProblemsException(
-                        problems = listOf(
-                            ProblemApiData(
-                                type = "error",
-                                code = "0001", // Error code
-                                message = "Simulated error message"
-                            )
-                        )
-                    )
-                )
-            )
-        } else {
-            // Emit Success state with AccountPreferencesData
-            emit(
-                NetworkResultState.Success(
-                    referenceId = "referenceId",
-                    data = AccountPreferencesData(
-                        status = "SUCCESS",
-                        problems = null // No problems for success
-                    )
-                )
-            )
+class ProblemsListPresenter(
+    private val error: Throwable?,
+    private val messageCatalogue: MessageCatalogue
+) {
+    // Generate a list of ProblemsPresenter
+    fun getPresenters(): List<ProblemsPresenter> {
+        val problems = error?.toProblemsData() ?: emptyList() // Map the Throwable to ProblemData
+        return problems.map { problem ->
+            ProblemsPresenter(listOf(problem), messageCatalogue)
         }
     }
 }
 
-val referenceId = UUID.randomUUID().toString() // Generate a unique ID for tracking
-
-
-private var accountPreferencesUpdateComplete: Bool {
-    guard let state = model.state else { return false }
-    return state.accountPreferencesUpdateComplete && !state.hasError
+fun createProblemsListPresenter(
+    error: Throwable?,
+    messageCatalogue: MessageCatalogue
+): List<ProblemsPresenter> {
+    return ProblemsListPresenter(error, messageCatalogue).getPresenters()
 }
