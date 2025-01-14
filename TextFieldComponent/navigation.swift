@@ -1,36 +1,70 @@
-class ProblemsListPresenter(
-    private val problems: List<ProblemData>,
-    private val messageCatalogue: MessageCatalogue
-) {
-    fun getPresenters(): List<ProblemsPresenter> {
-        return problems.map { problem ->
-            ProblemsPresenter(listOf(problem), messageCatalogue)
+private var isLoading: Bool {
+    (model.state?.isLoading ?? false) || (actionModel.state?.isLoading ?? false)
+}
+
+private var hasFullError: Bool {
+    (model.state?.resource?.hasError ?? false) ||
+    (model.state?.hasUnexpectedError ?? false) ||
+    (actionModel.state?.hasUnexpectedError ?? false)
+}
+
+private var hasInlineError: Bool {
+    (model.state?.hasError ?? false) || (actionModel.state?.hasError ?? false)
+}
+
+private var combinedErrorPresenters: [ProblemsPresenter] {
+    let modelErrors = viewModel.createProblemsListPresenter(error: model.state?.error)
+    let actionErrors = viewModel.createProblemsListPresenter(error: actionModel.state?.error)
+    return modelErrors + actionErrors
+}
+
+
+struct ErrorListView: View {
+    let errorPresenters: [ProblemsPresenter]
+    let spacing: CGFloat
+
+    var body: some View {
+        VStack(spacing: spacing) {
+            ForEach(errorPresenters.indices, id: \.self) { index in
+                let presenter = errorPresenters[index]
+                ErrorInlineView(presenter: presenter)
+            }
         }
     }
 }
 
-fun createProblemsListPresenter(
-    error: Throwable?,
-    messageCatalogue: MessageCatalogue
-): List<ProblemsPresenter> {
-    return ProblemsListPresenter(error?.toProblemsData() ?: emptyList(), messageCatalogue).getPresenters()
+struct ErrorInlineView: View {
+    let presenter: ProblemsPresenter
+
+    var body: some View {
+        errorInlineListView(
+            alertType: presenter.formatGlobalAlertType(),
+            alertMessage: presenter.formatGlobalAlertMessage(),
+            alertCode: presenter.formatErrorForGlobalAlertCode(),
+            applyPadding: true
+        )
+    }
 }
 
-
-@ViewBuilder
-private func errorInlineView() -> some View {
-    // Create the error presenters
-    let errorPresenters = viewModel.createProblemsListPresenter()
-
-    VStack(spacing: BankingTheme.spacing.noPadding) {
-        ForEach(errorPresenters.indices, id: \.self) { index in
-            let presenter = errorPresenters[index]
-            errorInlineListView(
-                alertType: AlertType.failure.rawValue,
-                alertMessage: presenter.formatGlobalAlertMessage(),
-                alertCode: presenter.formatErrorForGlobalAlertCode(),
-                applyPadding: true
-            )
+var body: some View {
+    ScrollView {
+        LoadingErrorLayout(
+            isLoading: isLoading,
+            hasData: model.state?.hasData ?? false,
+            hasFullError: hasFullError,
+            hasInlineError: hasInlineError,
+            inlineError: {
+                ErrorListView(
+                    errorPresenters: combinedErrorPresenters,
+                    spacing: BankingTheme.dimensions.smallMedium
+                )
+            },
+            fullError: {
+                errorFullView()
+            }
+        ) {
+            contentView()
         }
     }
 }
+
