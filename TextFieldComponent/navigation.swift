@@ -2,16 +2,16 @@ override suspend fun updateAccountNickname(
     accountId: String,
     nickname: String,
 ): Flow<NetworkResultState<AccountPreferencesData>> {
-    return flow {
-        // Simulate error scenario
+    return safeApiCall {
         emit(
-            NetworkResultState.Error(
-                ProblemsException(
-                    listOf(
+            NetworkResultState.Failure(
+                referenceId = UUID.randomUUID().toString(),
+                exception = ProblemsException(
+                    problems = listOf(
                         ProblemApiData(
                             type = "error",
-                            code = "0001", // Error code for simulation
-                            message = "Simulated error message" // Optional message
+                            code = "CUSTOM_ERROR_CODE",
+                            message = "Simulated API error"
                         )
                     )
                 )
@@ -19,4 +19,3 @@ override suspend fun updateAccountNickname(
         )
     }
 }
-
