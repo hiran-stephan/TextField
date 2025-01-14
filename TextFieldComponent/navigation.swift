@@ -1,12 +1,22 @@
-fun AccountPreferencesDetailsViewModel.isNicknameValid(
+override suspend fun updateAccountNickname(
+    accountId: String,
     nickname: String,
-): String {
-    val charLimit: Int = 20
-    val validCharacterPattern = "[a-zA-Z0-9 &.,-]".toRegex()
-
-    // Step 1: Filter out invalid characters
-    val filteredNickname = nickname.filter { validCharacterPattern.matches(it.toString()) }
-
-    // Step 2: Limit to the maximum allowed length, keeping leading and trailing spaces
-    return filteredNickname.take(charLimit)
+): Flow<NetworkResultState<AccountPreferencesData>> {
+    return flow {
+        // Simulate error scenario
+        emit(
+            NetworkResultState.Error(
+                ProblemsException(
+                    listOf(
+                        ProblemApiData(
+                            type = "error",
+                            code = "0001", // Error code for simulation
+                            message = "Simulated error message" // Optional message
+                        )
+                    )
+                )
+            )
+        )
+    }
 }
+
