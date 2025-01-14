@@ -41,3 +41,9 @@ override suspend fun updateAccountNickname(
 }
 
 val referenceId = UUID.randomUUID().toString() // Generate a unique ID for tracking
+
+
+private var accountPreferencesUpdateComplete: Bool {
+    guard let state = model.state else { return false }
+    return state.accountPreferencesUpdateComplete && !state.hasError
+}
