@@ -19,3 +19,41 @@ enum AlertType {
 }
 
 currentAlert = .showAlert
+
+// Computed properties for dynamic alert content
+private var alertTitle: String {
+    switch currentAlert {
+    case .showAlert:
+        return "Show Alert"
+    case .hideAlert:
+        return "Hide Alert"
+    case .none:
+        return ""
+    }
+}
+
+private var alertMessage: String {
+    switch currentAlert {
+    case .showAlert:
+        return "This is the Show Alert message."
+    case .hideAlert:
+        return "This is the Hide Alert message."
+    case .none:
+        return ""
+    }
+}
+
+private var alertActions: [AlertAction] {
+    switch currentAlert {
+    case .showAlert:
+        return [
+            AlertAction(title: "OK", style: .default, handler: { currentAlert = nil })
+        ]
+    case .hideAlert:
+        return [
+            AlertAction(title: "Dismiss", style: .default, handler: { currentAlert = nil })
+        ]
+    case .none:
+        return []
+    }
+}
