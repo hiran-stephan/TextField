@@ -1,83 +1,118 @@
-.presentAlert(
-        isPresented: Binding(
-            get: { currentAlert != nil },
-            set: { if !$0 { currentAlert = nil } }
-        ),
-        title: currentAlert == .showAlert ? "Show Alert" : "Hide Alert",
-        message: currentAlert == .showAlert ? "This is the Show Alert message." : "This is the Hide Alert message.",
-        actions: [
-            AlertAction(title: "OK", style: .default, handler: { currentAlert = nil })
-        ]
-    )
+public struct AlertControllerWrapper: UIViewControllerRepresentable {
+    @Binding public var isPresented: Bool
+    public var titleProvider: () -> String
+    public var messageProvider: () -> String
+    public var actionsProvider: () -> [AlertAction]
+    public let imageName: String?
 
-
-@State private var currentAlert: AlertType?
-
-enum AlertType {
-    case showAlert
-    case hideAlert
-}
-
-currentAlert = .showAlert
-
-// Computed properties for dynamic alert content
-private var alertTitle: String {
-    switch currentAlert {
-    case .showAlert:
-        return "Show Alert"
-    case .hideAlert:
-        return "Hide Alert"
-    case .none:
-        return ""
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
-}
 
-private var alertMessage: String {
-    switch currentAlert {
-    case .showAlert:
-        return "This is the Show Alert message."
-    case .hideAlert:
-        return "This is the Hide Alert message."
-    case .none:
-        return ""
+    public func makeUIViewController(context: Context) -> UIViewController {
+        UIViewController()
     }
-}
 
-private var alertActions: [AlertAction] {
-    switch currentAlert {
-    case .showAlert:
-        return [
-            AlertAction(title: "OK", style: .default, handler: { currentAlert = nil })
-        ]
-    case .hideAlert:
-        return [
-            AlertAction(title: "Dismiss", style: .default, handler: { currentAlert = nil })
-        ]
-    case .none:
-        return []
+    public func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        if isPresented {
+            let alertController = context.coordinator.createAlertController()
+            DispatchQueue.main.async {
+                uiViewController.present(alertController, animated: true)
+                isPresented = false // Automatically dismiss the flag after presenting
+            }
+        }
     }
-}
 
+    public class Coordinator: NSObject {
+        var parent: AlertControllerWrapper
 
-// Dynamically create the alert view based on `currentAlert`
-private var alertView: some View {
-    Group {
-        if let alertType = currentAlert {
-            AlertControllerWrapper(
-                isPresented: Binding(
-                    get: { currentAlert != nil },
-                    set: { if !$0 { currentAlert = nil } }
-                ),
-                title: alertTitle(for: alertType),
-                message: alertMessage(for: alertType),
-                actions: alertActions(for: alertType)
-            )
-        } else {
-            EmptyView() // No alert to display
+        init(_ parent: AlertControllerWrapper) {
+            self.parent = parent
+        }
+
+        func createAlertController() -> UIAlertController {
+            let title = parent.titleProvider()
+            let message = parent.messageProvider()
+            let actions = parent.actionsProvider()
+
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+            if let imageName = parent.imageName {
+                let image = UIImage(named: imageName)
+                let imageView = UIImageView(image: image)
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                alertController.view.addSubview(imageView)
+
+                // Add constraints for imageView as per your design
+            }
+
+            actions.forEach { actionConfig in
+                let action = UIAlertAction(title: actionConfig.title, style: actionConfig.style) { _ in
+                    actionConfig.handler?()
+                }
+                alertController.addAction(action)
+            }
+
+            return alertController
         }
     }
 }
 
-.background(
-        alertView // Dynamically inject the alert view
-    )
+extension View {
+    public func presentDynamicAlert(
+        isPresented: Binding<Bool>,
+        titleProvider: @escaping () -> String,
+        messageProvider: @escaping () -> String,
+        actionsProvider: @escaping () -> [AlertAction],
+        imageName: String? = nil
+    ) -> some View {
+        self.background(
+            AlertControllerWrapper(
+                isPresented: isPresented,
+                titleProvider: titleProvider,
+                messageProvider: messageProvider,
+                actionsProvider: actionsProvider,
+                imageName: imageName
+            )
+        )
+    }
+}
+
+struct ContentView: View {
+    @State private var isAlertPresented: Bool = false
+
+    var body: some View {
+        VStack {
+            Button("Show Dynamic Alert") {
+                isAlertPresented = true
+            }
+        }
+        .presentDynamicAlert(
+            isPresented: $isAlertPresented,
+            titleProvider: {
+                // Dynamically provide the title
+                return "Dynamic Title at \(Date())"
+            },
+            messageProvider: {
+                // Dynamically provide the message
+                return "This is a dynamic message generated at \(Date())."
+            },
+            actionsProvider: {
+                // Dynamically provide actions
+                return [
+                    AlertAction(
+                        title: "OK",
+                        style: .default,
+                        handler: { print("OK Tapped") }
+                    ),
+                    AlertAction(
+                        title: "Cancel",
+                        style: .cancel,
+                        handler: { print("Cancel Tapped") }
+                    )
+                ]
+            },
+            imageName: "yourImageName"
+        )
+    }
+}
