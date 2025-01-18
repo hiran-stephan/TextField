@@ -1,8 +1,11 @@
 public struct AlertControllerWrapper: UIViewControllerRepresentable {
     @Binding public var isPresented: Bool
-    public var titleProvider: () -> String
-    public var messageProvider: () -> String
-    public var actionsProvider: () -> [AlertAction]
+    public var title: String?
+    public var message: String?
+    public var actions: [AlertAction]?
+    public var titleProvider: (() -> String)?
+    public var messageProvider: (() -> String)?
+    public var actionsProvider: (() -> [AlertAction])?
     public let imageName: String?
 
     public func makeCoordinator() -> Coordinator {
@@ -31,9 +34,9 @@ public struct AlertControllerWrapper: UIViewControllerRepresentable {
         }
 
         func createAlertController() -> UIAlertController {
-            let title = parent.titleProvider()
-            let message = parent.messageProvider()
-            let actions = parent.actionsProvider()
+            let title = parent.titleProvider?() ?? parent.title ?? ""
+            let message = parent.messageProvider?() ?? parent.message ?? ""
+            let actions = parent.actionsProvider?() ?? parent.actions ?? []
 
             let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
@@ -59,6 +62,27 @@ public struct AlertControllerWrapper: UIViewControllerRepresentable {
 }
 
 extension View {
+    public func presentAlert(
+        isPresented: Binding<Bool>,
+        title: String,
+        message: String,
+        imageName: String? = nil,
+        actions: [AlertAction]
+    ) -> some View {
+        self.background(
+            AlertControllerWrapper(
+                isPresented: isPresented,
+                title: title,
+                message: message,
+                actions: actions,
+                imageName: imageName
+            )
+        )
+    }
+}
+
+
+extension View {
     public func presentDynamicAlert(
         isPresented: Binding<Bool>,
         titleProvider: @escaping () -> String,
@@ -78,6 +102,8 @@ extension View {
     }
 }
 
+
+
 struct ContentView: View {
     @State private var isAlertPresented: Bool = false
 
@@ -90,16 +116,13 @@ struct ContentView: View {
         .presentDynamicAlert(
             isPresented: $isAlertPresented,
             titleProvider: {
-                // Dynamically provide the title
-                return "Dynamic Title at \(Date())"
+                "Dynamic Title at \(Date())"
             },
             messageProvider: {
-                // Dynamically provide the message
-                return "This is a dynamic message generated at \(Date())."
+                "This is a dynamic message generated at \(Date())."
             },
             actionsProvider: {
-                // Dynamically provide actions
-                return [
+                [
                     AlertAction(
                         title: "OK",
                         style: .default,
@@ -111,8 +134,7 @@ struct ContentView: View {
                         handler: { print("Cancel Tapped") }
                     )
                 ]
-            },
-            imageName: "yourImageName"
+            }
         )
     }
 }
