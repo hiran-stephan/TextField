@@ -1,70 +1,82 @@
-private var isLoading: Bool {
-    (model.state?.isLoading ?? false) || (actionModel.state?.isLoading ?? false)
+struct AlertModel {
+    var isPresented: Bool = false
+    var title: String = ""
+    var message: String = ""
+    var actions: [AlertAction] = []
 }
 
-private var hasFullError: Bool {
-    (model.state?.resource?.hasError ?? false) ||
-    (model.state?.hasUnexpectedError ?? false) ||
-    (actionModel.state?.hasUnexpectedError ?? false)
-}
+@State private var alertModel = AlertModel()
 
-private var hasInlineError: Bool {
-    (model.state?.hasError ?? false) || (actionModel.state?.hasError ?? false)
-}
-
-private var combinedErrorPresenters: [ProblemsPresenter] {
-    let modelErrors = viewModel.createProblemsListPresenter(error: model.state?.error)
-    let actionErrors = viewModel.createProblemsListPresenter(error: actionModel.state?.error)
-    return modelErrors + actionErrors
-}
-
-
-struct ErrorListView: View {
-    let errorPresenters: [ProblemsPresenter]
-    let spacing: CGFloat
-
-    var body: some View {
-        VStack(spacing: spacing) {
-            ForEach(errorPresenters.indices, id: \.self) { index in
-                let presenter = errorPresenters[index]
-                ErrorInlineView(presenter: presenter)
+var body: some View {
+    ListCellItemToggle(
+        isToggled: Binding(
+            get: { viewModel.isEditingVisibility },
+            set: { newValue in
+                viewModel.updateVisibilityEditingStatus(status: newValue)
+                updateAlertContent(for: newValue, presenter: viewModel.createScreenPresenter())
             }
-        }
-    }
+        )
+    )
+    .modifier(PresentAlertModifier(alertModel: $alertModel))
 }
 
-struct ErrorInlineView: View {
-    let presenter: ProblemsPresenter
+// Function to update alert content dynamically
+private func updateAlertContent(for newValue: Bool, presenter: ScreenPresenter) {
+    alertModel = AlertModel(
+        isPresented: true,
+        title: presenter.accountDisplayDialogTitleText,
+        message: presenter.accountDisplayDialogBodyText,
+        actions: [
+            AlertAction(
+                title: presenter.accountControlDisplayBackButtonText,
+                style: .default,
+                handler: { alertModel.isPresented = false }
+            ),
+            AlertAction(
+                title: presenter.accountControlDisplayContinueButtonText,
+                style: .default,
+                handler: { alertModel.isPresented = false }
+            )
+        ]
+    )
+}
 
-    var body: some View {
-        errorInlineListView(
-            alertType: presenter.formatGlobalAlertType(),
-            alertMessage: presenter.formatGlobalAlertMessage(),
-            alertCode: presenter.formatErrorForGlobalAlertCode(),
-            applyPadding: true
+// Reusable ViewModifier for presenting alerts
+struct PresentAlertModifier: ViewModifier {
+    @Binding var alertModel: AlertModel
+
+    func body(content: Content) -> some View {
+        content.alert(
+            isPresented: $alertModel.isPresented,
+            content: {
+                Alert(
+                    title: Text(alertModel.title),
+                    message: Text(alertModel.message),
+                    primaryButton: alertModel.actions[safe: 0]?.toSwiftUIAlertButton() ?? .default(Text("OK")),
+                    secondaryButton: alertModel.actions[safe: 1]?.toSwiftUIAlertButton() ?? .cancel()
+                )
+            }
         )
     }
 }
 
-var body: some View {
-    ScrollView {
-        LoadingErrorLayout(
-            isLoading: isLoading,
-            hasData: model.state?.hasData ?? false,
-            hasFullError: hasFullError,
-            hasInlineError: hasInlineError,
-            inlineError: {
-                ErrorListView(
-                    errorPresenters: combinedErrorPresenters,
-                    spacing: BankingTheme.dimensions.smallMedium
-                )
-            },
-            fullError: {
-                errorFullView()
-            }
-        ) {
-            contentView()
+// Helper Extension to Convert AlertAction to SwiftUIAlertButton
+extension AlertAction {
+    func toSwiftUIAlertButton() -> SwiftUI.Alert.Button {
+        switch style {
+        case .default:
+            return .default(Text(title), action: handler)
+        case .cancel:
+            return .cancel(Text(title), action: handler)
+        case .destructive:
+            return .destructive(Text(title), action: handler)
         }
     }
 }
 
+// Safe Access for Array
+extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
