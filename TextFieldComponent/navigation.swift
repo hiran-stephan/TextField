@@ -1,140 +1,104 @@
-public struct AlertControllerWrapper: UIViewControllerRepresentable {
-    @Binding public var isPresented: Bool
-    public var title: String?
-    public var message: String?
-    public var actions: [AlertAction]?
-    public var titleProvider: (() -> String)?
-    public var messageProvider: (() -> String)?
-    public var actionsProvider: (() -> [AlertAction])?
-    public let imageName: String?
-
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    public func makeUIViewController(context: Context) -> UIViewController {
-        UIViewController()
-    }
-
-    public func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        if isPresented {
-            let alertController = context.coordinator.createAlertController()
-            DispatchQueue.main.async {
-                uiViewController.present(alertController, animated: true)
-                isPresented = false // Automatically dismiss the flag after presenting
-            }
+private var editingVisibilityBinding: Binding<Bool> {
+    Binding(
+        get: { isEditingVisibility },
+        set: { newValue in
+            viewModel.updateVisibilityEditingStatus(status: newValue)
+            accountShowAlert = true
         }
-    }
+    )
+}
+isToggled: editingVisibilityBinding
 
-    public class Coordinator: NSObject {
-        var parent: AlertControllerWrapper
 
-        init(_ parent: AlertControllerWrapper) {
-            self.parent = parent
-        }
 
-        func createAlertController() -> UIAlertController {
-            let title = parent.titleProvider?() ?? parent.title ?? ""
-            let message = parent.messageProvider?() ?? parent.message ?? ""
-            let actions = parent.actionsProvider?() ?? parent.actions ?? []
-
-            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-
-            if let imageName = parent.imageName {
-                let image = UIImage(named: imageName)
-                let imageView = UIImageView(image: image)
-                imageView.translatesAutoresizingMaskIntoConstraints = false
-                alertController.view.addSubview(imageView)
-
-                // Add constraints for imageView as per your design
-            }
-
-            actions.forEach { actionConfig in
-                let action = UIAlertAction(title: actionConfig.title, style: actionConfig.style) { _ in
-                    actionConfig.handler?()
-                }
-                alertController.addAction(action)
-            }
-
-            return alertController
-        }
-    }
+private var dialogTitle: String {
+    isEditingVisibility ? presenter.accountDisplayShowDialogTitleText : presenter.accountDisplayDialogTitleText
 }
 
-extension View {
-    public func presentAlert(
-        isPresented: Binding<Bool>,
-        title: String,
-        message: String,
-        imageName: String? = nil,
-        actions: [AlertAction]
-    ) -> some View {
-        self.background(
-            AlertControllerWrapper(
-                isPresented: isPresented,
-                title: title,
-                message: message,
-                actions: actions,
-                imageName: imageName
+private var dialogMessage: String {
+    isEditingVisibility ? presenter.accountDisplayShowDialogBodyText : presenter.accountDisplayDialogBodyText
+}
+
+titleProvider: { dialogTitle },
+messageProvider: { dialogMessage }
+
+
+
+private func alertActions(forEditingVisibility isEditing: Bool) -> [AlertAction] {
+    if isEditing {
+        return [
+            AlertAction(
+                title: presenter.accountControlDisplayShowBackButtonText,
+                style: .default,
+                handler: { viewModel.updateVisibilityEditingStatus(status: true) }
+            ),
+            AlertAction(
+                title: presenter.accountControlDisplayShowContinueButtonText,
+                style: .default,
+                handler: {}
             )
-        )
-    }
-}
-
-
-extension View {
-    public func presentDynamicAlert(
-        isPresented: Binding<Bool>,
-        titleProvider: @escaping () -> String,
-        messageProvider: @escaping () -> String,
-        actionsProvider: @escaping () -> [AlertAction],
-        imageName: String? = nil
-    ) -> some View {
-        self.background(
-            AlertControllerWrapper(
-                isPresented: isPresented,
-                titleProvider: titleProvider,
-                messageProvider: messageProvider,
-                actionsProvider: actionsProvider,
-                imageName: imageName
+        ]
+    } else {
+        return [
+            AlertAction(
+                title: presenter.accountControlDisplayBackButtonText,
+                style: .default,
+                handler: { viewModel.updateVisibilityEditingStatus(status: false) }
+            ),
+            AlertAction(
+                title: presenter.accountControlDisplayContinueButtonText,
+                style: .default,
+                handler: {}
             )
-        )
+        ]
     }
 }
 
 
+actionsProvider: { alertActions(forEditingVisibility: isEditingVisibility) }
 
-struct ContentView: View {
-    @State private var isAlertPresented: Bool = false
 
-    var body: some View {
-        VStack {
-            Button("Show Dynamic Alert") {
-                isAlertPresented = true
+private func createAccountControlItems() -> [ListCellItemData] {
+    return [
+        ListCellItemData(
+            actionCellId: "1",
+            actionPrimaryLabel: presenter.accountControlHideThisAccountText,
+            actionPrimaryLabelAccessibilityText: presenter.accountControlHideThisAccountText
+        )
+    ]
+}
+
+private func createAccountControlList(items: [ListCellItemData]) -> some View {
+    ListCardContainer(style: BorderlessCardStyle()) {
+        VStack(spacing: BankingTheme.spacing.noPadding) {
+            ForEach(items, id: \.actionCellId) { item in
+                ListCellItemToggle(
+                    backgroundColor: BankingTheme.colors.illustrationGrey,
+                    pressedBackgroundColor: BankingTheme.colors.illustrationGrey,
+                    listCellItemData: item,
+                    showDivider: false,
+                    isToggled: editingVisibilityBinding
+                )
             }
         }
-        .presentDynamicAlert(
-            isPresented: $isAlertPresented,
-            titleProvider: {
-                "Dynamic Title at \(Date())"
-            },
-            messageProvider: {
-                "This is a dynamic message generated at \(Date())."
-            },
-            actionsProvider: {
-                [
-                    AlertAction(
-                        title: "OK",
-                        style: .default,
-                        handler: { print("OK Tapped") }
-                    ),
-                    AlertAction(
-                        title: "Cancel",
-                        style: .cancel,
-                        handler: { print("Cancel Tapped") }
-                    )
-                ]
-            }
-        )
     }
 }
+
+private func accountControlSection() -> some View {
+    let items = createAccountControlItems()
+    return createPreferenceCard(
+        headerText: presenter.accountControlHeaderTitle,
+        infoIconAccessibilityText: presenter.accountControlInfoIconAccessibilityText,
+        infoIconDialogBodyText: presenter.accountControlInfoIconDialogBodyText,
+        infoIconDialogCloseButtonText: presenter.infoIconDialogCloseButtonText
+    ) {
+        createAccountControlList(items: items)
+    }
+    .presentAlert(
+        isPresented: $accountShowAlert,
+        titleProvider: { dialogTitle },
+        messageProvider: { dialogMessage },
+        actionsProvider: { alertActions(forEditingVisibility: isEditingVisibility) }
+    )
+}
+
