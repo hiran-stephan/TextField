@@ -57,3 +57,27 @@ private var alertActions: [AlertAction] {
         return []
     }
 }
+
+
+// Dynamically create the alert view based on `currentAlert`
+private var alertView: some View {
+    Group {
+        if let alertType = currentAlert {
+            AlertControllerWrapper(
+                isPresented: Binding(
+                    get: { currentAlert != nil },
+                    set: { if !$0 { currentAlert = nil } }
+                ),
+                title: alertTitle(for: alertType),
+                message: alertMessage(for: alertType),
+                actions: alertActions(for: alertType)
+            )
+        } else {
+            EmptyView() // No alert to display
+        }
+    }
+}
+
+.background(
+        alertView // Dynamically inject the alert view
+    )
