@@ -1,104 +1,47 @@
-private var editingVisibilityBinding: Binding<Bool> {
-    Binding(
-        get: { isEditingVisibility },
-        set: { newValue in
-            viewModel.updateVisibilityEditingStatus(status: newValue)
-            accountShowAlert = true
-        }
-    )
-}
-isToggled: editingVisibilityBinding
-
-
-
-private var dialogTitle: String {
-    isEditingVisibility ? presenter.accountDisplayShowDialogTitleText : presenter.accountDisplayDialogTitleText
-}
-
-private var dialogMessage: String {
-    isEditingVisibility ? presenter.accountDisplayShowDialogBodyText : presenter.accountDisplayDialogBodyText
-}
-
-titleProvider: { dialogTitle },
-messageProvider: { dialogMessage }
-
-
-
-private func alertActions(forEditingVisibility isEditing: Bool) -> [AlertAction] {
-    if isEditing {
-        return [
-            AlertAction(
-                title: presenter.accountControlDisplayShowBackButtonText,
-                style: .default,
-                handler: { viewModel.updateVisibilityEditingStatus(status: true) }
-            ),
-            AlertAction(
-                title: presenter.accountControlDisplayShowContinueButtonText,
-                style: .default,
-                handler: {}
-            )
-        ]
-    } else {
-        return [
-            AlertAction(
-                title: presenter.accountControlDisplayBackButtonText,
-                style: .default,
-                handler: { viewModel.updateVisibilityEditingStatus(status: false) }
-            ),
-            AlertAction(
-                title: presenter.accountControlDisplayContinueButtonText,
-                style: .default,
-                handler: {}
-            )
-        ]
-    }
-}
-
-
-actionsProvider: { alertActions(forEditingVisibility: isEditingVisibility) }
-
-
-private func createAccountControlItems() -> [ListCellItemData] {
-    return [
-        ListCellItemData(
-            actionCellId: "1",
-            actionPrimaryLabel: presenter.accountControlHideThisAccountText,
-            actionPrimaryLabelAccessibilityText: presenter.accountControlHideThisAccountText
-        )
-    ]
-}
-
-private func createAccountControlList(items: [ListCellItemData]) -> some View {
-    ListCardContainer(style: BorderlessCardStyle()) {
-        VStack(spacing: BankingTheme.spacing.noPadding) {
-            ForEach(items, id: \.actionCellId) { item in
-                ListCellItemToggle(
-                    backgroundColor: BankingTheme.colors.illustrationGrey,
-                    pressedBackgroundColor: BankingTheme.colors.illustrationGrey,
-                    listCellItemData: item,
-                    showDivider: false,
-                    isToggled: editingVisibilityBinding
-                )
-            }
+fun getAccountsSummary() = launch {
+    repository.getAccountsSummary().collect { result ->
+        _homeState.value = result.isLoading {
+            isLoading -> copy(isLoading = isLoading)
+        }.onStateSuccess { response ->
+            handleAccountsSummary(response)
+        }.onStateException { error ->
+            copy(isLoading = false, error = error)
         }
     }
 }
 
-private func accountControlSection() -> some View {
-    let items = createAccountControlItems()
-    return createPreferenceCard(
-        headerText: presenter.accountControlHeaderTitle,
-        infoIconAccessibilityText: presenter.accountControlInfoIconAccessibilityText,
-        infoIconDialogBodyText: presenter.accountControlInfoIconDialogBodyText,
-        infoIconDialogCloseButtonText: presenter.infoIconDialogCloseButtonText
-    ) {
-        createAccountControlList(items: items)
+private fun handleAccountsSummary(response: HomeAccountsSummary): SummaryUiState {
+    return when {
+        response.accountGroups.all { it.homeAccounts.isEmpty() } -> {
+            val exception = createNoAccountsException()
+            copy(
+                noAccountsToDisplay = true,
+                error = exception
+            )
+        }
+        response.problems != null -> {
+            val exception = createProblemsException(response.problems)
+            trackErrorState(exception.problems)
+            copy(
+                accountsSummary = response,
+                error = exception
+            )
+        }
+        else -> {
+            copy(accountsSummary = response)
+        }
     }
-    .presentAlert(
-        isPresented: $accountShowAlert,
-        titleProvider: { dialogTitle },
-        messageProvider: { dialogMessage },
-        actionsProvider: { alertActions(forEditingVisibility: isEditingVisibility) }
-    )
 }
 
+private fun createNoAccountsException(): ProblemsException {
+    val problemData = ProblemApiData(
+        code = "001",
+        type = "NoAccounts",
+        field = "accountGroups"
+    ).toProblemData()
+    return ProblemsException(listOf(problemData))
+}
+
+private fun createProblemsException(problems: List<ProblemApiData>): ProblemsException {
+    return ProblemsException(problems.map { it.toProblemData() })
+}
