@@ -1,71 +1,60 @@
-public struct EmptyState<ImageView: View, ContentView: View, Action: View>: View {
-    private let imageView: (() -> ImageView)?
-    private let contentView: (() -> ContentView)?
-    private let action: (() -> Action)?
+public struct StyledImageView<Style: ImageViewStyle>: View {
+    private let image: Image
+    private let style: Style
 
     public init(
-        imageView: (() -> ImageView)? = nil,
-        contentView: (() -> ContentView)? = nil,
-        action: (() -> Action)? = nil
+        image: Image,
+        style: Style = CircularImageViewStyle() as! Style // Default to CircularImageViewStyle
     ) {
-        self.imageView = imageView
-        self.contentView = contentView
-        self.action = action
+        self.image = image
+        self.style = style
     }
 
     public var body: some View {
-        ScrollView {
-            VStack(spacing: BankingTheme.dimens.extraLarge) {
-                if let imageView = imageView {
-                    imageView()
-                }
-                if let contentView = contentView {
-                    contentView()
-                }
-                if let action = action {
-                    action()
-                }
-            }
-            .padding(.vertical, BankingTheme.dimens.medium)
+        style.body(content: image)
+    }
+}
+
+
+public protocol ImageViewStyle {
+    associatedtype Body: View
+    func body(content: Image) -> Body
+}
+
+public struct CircularImageViewStyle: ImageViewStyle {
+    let backgroundColor: Color
+    let size: CGFloat
+    let padding: CGFloat
+
+    public init(
+        backgroundColor: Color = Color.gray.opacity(0.2),
+        size: CGFloat = 100,
+        padding: CGFloat = 16
+    ) {
+        self.backgroundColor = backgroundColor
+        self.size = size
+        self.padding = padding
+    }
+
+    public func body(content: Image) -> some View {
+        ZStack {
+            Circle()
+                .fill(backgroundColor)
+                .frame(width: size + padding, height: size + padding)
+            content
+                .resizable()
+                .scaledToFit()
+                .frame(width: size, height: size)
         }
     }
 }
 
-EmptyState(
-    imageView: {
-        Image(systemName: "exclamationmark.circle")
+public struct BackgroundlessImageViewStyle: ImageViewStyle {
+    public init() {}
+
+    public func body(content: Image) -> some View {
+        content
             .resizable()
             .scaledToFit()
-            .frame(width: 100, height: 100)
-            .foregroundColor(.red)
-    },
-    contentView: {
-        VStack(spacing: BankingTheme.dimens.medium) {
-            Text("Error Occurred")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-            Text("Something went wrong. Please try again later.")
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-            Text("If the problem persists, contact support.")
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.gray)
-        }
-    },
-    action: {
-        Button(action: {
-            print("Retry tapped")
-        }) {
-            Text("Retry")
-                .fontWeight(.semibold)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-        }
-        .padding(.horizontal)
     }
-)
+}
