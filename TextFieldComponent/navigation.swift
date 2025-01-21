@@ -1,29 +1,42 @@
+
 import SwiftUI
 
-func emptyStateAction(actionLabel: String, callback: @escaping () -> Void) -> some View {
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-
-    return Group {
-        if horizontalSizeClass == .compact {
-            // iPhone Layout: Max width
-            PrimaryButton(
-                content: {
-                    Text(actionLabel)
-                },
-                callback: callback
-            )
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.top, BankingTheme.dimens.extraLarge)
+func deviceResponsiveContent<Content: View>(
+    content: Content,
+    compactWidth: CGFloat? = nil, // Max width for compact (iPhone)
+    regularWidth: CGFloat? = 311, // Fixed width for regular (iPad)
+    alignment: Alignment = .center,
+    topPadding: CGFloat
+) -> some View {
+    Group {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // iPad: Fixed width
+            content
+                .frame(width: regularWidth, alignment: alignment)
+                .padding(.top, topPadding)
         } else {
-            // iPad Layout: Fixed width
-            PrimaryButton(
-                content: {
-                    Text(actionLabel)
-                },
-                callback: callback
-            )
-            .frame(width: 300, alignment: .center) // Fixed width for iPad
-            .padding(.top, BankingTheme.dimens.extraLarge)
+            // iPhone: Max width
+            content
+                .frame(maxWidth: compactWidth ?? .infinity, alignment: alignment)
+                .padding(.top, topPadding)
         }
+    }
+}
+
+func unexpectedErrorAction(
+    actionLabel: String,
+    callback: @escaping () -> Void
+) -> some View {
+    VStack(alignment: .center, spacing: BankingTheme.spacing.noPadding) {
+        deviceResponsiveContent(
+            content: PrimaryButton(
+                content: { Text(actionLabel) },
+                callback: callback
+            ),
+            compactWidth: .infinity, // Max width for iPhones
+            regularWidth: 311,      // Fixed width for iPads
+            alignment: .center,
+            topPadding: SectionMarginLg // Your top padding constant
+        )
     }
 }
