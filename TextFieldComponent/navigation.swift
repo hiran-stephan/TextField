@@ -1,58 +1,41 @@
-override suspend fun updateAccountNickname(
-    accountId: String,
-    nickname: String
-): Flow<NetworkResultState<AccountPreferencesAccountData>> {
-    return flow {
-        // Step 1: Call updateAccountNickname API using safeApiCall
-        safeApiCall { requestId ->
-            accountsApiService.updateAccountNickname(
-                requestId,
-                accountId,
-                nickname
-            )
-        }.collect { updateResult ->
-            when (updateResult) {
-                is NetworkResultState.Loading -> {
-                    // Emit the loading state
-                    emit(NetworkResultState.Loading(updateResult.id))
-                }
-                is NetworkResultState.Success -> {
-                    // If update is successful, fetch account details
-                    fetchAccountById(accountId).collect { fetchResult ->
-                        when (fetchResult) {
-                            is NetworkResultState.Success -> {
-                                // Emit success with refreshed data
-                                emit(
-                                    NetworkResultState.Success(
-                                        fetchResult.id,
-                                        fetchResult.data
-                                    )
-                                )
-                            }
-                            is NetworkResultState.Failure -> {
-                                // Emit partial success: update succeeded, but refresh failed
-                                emit(
-                                    NetworkResultState.Failure(
-                                        fetchResult.id,
-                                        Exception(
-                                            "Update succeeded, but refresh failed",
-                                            fetchResult.exception
-                                        )
-                                    )
-                                )
-                            }
-                            is NetworkResultState.Loading -> {
-                                // Emit loading state during fetch
-                                emit(NetworkResultState.Loading(fetchResult.id))
-                            }
-                        }
-                    }
-                }
-                is NetworkResultState.Failure -> {
-                    // Emit the failure state with exception
-                    emit(NetworkResultState.Failure(updateResult.id, updateResult.exception))
-                }
-            }
+suspend fun <T> retryNetworkRequest(
+    times: Int,
+    initialDelayMillis: Long = 1000,
+    maxDelayMillis: Long = 5000,
+    factor: Double = 2.0,
+    block: suspend () -> T
+): T {
+    var currentDelay = initialDelayMillis
+
+    repeat(times - 1) { attempt ->
+        try {
+            // Try executing the block
+            return block()
+        } catch (e: Exception) {
+            println("Attempt ${attempt + 1} failed: ${e.message}")
+
+            // Calculate and delay before retrying
+            delay(currentDelay)
+            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelayMillis)
+        }
+    }
+
+    // Final attempt (no retry logic here)
+    return block()
+}
+
+suspend fun fetchData(): String {
+    return retryNetworkRequest(
+        times = 3,
+        initialDelayMillis = 1000,
+        maxDelayMillis = 8000,
+        factor = 2.0
+    ) {
+        // Simulate a network call
+        if (Math.random() > 0.7) {
+            "Success"
+        } else {
+            throw Exception("Network request failed")
         }
     }
 }
