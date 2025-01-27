@@ -1,20 +1,38 @@
-// Define the private enum
-private enum class ActionStatus(val value: String) {
-    SUCCESSFUL("successful"),
-    UNSUCCESSFUL("unsuccessful");
-
-    companion object {
-        fun fromBoolean(status: Boolean): String {
-            return if (status) SUCCESSFUL.value else UNSUCCESSFUL.value
+override suspend fun updateAccountNickname(
+    accountId: String,
+    nickname: String
+): Flow<NetworkResultState<AccountPreferencesAccountData>> {
+    return safeApiCall { requestId ->
+        accountsApiService.updateAccountNickname(
+            referenceId = requestId,
+            accountId = accountId,
+            nickname = nickname
+        ).toAccountPreferencesData()
+    }.map { updateResult ->
+        when (updateResult) {
+            is NetworkResultState.Success -> fetchAccountById(accountId, updateResult.data.referenceId)
+            is NetworkResultState.Error -> NetworkResultState.Error(updateResult.error)
+            else -> NetworkResultState.Error(Exception("Unknown error occurred"))
         }
     }
 }
 
-// ViewModel Method
-override fun trackAccountHideConfirmAction(status: Boolean) {
-    val item = ActionStatus.fromBoolean(status) // Use the helper from the private enum
-    trackAction(
-        properties.stateAccountPreferenceDetails(),
-        properties.accountHideConfirmActionItem(item = item)
-    )
+fun updateAccountNickname(accountId: String, nickname: String) = launch(_actionState) {
+    repository.updateAccountNickname(accountId, nickname).collect { result ->
+        result.isLoading { isLoading ->
+            applicationRouter.trackBlockingLoading(result.id, isLoading)
+        }
+        onStateSuccess(result) { response ->
+            copy(
+                accountPreferencesUpdateComplete = true,
+                accountData = response // Updated account data after fetching
+            )
+        }
+        onStateException(result) { response ->
+            copy(
+                isLoading = false,
+                error = response
+            )
+        }
+    }
 }
