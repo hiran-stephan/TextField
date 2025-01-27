@@ -8,14 +8,21 @@ override suspend fun updateAccountNickname(
             accountId = accountId,
             nickname = nickname
         ).toAccountPreferencesData()
-    }.map { updateResult ->
+    }.transform { updateResult ->
         when (updateResult) {
-            is NetworkResultState.Success -> fetchAccountById(accountId)
-            is NetworkResultState.Error -> flowOf(NetworkResultState.Error(updateResult.error))
-            else -> flowOf(NetworkResultState.Error(Exception("Unknown error occurred")))
+            is NetworkResultState.Success -> {
+                emitAll(fetchAccountById(accountId)) // Use emitAll for the next flow
+            }
+            is NetworkResultState.Error -> {
+                emit(NetworkResultState.Error(updateResult.error)) // Directly emit the error
+            }
+            else -> {
+                emit(NetworkResultState.Error(Exception("Unknown error occurred")))
+            }
         }
-    }.flattenConcat() // Ensures all flows are combined in order
+    }
 }
+
 
 
 fun updateAccountNickname(accountId: String, nickname: String) = launch(_actionState) {
