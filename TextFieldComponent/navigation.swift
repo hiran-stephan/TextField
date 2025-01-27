@@ -1,25 +1,26 @@
-override suspend fun updateAccountNickname(
+override suspend fun updateAccountNicknameAndFetch(
     accountId: String,
     nickname: String
 ): Flow<NetworkResultState<AccountPreferencesAccountData>> {
-    return safeApiCall { requestId ->
-        accountsApiService.updateAccountNickname(
-            referenceId = requestId,
-            accountId = accountId,
-            nickname = nickname
-        ).toAccountPreferencesData()
-    }.transform { updateResult ->
-        when (updateResult) {
-            is NetworkResultState.Success -> {
-                emitAll(fetchAccountById(accountId)) // Use emitAll for the next flow
-            }
-            is NetworkResultState.Error -> {
-                emit(NetworkResultState.Error(updateResult.error)) // Directly emit the error
-            }
-            else -> {
-                emit(NetworkResultState.Error(Exception("Unknown error occurred")))
+    return flow {
+        // Step 1: Update the account nickname
+        updateAccountNickname(accountId, nickname).collect { updateResult ->
+            when (updateResult) {
+                is NetworkResultState.Success -> {
+                    // Step 2: Fetch account details if update is successful
+                    fetchAccountById(accountId).collect { fetchResult ->
+                        emit(fetchResult) // Emit the result of fetching the account
+                    }
+                }
+                else -> {
+                    // Emit the update result (error or loading)
+                    emit(updateResult)
+                }
             }
         }
+    }.catch { e ->
+        // Handle any exceptions
+        emit(NetworkResultState.Error(e))
     }
 }
 
