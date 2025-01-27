@@ -1,27 +1,28 @@
 override suspend fun updateAccountNickname(
     accountId: String,
     nickname: String
-): Flow<NetworkResultState<AccountPreferencesAccountData>> {
-    return safeApiCall { requestId ->
+): Flow<NetworkResultState<AccountPreferencesAccountData>> = flow {
+    safeApiCall { requestId ->
         accountsApiService.updateAccountNickname(
             referenceId = requestId,
             accountId = accountId,
             nickname = nickname
         ).toAccountPreferencesData()
-    }.flatMapConcat { updateResult ->
+    }.collect { updateResult ->
         when (updateResult) {
             is NetworkResultState.Success -> {
-                fetchAccountById(accountId, updateResult.data.referenceId)
+                emit(fetchAccountById(accountId, updateResult.data.referenceId))
             }
             is NetworkResultState.Error -> {
-                flowOf(NetworkResultState.Error(updateResult.error))
+                emit(NetworkResultState.Error(updateResult.error))
             }
             else -> {
-                flowOf(NetworkResultState.Error(Exception("Unknown error occurred")))
+                emit(NetworkResultState.Error(Exception("Unknown error occurred")))
             }
         }
     }
 }
+
 
 
 fun updateAccountNickname(accountId: String, nickname: String) = launch(_actionState) {
