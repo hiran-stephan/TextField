@@ -8,14 +8,21 @@ override suspend fun updateAccountNickname(
             accountId = accountId,
             nickname = nickname
         ).toAccountPreferencesData()
-    }.map { updateResult ->
+    }.flatMapConcat { updateResult ->
         when (updateResult) {
-            is NetworkResultState.Success -> fetchAccountById(accountId, updateResult.data.referenceId)
-            is NetworkResultState.Error -> NetworkResultState.Error(updateResult.error)
-            else -> NetworkResultState.Error(Exception("Unknown error occurred"))
+            is NetworkResultState.Success -> {
+                fetchAccountById(accountId, updateResult.data.referenceId)
+            }
+            is NetworkResultState.Error -> {
+                flowOf(NetworkResultState.Error(updateResult.error))
+            }
+            else -> {
+                flowOf(NetworkResultState.Error(Exception("Unknown error occurred")))
+            }
         }
     }
 }
+
 
 fun updateAccountNickname(accountId: String, nickname: String) = launch(_actionState) {
     repository.updateAccountNickname(accountId, nickname).collect { result ->
