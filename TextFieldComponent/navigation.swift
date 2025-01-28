@@ -1,14 +1,14 @@
-override suspend fun updateAccountNickname(
+override suspend fun updateAccountVisibility(
     accountId: String,
-    nickname: String
+    visibility: Boolean
 ): Flow<NetworkResultState<AccountPreferencesAccountData>> {
     return safeApiCall {
-        // Find the account by ID and update the nickname
+        // Find the account by ID and update the visibility
         accounts.indexOfFirst { it.id == accountId }
             .takeIf { it != -1 } // Check if account exists
             ?.let { index ->
                 val updatedAccount = accounts[index].copy(
-                    nickname = nickname.takeUnless { it.isBlank() }
+                    visibility = visibility
                 )
                 accounts[index] = updatedAccount // Update the account in the list
 
