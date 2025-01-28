@@ -1,22 +1,32 @@
-override suspend fun updateAccountVisibility(
-    accountId: String,
-    visibility: Boolean
-): Flow<NetworkResultState<AccountPreferencesAccountData>> {
-    return safeApiCall {
-        // Find the account by ID and update the visibility
-        accounts.indexOfFirst { it.id == accountId }
-            .takeIf { it != -1 } // Check if account exists
-            ?.let { index ->
-                val updatedAccount = accounts[index].copy(
-                    visibility = visibility
-                )
-                accounts[index] = updatedAccount // Update the account in the list
+func errorInlineListView(
+    alertType: String,
+    alertMessage: String,
+    alertCode: String,
+    actionString: String = "",
+    applyPadding: Bool = false,
+    retryAction: @escaping () -> Void = {}
+) -> AnyView {
+    let alertEnumType = AlertType.find(key: alertType)
 
-                // Return the updated account data
-                AccountPreferencesAccountData(
-                    account = updatedAccount,
-                    problems = null // Update this if you have any problems to attach
-                )
-            } ?: throw Exception("Account not found") // Handle the case where the account is not found
+    guard alertEnumType != .none else {
+        return AnyView(EmptyView()) // Avoid rendering anything if alertType is .none
     }
+
+    return AnyView(
+        Section {
+            VStack(spacing: BankingTheme.spacing.noPadding) {
+                AlertGlobal(
+                    alertType: alertEnumType,
+                    alertGlobalData: AlertGlobalData(
+                        alertMessage: alertMessage,
+                        actionString: actionString,
+                        resultText: alertCode
+                    ),
+                    retryAction: retryAction
+                )
+            }
+            .padding(.horizontal, applyPadding ? BankingTheme.dimens.medium : BankingTheme.spacing.noPadding)
+        }
+        .listRowSeparator(.hidden)
+    )
 }
