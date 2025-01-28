@@ -1,40 +1,22 @@
-suspend fun <T> retryNetworkRequest(
-    times: Int = 2, // Default to 2 attempts
-    delayMillis: Long = 2000, // 2-second gap between retries
-    block: suspend () -> T
-): T {
-    repeat(times - 1) { attempt -> // Retry `times - 1` times
-        try {
-            // Try executing the block
-            return block()
-        } catch (e: Exception) {
-            println("Attempt ${attempt + 1} failed: ${e.message}")
+override suspend fun updateAccountNickname(
+    accountId: String,
+    nickname: String
+): Flow<NetworkResultState<AccountPreferencesAccountData>> {
+    return safeApiCall {
+        // Find the account by ID and update the nickname
+        accounts.indexOfFirst { it.id == accountId }
+            .takeIf { it != -1 } // Check if account exists
+            ?.let { index ->
+                val updatedAccount = accounts[index].copy(
+                    nickname = nickname.takeUnless { it.isBlank() }
+                )
+                accounts[index] = updatedAccount // Update the account in the list
 
-            // If this is the last retry, rethrow the exception
-            if (attempt == times - 1) throw e
-
-            // Delay for the specified gap
-            delay(delayMillis)
-        }
-    }
-
-    // Final attempt (no retry logic)
-    return block()
-}
-
-
-suspend fun fetchData(): String {
-    return retryNetworkRequest(
-        times = 2, // Retry twice
-        delayMillis = 2000 // 2-second gap between retries
-    ) {
-        // Simulate a network request
-        if (Math.random() > 0.7) {
-            "Success"
-        } else {
-            throw Exception("Network error")
-        }
+                // Return the updated account data
+                AccountPreferencesAccountData(
+                    account = updatedAccount,
+                    problems = null // Update this if you have any problems to attach
+                )
+            } ?: throw Exception("Account not found") // Handle the case where the account is not found
     }
 }
-
-// Call fetchData in your coroutine
