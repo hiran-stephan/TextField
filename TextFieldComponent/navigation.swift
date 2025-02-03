@@ -28,19 +28,29 @@ class AccountPreferencesRepositoryTest {
 
 @Test
 fun `test loadAccounts successful`() = runTest {
-    val mockAccountsData = AccountPreferencesAccountsData(
-        accountGroups = listOf(mockAccountGroupData()),
-        problems = emptyList()
+    val accountSummaryApiData = getAccountsSummaryApiData()
+    val accountGroups = mapAccountGroups(
+        accountCatalogue = mockAccountCatalogue,
+        accountSorter = mockAccountSorter,
+        response = accountSummaryApiData
+    ).filter { it.accounts.isNotEmpty() }
+
+    val accountPreferencesAccountsData = AccountPreferencesAccountsData(
+        accountGroups = accountGroups,
+        problems = accountSummaryApiData.problems?.map { it.toProblemData() }
     )
 
-    everySuspend { mockAccountsApiService.fetchAccounts(any()) } returns mockAccountsData
+    every { mockConnectivityChecker.isConnected() } returns true
+    every { mockAccountsApiService.fetchAccounts(any()) } returns accountSummaryApiData
+    every { mockAccountCatalogue.formatAccountDisplayName(any(), any(), any()) } returns "Mocked Account Name"
 
     val result = repository.loadAccounts().last()
 
     (result as? NetworkResultState.Success)?.onSuccess { response ->
-        assertEquals(mockAccountsData, response)
+        assertEquals(accountPreferencesAccountsData, response)
     }
 }
+
 
 
 @Test
