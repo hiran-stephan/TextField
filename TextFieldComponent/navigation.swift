@@ -39,6 +39,7 @@ fun `test loadAccounts successful`() = runTest {
         accountGroups = accountGroups,
         problems = accountSummaryApiData.problems?.map { it.toProblemData() }
     )
+    every { mockAccountSorter.sort(any()) } answers { firstArg() } // Mocking sort behavior
 
     every { mockConnectivityChecker.isConnected() } returns true
     every { mockAccountsApiService.fetchAccounts(any()) } returns accountSummaryApiData
