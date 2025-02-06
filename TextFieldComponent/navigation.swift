@@ -1,51 +1,13 @@
-struct TooltipAlertModifier: ViewModifier {
-    let showTooltipAlert: Binding<Bool>?
-    let infoIconDialogBodyText: String?
-    let infoIconDialogCancelButtonText: String?
-
-    func body(content: Content) -> some View {
-        if let showTooltipAlert = showTooltipAlert {
-            content
-                .presentAlert(
-                    isPresented: showTooltipAlert,
-                    title: "",
-                    message: infoIconDialogBodyText ?? "",
-                    actions: [
-                        AlertAction(
-                            title: infoIconDialogCancelButtonText ?? "",
-                            style: .default,
-                            handler: { showTooltipAlert.wrappedValue = false }
-                        )
-                    ]
-                )
-        } else {
-            content  // If there's no alert, return content as-is
-        }
+func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    // If we *want* to be showing an alert but haven't shown one yet, do it:
+    if isPresented && context.coordinator.alertController == nil {
+        let alert = context.coordinator.createAlertController()
+        context.coordinator.alertController = alert
+        uiViewController.present(alert, animated: true)
+    }
+    // If we no longer want an alert, but one is still up, dismiss it:
+    else if !isPresented, let alert = context.coordinator.alertController {
+        alert.dismiss(animated: true)
+        context.coordinator.alertController = nil
     }
 }
-
-public var body: some View {
-    VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-        SectionHeadingView(
-            headerText,
-            imageName: (infoIconDialogBodyText != nil) ?
-                BankingTheme.icons.functional.infoGrey.rawValue : nil,
-            imageAccessibilityText: infoIconAccessibilityText,
-            trailingContent: {
-                trailingContent()
-            }
-        ) {
-            if let showTooltipAlert = showTooltipAlert {
-                showTooltipAlert.wrappedValue = true
-            }
-        }
-        
-        content
-    }
-    .modifier(TooltipAlertModifier(
-        showTooltipAlert: showTooltipAlert,
-        infoIconDialogBodyText: infoIconDialogBodyText,
-        infoIconDialogCancelButtonText: infoIconDialogCancelButtonText
-    ))
-}
-
