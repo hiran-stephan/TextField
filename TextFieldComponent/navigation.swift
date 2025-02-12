@@ -40,22 +40,13 @@ class ConsentsPageRouter(...) {
         parent.navigateTo(DeeplinkNavigationItem(Url(deepLink)))
     }
 }
-
-sealed class ConsentsNavigationItems(val path: String) {
-
-    data class Main(
-        val redirect: String? = null
-    ) : ConsentsNavigationItems(path = "consents") {
-        fun toDeepLink(): String {
-            return if (!redirect.isNullOrEmpty()) {
-                "cibcus://consents?redirect=$redirect"
-            } else {
-                "cibcus://consents"
-            }
-        }
-    }
+sealed class ConsentsNavigationItems(
+    override val path: String
+) : NavigationItem() {
 
     companion object {
+        const val DOMAIN = "consents"
+
         fun parse(url: String): Main {
             val params = url.parseQueryString()
             val redirect = params["redirect"]?.firstOrNull()
@@ -66,4 +57,23 @@ sealed class ConsentsNavigationItems(val path: String) {
             return item as? Main ?: parse(item.deeplink)
         }
     }
+
+    // 1) data class with domain overridden, path = "" so route is "/consents"
+    data class Main(
+        val redirect: String? = null
+    ) : ConsentsNavigationItems(path = "") {
+
+        // 2) Override domain so that route = "/consents"
+        override val domain: String get() = DOMAIN
+
+        // 3) Optionally give yourself a deep-link builder
+        fun toDeepLink(): String =
+            if (!redirect.isNullOrEmpty()) {
+                "cibcus://consents?redirect=$redirect"
+            } else {
+                "cibcus://consents"
+            }
+    }
+
+    // etc...
 }
