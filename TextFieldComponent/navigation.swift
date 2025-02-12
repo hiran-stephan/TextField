@@ -77,3 +77,14 @@ sealed class ConsentsNavigationItems(
 
     // etc...
 }
+
+data class Main(
+    val redirectTo: String? = null
+) : ConsentsNavigationItems(path = "consents") {
+
+    override val route: String
+        get() = "/$path"
+
+    override val deeplink: String
+        get() = "/$path" + redirectTo?.let { "?redirect=$it" }.orEmpty()
+}
