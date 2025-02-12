@@ -40,3 +40,30 @@ class ConsentsPageRouter(...) {
         parent.navigateTo(DeeplinkNavigationItem(Url(deepLink)))
     }
 }
+
+sealed class ConsentsNavigationItems(val path: String) {
+
+    data class Main(
+        val redirect: String? = null
+    ) : ConsentsNavigationItems(path = "consents") {
+        fun toDeepLink(): String {
+            return if (!redirect.isNullOrEmpty()) {
+                "cibcus://consents?redirect=$redirect"
+            } else {
+                "cibcus://consents"
+            }
+        }
+    }
+
+    companion object {
+        fun parse(url: String): Main {
+            val params = url.parseQueryString()
+            val redirect = params["redirect"]?.firstOrNull()
+            return Main(redirect = redirect)
+        }
+
+        fun cast(item: NavigationItem): Main {
+            return item as? Main ?: parse(item.deeplink)
+        }
+    }
+}
