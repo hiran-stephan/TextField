@@ -8,21 +8,24 @@ struct ConsentCaptureListCell: View {
                 .font(.headline)
                 .foregroundColor(.primary)
 
-            List(pdfLinks, id: \.self) { link in
-                HStack {
-                    Image(systemName: "doc.text") // PDF Icon
-                    Text(link)
-                        .foregroundColor(.blue)
-                    Spacer()
-                    BadgeIndicator(text: "Pending review", type: .passive)
+            VStack { // Replace List with VStack
+                ForEach(pdfLinks, id: \.self) { link in
+                    HStack {
+                        Image(systemName: "doc.text") // PDF Icon
+                        Text(link)
+                            .foregroundColor(.blue)
+                        Spacer()
+                        BadgeIndicator(BadgeIndicatorData(type: .passive, text: "Pending review"))
+                    }
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
                 }
             }
-
-
         }
         .padding()
     }
 }
+
 
 struct ConsentMethod: View {
     @State private var isChecked = false
