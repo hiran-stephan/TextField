@@ -4,3 +4,8 @@ if (!redirect.isNullOrEmpty()) {
 } else {
     router.navigateToAuthenticated()
 }
+
+
+override val deeplink: String
+    get() = "/$domain".buildQueryString("redirect" to redirect)
+
