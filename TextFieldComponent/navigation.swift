@@ -88,3 +88,8 @@ data class Main(
     override val deeplink: String
         get() = "/$path" + redirectTo?.let { "?redirect=$it" }.orEmpty()
 }
+
+
+single<FeatureRouter>(named("localhost-router")) {
+    get<ConsentsFeatureRouter>()  // or some other router
+}
