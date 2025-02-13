@@ -8,7 +8,7 @@ struct ConsentCaptureListCell: View {
                 .font(.headline)
                 .foregroundColor(.primary)
 
-            ForEach(pdfLinks, id: \.self) { link in
+            List(pdfLinks, id: \.self) { link in
                 HStack {
                     Image(systemName: "doc.text") // PDF Icon
                     Text(link)
@@ -16,9 +16,8 @@ struct ConsentCaptureListCell: View {
                     Spacer()
                     BadgeIndicator(text: "Pending review", type: .passive)
                 }
-                .padding(8)
-                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
             }
+
 
         }
         .padding()
