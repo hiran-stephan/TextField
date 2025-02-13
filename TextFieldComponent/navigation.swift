@@ -8,8 +8,7 @@ struct ConsentCaptureListCell: View {
                 .font(.headline)
                 .foregroundColor(.primary)
 
-            ForEach(pdfLinks.indices, id: \.self) { index in
-                let link = pdfLinks[index] // Ensure we're getting a String
+            ForEach(pdfLinks, id: \.self) { link in
                 HStack {
                     Image(systemName: "doc.text") // PDF Icon
                     Text(link)
@@ -20,6 +19,7 @@ struct ConsentCaptureListCell: View {
                 .padding(8)
                 .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
             }
+
         }
         .padding()
     }
