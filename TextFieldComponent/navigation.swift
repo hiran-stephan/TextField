@@ -1,59 +1,90 @@
-struct ConsentCaptureListCell: View {
-    let title: String
-    let pdfLinks: [String]
-
+struct ReviewAgreementsScreen: View {
+    @State private var agreements: [AgreementData] = [
+        AgreementData(
+            title: "Review and accept the following agreement:",
+            pdfLinks: ["Electronic Disclosure Consent Agreement (PDF, 15 KB)"],
+            agreementText: "I/we read and agree to the Electronic Disclosure Consent Agreement."
+        ),
+        AgreementData(
+            title: "Review and accept the following agreement:",
+            pdfLinks: ["CIBC Digital Banking Service Agreement (PDF, 15 KB)"],
+            agreementText: "I/we read and agree to the CIBC Digital Banking Service Agreement."
+        )
+    ]
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 16) {
+            // Header Section
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Review agreements")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                Text("Some of our agreements have been updated. To continue with your online banking, review and agree to the document provided.")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal)
 
-            VStack { // Replace List with VStack
-                ForEach(pdfLinks, id: \.self) { link in
-                    HStack {
-                        Image(systemName: "doc.text") // PDF Icon
-                        Text(link)
-                            .foregroundColor(.blue)
-                        Spacer()
-                        BadgeIndicator(BadgeIndicatorData(type: .passive, text: "Pending review"))
+            // List of Agreements
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(agreements, id: \.self) { agreement in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(agreement.title)
+                                .font(.headline)
+                            
+                            ConsentCaptureListCell(title: agreement.title, pdfLinks: agreement.pdfLinks)
+                            
+                            ConsentMethod(agreementText: agreement.agreementText)
+                        }
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
                     }
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
+                }
+                .padding(.horizontal)
+            }
+
+            // Confirmation Text
+            Text("By clicking ‘Continue’, I confirm I have received, reviewed, and agreed to the CIBC Digital Banking Service Agreement.")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+            
+            // Action Buttons
+            VStack(spacing: 8) {
+                Button(action: {
+                    // Submit action
+                }) {
+                    Text("Submit")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                
+                Button(action: {
+                    // Cancel action
+                }) {
+                    Text("Cancel")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .foregroundColor(.black)
+                        .cornerRadius(8)
                 }
             }
+            .padding(.horizontal)
         }
-        .padding()
+        .padding(.vertical)
     }
 }
 
-
-struct ConsentMethod: View {
-    @State private var isChecked = false
-
-    var body: some View {
-        HStack(alignment: .top) {
-            Image(systemName: isChecked ? "checkmark.square.fill" : "square")
-                .resizable()
-                .frame(width: 24, height: 24)
-                .onTapGesture {
-                    isChecked.toggle()
-                }
-
-            Text("I/We read and agree to the Lorem Ipsum Agreement.")
-                .font(.body)
-                .foregroundColor(.primary)
-        }
-        .padding()
-        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary, lineWidth: 1))
-    }
-}
-
-struct ConsentCaptureScreen: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            ConsentCaptureListCell(title: "Lorem Ipsum", pdfLinks: ["PDF Link Goes Here", "PDF Link Goes Here"])
-            ConsentMethod()
-        }
-        .padding()
-    }
+// Agreement Data Model
+struct AgreementData: Hashable {
+    let title: String
+    let pdfLinks: [String]
+    let agreementText: String
 }
