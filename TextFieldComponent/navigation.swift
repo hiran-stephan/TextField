@@ -1,14 +1,15 @@
 struct ConsentCaptureListCell: View {
     let title: String
     let pdfLinks: [String]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(.primary)
-            
-            ForEach(pdfLinks, id: \.self) { link in
+
+            ForEach(pdfLinks.indices, id: \.self) { index in
+                let link = pdfLinks[index] // Ensure we're getting a String
                 HStack {
                     Image(systemName: "doc.text") // PDF Icon
                     Text(link)
