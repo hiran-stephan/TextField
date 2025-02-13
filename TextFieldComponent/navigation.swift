@@ -33,3 +33,9 @@ struct ConsentCaptureListView: View {
         .padding()
     }
 }
+
+// Separator
+            Divider()
+                .frame(height: 1)
+                .background(BankingTheme.colors.illustrationGrey)
+                .padding(.horizontal, BankingTheme.dimens.medium)
