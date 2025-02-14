@@ -1,123 +1,53 @@
 import SwiftUI
 
-struct ConsentView: View {
-    enum ConsentType {
-        case normal, confirmed, error
-
-        var icon: String {
-            switch self {
-            case .normal, .confirmed:
-                return BankingTheme.icons.functional.checkboxBlack.rawValue
-            case .error:
-                return BankingTheme.icons.functional.checkboxRed.rawValue
-            }
-        }
-
-        var typography: Font {
-            switch self {
-            case .normal, .error:
-                return BankingTheme.typography.bodySemiBold
-            case .confirmed:
-                return BankingTheme.typography.body
-            }
-        }
-
-        var backgroundColor: Color {
-            switch self {
-            case .normal, .confirmed:
-                return BankingTheme.colors.illustrationGrey
-            case .error:
-                return BankingTheme.colors.errorContainer
-            }
-        }
-
-        var borderColor: Color? {
-            switch self {
-            case .error:
-                return BankingTheme.colors.errorBorder
-            default:
-                return nil
-            }
-        }
-
-        var alignment: Alignment {
-            return self == .confirmed ? .center : .topLeading
-        }
+struct ConsentCaptureListCell: View {
+    struct ConsentCaptureData: Hashable {
+        let link: String
+        let icon: String
+        let badgeText: String
     }
 
-    struct ConsentData {
-        let text: String
-        let type: ConsentType
-    }
-
-    @Binding var isChecked: Bool
-    let data: ConsentData
+    let data: ConsentCaptureData
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top, spacing: BankingTheme.dimens.smallMedium) {
-                ComponentImage(data.type.icon)
-
-                Text(data.text)
-                    .font(data.type.typography)
-                    .foregroundColor(BankingTheme.colors.textPrimary)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .multilineTextAlignment(.leading)
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+            HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
+                HStack(alignment: .center, spacing: BankingTheme.dimens.small) {
+                    ComponentImage(data.icon)
+                    
+                    Text(data.link)
+                        .underline()
+                        .typography(BankingTheme.typography.body)
+                        .foregroundColor(BankingTheme.colors.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                }
+                .padding(.vertical, BankingTheme.dimens.small)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Spacer()
+                
+                BadgeIndicator(BadgeIndicatorData(type: .passive, text: data.badgeText))
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(BankingTheme.dimens.medium)
-            .frame(maxWidth: .infinity, alignment: data.type.alignment)
-            .background(data.type.backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium))
-            .overlay(borderOverlay)
-            .onTapGesture {
-                isChecked.toggle()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var borderOverlay: some View {
-        if let borderColor = data.type.borderColor {
-            RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium)
-                .strokeBorder(borderColor, lineWidth: 1)
+            
+            Divider()
+                .frame(height: 1)
+                .background(BankingTheme.colors.illustrationGrey)
+                .padding(.horizontal, BankingTheme.dimens.medium)
         }
     }
 }
 
-struct ConsentView_Previews: PreviewProvider {
+struct ConsentCaptureListCell_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
-                text: "We read and agree to the Electronic Disclosure Consent Agreement.",
-                type: .normal
-            ))
-
-            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
-                text: "By clicking ‘Continue’, I confirm I have received, reviewed, and agreed to the CIBC Digital Banking Service Agreement.",
-                type: .confirmed
-            ))
-
-            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
-                text: "We read and agree to the Electronic Disclosure Consent Agreement.",
-                type: .error
-            ))
-        }
-        .padding()
+        ConsentCaptureListCell(
+            data: ConsentCaptureListCell.ConsentCaptureData(
+                link: "Electronic Disclosure Consent Agreement.pdf",
+                icon: BankingTheme.icons.functional.pdf.rawValue,
+                badgeText: "Pending review"
+            )
+        )
+        .previewLayout(.sizeThatFits)
     }
 }
-
-
-ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
-                text: "We read and agree to the Electronic Disclosure Consent Agreement.",
-                type: .normal
-            ))
-
-            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
-                text: "By clicking ‘Continue’, I confirm I have received, reviewed, and agreed to the CIBC Digital Banking Service Agreement.",
-                type: .confirmed
-            ))
-
-            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
-                text: "We read and agree to the Electronic Disclosure Consent Agreement.",
-                type: .error
-            ))
