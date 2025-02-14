@@ -1,53 +1,49 @@
 import SwiftUI
 
-struct ConsentCaptureListCell: View {
-    struct ConsentCaptureData: Hashable {
-        let link: String
+struct ConsentCaptureListCard: View {
+    struct ConsentCaptureCardData: Hashable {
+        let pdfLinks: [String]
         let icon: String
         let badgeText: String
     }
 
-    let data: ConsentCaptureData
+    let data: ConsentCaptureCardData
 
     var body: some View {
         VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            HStack(alignment: .center, spacing: BankingTheme.dimens.smallMedium) {
-                HStack(alignment: .center, spacing: BankingTheme.dimens.small) {
-                    ComponentImage(data.icon)
-                    
-                    Text(data.link)
-                        .underline()
-                        .typography(BankingTheme.typography.body)
-                        .foregroundColor(BankingTheme.colors.textPrimary)
-                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                }
-                .padding(.vertical, BankingTheme.dimens.small)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Spacer()
-                
-                BadgeIndicator(BadgeIndicatorData(type: .passive, text: data.badgeText))
+            ForEach(data.pdfLinks, id: \.self) { link in
+                ConsentCaptureListCell(
+                    data: ConsentCaptureListCell.ConsentCaptureData(
+                        link: link,
+                        icon: data.icon,
+                        badgeText: data.badgeText
+                    )
+                )
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(BankingTheme.dimens.medium)
-            
-            Divider()
-                .frame(height: 1)
-                .background(BankingTheme.colors.illustrationGrey)
-                .padding(.horizontal, BankingTheme.dimens.medium)
         }
+        .cornerRadius(BankingTheme.dimens.smallMedium)
+        .overlay(
+            RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium)
+                .inset(by: 0.5)
+                .stroke(BankingTheme.colors.borderDefault, lineWidth: BankingTheme.spacing.stroke)
+        )
     }
 }
 
-struct ConsentCaptureListCell_Previews: PreviewProvider {
+struct ConsentCaptureListCard_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentCaptureListCell(
-            data: ConsentCaptureListCell.ConsentCaptureData(
-                link: "Electronic Disclosure Consent Agreement.pdf",
+        ConsentCaptureListCard(
+            data: ConsentCaptureListCard.ConsentCaptureCardData(
+                pdfLinks: [
+                    "Electronic Disclosure Consent Agreement.pdf",
+                    "Banking Terms & Conditions.pdf",
+                    "Privacy Policy.pdf"
+                ],
                 icon: BankingTheme.icons.functional.pdf.rawValue,
                 badgeText: "Pending review"
             )
         )
         .previewLayout(.sizeThatFits)
+        .padding()
     }
 }
