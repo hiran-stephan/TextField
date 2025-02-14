@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct ConsentCaptureSectionView: View {
-    struct ConsentCaptureSectionData: Hashable {
+struct ReviewAgreementsView: View {
+    struct AgreementSectionData: Hashable {
         let title: String
         let pdfLinks: [String]
         let icon: String
@@ -10,55 +10,90 @@ struct ConsentCaptureSectionView: View {
         let consentType: ConsentView.ConsentType
     }
 
-    let data: ConsentCaptureSectionData
+    @State private var agreementSections: [AgreementSectionData] = [
+        AgreementSectionData(
+            title: "1. Review and accept the following agreement:",
+            pdfLinks: ["Electronic Disclosure Consent Agreement (PDF, 15 KB)"],
+            icon: BankingTheme.icons.functional.pdf.rawValue,
+            badgeText: "Pending review",
+            consentText: "I/we read and agree to the Electronic Disclosure Consent Agreement.",
+            consentType: .normal
+        ),
+        AgreementSectionData(
+            title: "2. Review and accept the following agreement:",
+            pdfLinks: ["CIBC Digital Banking Service Agreement (PDF, 15 KB)"],
+            icon: BankingTheme.icons.functional.pdf.rawValue,
+            badgeText: "Pending review",
+            consentText: "By clicking ‘Continue’, I confirm I have received, reviewed, and agreed to the CIBC Digital Banking Service Agreement.",
+            consentType: .confirmed
+        )
+    ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: BankingTheme.dimens.smallMedium) {
-            // Section Title
-            Text(data.title)
+        VStack(alignment: .center, spacing: BankingTheme.dimens.extraLarge) {
+            // Heading
+            Text("Review agreements")
+                .typography(BankingTheme.typography.heading.medium)
+                .multilineTextAlignment(.center)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .top)
+            
+            // Body Description
+            Text("Some of our agreements have been updated. To continue with your online banking, review and agree to the document provided.")
                 .typography(BankingTheme.typography.body)
-                .foregroundColor(.black)
+                .foregroundColor(BankingTheme.colors.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .topLeading)
             
-            // List of PDF Links
-            ConsentCaptureListCard(
-                data: ConsentCaptureListCard.ConsentCaptureCardData(
-                    pdfLinks: data.pdfLinks,
-                    icon: data.icon,
-                    badgeText: data.badgeText
+            // List of Agreement Sections
+            ForEach(agreementSections, id: \.self) { section in
+                ConsentCaptureSectionView(
+                    data: ConsentCaptureSectionView.ConsentCaptureSectionData(
+                        title: section.title,
+                        pdfLinks: section.pdfLinks,
+                        icon: section.icon,
+                        badgeText: section.badgeText,
+                        consentText: section.consentText,
+                        consentType: section.consentType
+                    )
                 )
-            )
+            }
 
-            // Consent Agreement View with dynamic consent type
-            ConsentView(
-                isChecked: .constant(false),
-                data: ConsentView.ConsentData(
-                    text: data.consentText,
-                    type: data.consentType
-                )
-            )
+            // Action Buttons
+            buildButtonView()
         }
         .padding(BankingTheme.dimens.medium)
     }
-}
 
-struct ConsentCaptureSectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConsentCaptureSectionView(
-            data: ConsentCaptureSectionView.ConsentCaptureSectionData(
-                title: "Agreement Documents",
-                pdfLinks: [
-                    "Electronic Disclosure Consent Agreement.pdf",
-                    "Banking Terms & Conditions.pdf",
-                    "Privacy Policy.pdf"
-                ],
-                icon: BankingTheme.icons.functional.pdf.rawValue,
-                badgeText: "Pending review",
-                consentText: "We read and agree to the Electronic Disclosure Consent Agreement.",
-                consentType: .normal // Pass different types (.error, .confirmed) dynamically
+    private func buildButtonView() -> some View {
+        ActionBar(
+            primaryButton: PrimaryButton(
+                content: { Text("Submit") },
+                buttonPaddingLeading: .zero,
+                buttonPaddingTrailing: .zero,
+                action: {
+                    // viewModel.sendCode()
+                }
+            ),
+            secondaryButton: SecondaryButton(
+                content: { Text("Cancel") },
+                buttonPaddingLeading: .zero,
+                buttonPaddingTrailing: .zero,
+                action: {
+                    // viewModel.clickCancel()
+                }
             )
         )
-        .previewLayout(.sizeThatFits)
-        .padding()
+        .padding(.horizontal, BankingTheme.dimens.medium)
+        .padding(.top, BankingTheme.dimens.smallMedium)
+        .padding(.bottom, BankingTheme.dimens.extraLarge)
+        .frame(maxWidth: .infinity, alignment: .top)
+    }
+}
+
+struct ReviewAgreementsView_Previews: PreviewProvider {
+    static var previews: some View {
+        ReviewAgreementsView()
+            .previewLayout(.sizeThatFits)
+            .padding()
     }
 }
