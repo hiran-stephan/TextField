@@ -7,6 +7,7 @@ struct ConsentCaptureSectionView: View {
         let icon: String
         let badgeText: String
         let consentText: String
+        let consentType: ConsentView.ConsentType
     }
 
     let data: ConsentCaptureSectionData
@@ -28,12 +29,12 @@ struct ConsentCaptureSectionView: View {
                 )
             )
 
-            // Consent Agreement View
+            // Consent Agreement View with dynamic consent type
             ConsentView(
                 isChecked: .constant(false),
                 data: ConsentView.ConsentData(
                     text: data.consentText,
-                    type: .normal
+                    type: data.consentType
                 )
             )
         }
@@ -53,7 +54,8 @@ struct ConsentCaptureSectionView_Previews: PreviewProvider {
                 ],
                 icon: BankingTheme.icons.functional.pdf.rawValue,
                 badgeText: "Pending review",
-                consentText: "We read and agree to the Electronic Disclosure Consent Agreement."
+                consentText: "We read and agree to the Electronic Disclosure Consent Agreement.",
+                consentType: .normal // Pass different types (.error, .confirmed) dynamically
             )
         )
         .previewLayout(.sizeThatFits)
