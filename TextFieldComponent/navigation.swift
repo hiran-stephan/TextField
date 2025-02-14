@@ -1,46 +1,59 @@
 import SwiftUI
 
-struct ConsentCaptureListCard: View {
-    struct ConsentCaptureCardData: Hashable {
+struct ConsentCaptureSectionView: View {
+    struct ConsentCaptureSectionData: Hashable {
+        let title: String
         let pdfLinks: [String]
         let icon: String
         let badgeText: String
+        let consentText: String
     }
 
-    let data: ConsentCaptureCardData
+    let data: ConsentCaptureSectionData
 
     var body: some View {
-        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            ForEach(data.pdfLinks, id: \.self) { link in
-                ConsentCaptureListCell(
-                    data: ConsentCaptureListCell.ConsentCaptureData(
-                        link: link,
-                        icon: data.icon,
-                        badgeText: data.badgeText
-                    )
+        VStack(alignment: .leading, spacing: BankingTheme.dimens.smallMedium) {
+            // Section Title
+            Text(data.title)
+                .typography(BankingTheme.typography.body)
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+            
+            // List of PDF Links
+            ConsentCaptureListCard(
+                data: ConsentCaptureListCard.ConsentCaptureCardData(
+                    pdfLinks: data.pdfLinks,
+                    icon: data.icon,
+                    badgeText: data.badgeText
                 )
-            }
+            )
+
+            // Consent Agreement View
+            ConsentView(
+                isChecked: .constant(false),
+                data: ConsentView.ConsentData(
+                    text: data.consentText,
+                    type: .normal
+                )
+            )
         }
-        .cornerRadius(BankingTheme.dimens.smallMedium)
-        .overlay(
-            RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium)
-                .inset(by: 0.5)
-                .stroke(BankingTheme.colors.borderDefault, lineWidth: BankingTheme.spacing.stroke)
-        )
+        .padding(BankingTheme.dimens.medium)
     }
 }
 
-struct ConsentCaptureListCard_Previews: PreviewProvider {
+struct ConsentCaptureSectionView_Previews: PreviewProvider {
     static var previews: some View {
-        ConsentCaptureListCard(
-            data: ConsentCaptureListCard.ConsentCaptureCardData(
+        ConsentCaptureSectionView(
+            data: ConsentCaptureSectionView.ConsentCaptureSectionData(
+                title: "Agreement Documents",
                 pdfLinks: [
                     "Electronic Disclosure Consent Agreement.pdf",
                     "Banking Terms & Conditions.pdf",
                     "Privacy Policy.pdf"
                 ],
                 icon: BankingTheme.icons.functional.pdf.rawValue,
-                badgeText: "Pending review"
+                badgeText: "Pending review",
+                consentText: "We read and agree to the Electronic Disclosure Consent Agreement."
             )
         )
         .previewLayout(.sizeThatFits)
