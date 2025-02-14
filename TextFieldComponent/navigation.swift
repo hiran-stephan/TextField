@@ -105,3 +105,19 @@ struct ConsentView_Previews: PreviewProvider {
         .padding()
     }
 }
+
+
+ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
+                text: "We read and agree to the Electronic Disclosure Consent Agreement.",
+                type: .normal
+            ))
+
+            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
+                text: "By clicking ‘Continue’, I confirm I have received, reviewed, and agreed to the CIBC Digital Banking Service Agreement.",
+                type: .confirmed
+            ))
+
+            ConsentView(isChecked: .constant(false), data: ConsentView.ConsentData(
+                text: "We read and agree to the Electronic Disclosure Consent Agreement.",
+                type: .error
+            ))
