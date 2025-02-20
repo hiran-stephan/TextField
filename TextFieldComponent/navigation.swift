@@ -1,39 +1,40 @@
-protocol ConsentStyle {
-    var uncheckedIcon: (any ComponentIcon)? { get }
-    var checkedIcon: (any ComponentIcon)? { get }
-    var typography: TypographyFont { get }
-    var backgroundColor: Color { get }
-    var borderColor: Color? { get }
-    var alignment: Alignment { get }
-}
+import SwiftUI
 
+struct ConsentStyle: Equatable, Identifiable {
+    let id = UUID()
+    let uncheckedIcon: (any ComponentIcon)?
+    let checkedIcon: (any ComponentIcon)?
+    let typography: TypographyFont
+    let backgroundColor: Color
+    let borderColor: Color?
+    let alignment: Alignment
 
-struct CheckboxConsentStyle: ConsentStyle {
-    var uncheckedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checkboxBlack }
-    var checkedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checked }
-    var typography: TypographyFont { BankingTheme.typography.bodySemiBold }
-    var backgroundColor: Color { BankingTheme.colors.illustrationGrey }
-    var borderColor: Color? { BankingTheme.colors.textSecondary }
-    var alignment: Alignment { .topLeading }
-}
-
-struct PlainConsentStyle: ConsentStyle {
-    var uncheckedIcon: (any ComponentIcon)? { nil }
-    var checkedIcon: (any ComponentIcon)? { nil }
-    var typography: TypographyFont { BankingTheme.typography.body }
-    var backgroundColor: Color { BankingTheme.colors.illustrationGrey }
-    var borderColor: Color? { nil }
-    var alignment: Alignment { .center }
-}
-
-
-struct ErrorConsentStyle: ConsentStyle {
-    var uncheckedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checkboxRed }
-    var checkedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checked }
-    var typography: TypographyFont { BankingTheme.typography.bodySemiBold }
-    var backgroundColor: Color { BankingTheme.colors.errorContainer }
-    var borderColor: Color? { BankingTheme.colors.errorBorder }
-    var alignment: Alignment { .topLeading }
+    static let checkbox = ConsentStyle(
+        uncheckedIcon: BankingTheme.icons.functional.checkboxBlack,
+        checkedIcon: BankingTheme.icons.functional.checked,
+        typography: BankingTheme.typography.bodySemiBold,
+        backgroundColor: BankingTheme.colors.illustrationGrey,
+        borderColor: BankingTheme.colors.textSecondary,
+        alignment: .topLeading
+    )
+    
+    static let plain = ConsentStyle(
+        uncheckedIcon: nil,
+        checkedIcon: nil,
+        typography: BankingTheme.typography.body,
+        backgroundColor: BankingTheme.colors.illustrationGrey,
+        borderColor: nil,
+        alignment: .center
+    )
+    
+    static let error = ConsentStyle(
+        uncheckedIcon: BankingTheme.icons.functional.checkboxRed,
+        checkedIcon: BankingTheme.icons.functional.checked,
+        typography: BankingTheme.typography.bodySemiBold,
+        backgroundColor: BankingTheme.colors.errorContainer,
+        borderColor: BankingTheme.colors.errorBorder,
+        alignment: .topLeading
+    )
 }
 
 
@@ -51,12 +52,16 @@ struct ConsentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if !(style is PlainConsentStyle) {
-                toggleCheckbox
-            }
-            if style is PlainConsentStyle {
-                plainView
-            }
+            contentView
+        }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        if style == .plain {
+            plainView
+        } else {
+            toggleCheckbox
         }
     }
 
@@ -100,43 +105,29 @@ struct ConsentView: View {
     }
 }
 
+
+
 struct CheckboxToggleStyle: ToggleStyle {
     let style: ConsentStyle
 
     func makeBody(configuration: Configuration) -> some View {
-        Button(action: { configuration.isOn.toggle() }) {
-            HStack {
-                if let icon = configuration.isOn ? style.checkedIcon : style.uncheckedIcon {
-                    ComponentImage(icon)
+        Button(
+            action: { configuration.isOn.toggle() },
+            label: {
+                HStack {
+                    if let icon = configuration.isOn ? style.checkedIcon : style.uncheckedIcon {
+                        ComponentImage(icon)
+                    }
+                    configuration.label
                 }
-                configuration.label
             }
-        }
+        )
         .buttonStyle(.borderless)
         .tint(.primary)
+        .accessibility(label: Text(configuration.isOn ? "Checked" : "Unchecked"))
+        .accessibility(addTraits: .isButton)
     }
 }
 
-struct ContentView: View {
-    @State private var consentData = ConsentData(
-        text: "I agree to the terms and conditions",
-        isChecked: false
-    )
 
-    var body: some View {
-        VStack {
-            ConsentView(data: consentData, style: CheckboxConsentStyle()) { newValue in
-                consentData.isChecked = newValue
-            }
-            
-            ConsentView(data: consentData, style: PlainConsentStyle()) { newValue in
-                consentData.isChecked = newValue
-            }
 
-            ConsentView(data: consentData, style: ErrorConsentStyle()) { newValue in
-                consentData.isChecked = newValue
-            }
-        }
-        .padding()
-    }
-}
