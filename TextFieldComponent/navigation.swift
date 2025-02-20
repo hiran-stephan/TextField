@@ -1,51 +1,63 @@
 import SwiftUI
 
-struct DocumentData {
-    let documents: [Document]
-}
-
-struct Document: Identifiable {
-    let id = UUID()
-    let title: String
-    let type: String
-    let path: String
-    let badgeText: String
-    let errorMessage: String?
-}
-
-struct ConsentCaptureListCardView: View {
-    let data: DocumentData
-    let onChangeDocumentReviewStatus: (String, Bool) -> Void
+struct ConsentCaptureListCell: View {
+    let data: Document
+    let onReviewDocument: () -> Void
 
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            if let firstDocument = data.documents.first {
-                documentCell(for: firstDocument)
-            }
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
             
-            ForEach(data.documents.dropFirst()) { document in
-                createDivider()
-                documentCell(for: document)
+            HStack(alignment: .center, spacing: BankingTheme.dimensions.smallMedium) {
+                HStack(alignment: .center, spacing: BankingTheme.dimensions.small) {
+                    ComponentImage(BankingTheme.icons.functional.pdf.rawValue)
+                }
+                
+                titleTextView
             }
+            .padding(.vertical, BankingTheme.dimensions.small)
+
+            BadgeIndicator(BadgeIndicatorData(type: .passive, text: data.badgeText))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .onTapGesture {
+                    onReviewDocument()
+                }
+
+            if let errorMessage = data.errorMessage {
+                errorAlertView(message: errorMessage)
+            }
+
+            createDivider()
         }
-        .cornerRadius(BankingTheme.dimensions.smallMedium)
-        .modifier(TileViewModifier())
-    }
-    
-    @ViewBuilder
-    private func documentCell(for document: Document) -> some View {
-        ConsentCaptureListCell(
-            data: ConsentCaptureListCell.Data(
-                title: document.title,
-                badgeText: document.badgeText,
-                errorMessage: document.errorMessage
-            ),
-            onReviewDocument: {
-                onChangeDocumentReviewStatus(document.type, true)
-            }
-        )
+        .padding(BankingTheme.dimensions.medium)
     }
 
+    // MARK: - Extracted Subviews
+
+    /// Title Text View
+    @ViewBuilder
+    private var titleTextView: some View {
+        Text(data.title)
+            .underline()
+            .typography(BankingTheme.typography.body)
+            .foregroundColor(BankingTheme.colors.textPrimary)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
+    /// Error Alert View
+    @ViewBuilder
+    private func errorAlertView(message: String) -> some View {
+        HStack(alignment: .top, spacing: BankingTheme.dimensions.microSmall) {
+            InlineAlert(
+                statusMessage: message,
+                alertType: .error,
+                mode: .borderless(hasIcon: true)
+            )
+        }
+        .padding(.top, BankingTheme.dimensions.small)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
+    /// Divider View
     @ViewBuilder
     private func createDivider() -> some View {
         Divider()
