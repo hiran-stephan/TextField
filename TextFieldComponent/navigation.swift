@@ -1,49 +1,66 @@
 import SwiftUI
 
-struct ConsentCaptureListCell: View {
-    let data: Document
-    let onReviewDocument: () -> Void
+// MARK: - Custom Checkbox Toggle Style
+struct iOSCheckboxToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: {
+            configuration.isOn.toggle()
+        }) {
+            HStack {
+                Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+                    .foregroundColor(.primary)
+                configuration.label
+            }
+        }
+    }
+}
+
+// MARK: - ConsentView
+struct ConsentView: View {
+    enum ConsentType {
+        case normal, reviewed, error
+        
+        var alignment: Alignment {
+            self == .reviewed ? .center : .topLeading
+        }
+    }
+
+    struct Data {
+        let text: String
+        var isChecked: Bool
+        let type: ConsentType
+        let errorMessage: String?
+    }
+
+    @State private var data: Data
+    let onClickCheckbox: (Bool) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
-            
-            HStack(alignment: .center, spacing: BankingTheme.dimensions.smallMedium) {
-                HStack(alignment: .center, spacing: BankingTheme.dimensions.small) {
-                    ComponentImage(BankingTheme.icons.functional.pdf.rawValue)
-                }
-                
-                titleTextView
+        VStack(alignment: .leading, spacing: 0) {
+            Toggle(isOn: $data.isChecked) {
+                Text(data.text)
+                    .typography(data.type.typography)
+                    .foregroundColor(BankingTheme.colors.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .multilineTextAlignment(.leading)
             }
-            .padding(.vertical, BankingTheme.dimensions.small)
+            .toggleStyle(iOSCheckboxToggleStyle())
+            .padding(BankingTheme.dimensions.medium)
+            .frame(maxWidth: .infinity, alignment: data.type.alignment)
+            .background(data.type.backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: BankingTheme.dimensions.smallMedium))
+            .overlay(borderOverlay)
+            .onChange(of: data.isChecked) { newValue in
+                onClickCheckbox(newValue)
+            }
 
-            BadgeIndicator(BadgeIndicatorData(type: .passive, text: data.badgeText))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .onTapGesture {
-                    onReviewDocument()
-                }
-
-            if let errorMessage = data.errorMessage {
+            if let errorMessage = data.errorMessage, data.isChecked {
                 errorAlertView(message: errorMessage)
             }
-
-            createDivider()
         }
-        .padding(BankingTheme.dimensions.medium)
     }
 
-    // MARK: - Extracted Subviews
-
-    /// Title Text View
-    @ViewBuilder
-    private var titleTextView: some View {
-        Text(data.title)
-            .underline()
-            .typography(BankingTheme.typography.body)
-            .foregroundColor(BankingTheme.colors.textPrimary)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-    }
-
-    /// Error Alert View
+    // MARK: - Error Alert View
     @ViewBuilder
     private func errorAlertView(message: String) -> some View {
         HStack(alignment: .top, spacing: BankingTheme.dimensions.microSmall) {
@@ -57,13 +74,10 @@ struct ConsentCaptureListCell: View {
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
-    /// Divider View
+    // MARK: - Border Overlay
     @ViewBuilder
-    private func createDivider() -> some View {
-        Divider()
-            .frame(height: BankingTheme.spacing.stroke)
-            .background(BankingTheme.colors.borderDefault)
-            .accessibilityHidden(true)
-            .padding(.horizontal, BankingTheme.dimensions.medium)
+    private var borderOverlay: some View {
+        RoundedRectangle(cornerRadius: BankingTheme.dimensions.smallMedium)
+            .stroke(data.type.borderColor ?? .clear, lineWidth: 1)
     }
 }
