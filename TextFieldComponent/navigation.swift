@@ -1,17 +1,18 @@
 import SwiftUI
 
 // MARK: - Custom Checkbox Toggle Style
-struct iOSCheckboxToggleStyle: ToggleStyle {
+struct CheckboxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button(action: {
-            configuration.isOn.toggle()
+            configuration.isOn.toggle() // ✅ Corrected `isOn`
         }) {
             HStack {
-                Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+                Image(systemName: configuration.isOn ? "checkmark.square" : "square") // ✅ Fixed `isOn`
                     .foregroundColor(.primary)
                 configuration.label
             }
         }
+        .buttonStyle(PlainButtonStyle()) // ✅ Removes default button styling
     }
 }
 
