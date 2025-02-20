@@ -1,84 +1,142 @@
-import SwiftUI
-
-// MARK: - Custom Checkbox Toggle Style
-struct CheckboxToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        Button(action: {
-            configuration.isOn.toggle() // ✅ Corrected `isOn`
-        }) {
-            HStack {
-                Image(systemName: configuration.isOn ? "checkmark.square" : "square") // ✅ Fixed `isOn`
-                    .foregroundColor(.primary)
-                configuration.label
-            }
-        }
-        .buttonStyle(PlainButtonStyle()) // ✅ Removes default button styling
-    }
+protocol ConsentStyle {
+    var uncheckedIcon: (any ComponentIcon)? { get }
+    var checkedIcon: (any ComponentIcon)? { get }
+    var typography: TypographyFont { get }
+    var backgroundColor: Color { get }
+    var borderColor: Color? { get }
+    var alignment: Alignment { get }
 }
 
-// MARK: - ConsentView
+
+struct CheckboxConsentStyle: ConsentStyle {
+    var uncheckedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checkboxBlack }
+    var checkedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checked }
+    var typography: TypographyFont { BankingTheme.typography.bodySemiBold }
+    var backgroundColor: Color { BankingTheme.colors.illustrationGrey }
+    var borderColor: Color? { BankingTheme.colors.textSecondary }
+    var alignment: Alignment { .topLeading }
+}
+
+struct PlainConsentStyle: ConsentStyle {
+    var uncheckedIcon: (any ComponentIcon)? { nil }
+    var checkedIcon: (any ComponentIcon)? { nil }
+    var typography: TypographyFont { BankingTheme.typography.body }
+    var backgroundColor: Color { BankingTheme.colors.illustrationGrey }
+    var borderColor: Color? { nil }
+    var alignment: Alignment { .center }
+}
+
+
+struct ErrorConsentStyle: ConsentStyle {
+    var uncheckedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checkboxRed }
+    var checkedIcon: (any ComponentIcon)? { BankingTheme.icons.functional.checked }
+    var typography: TypographyFont { BankingTheme.typography.bodySemiBold }
+    var backgroundColor: Color { BankingTheme.colors.errorContainer }
+    var borderColor: Color? { BankingTheme.colors.errorBorder }
+    var alignment: Alignment { .topLeading }
+}
+
+
 struct ConsentView: View {
-    enum ConsentType {
-        case normal, reviewed, error
-        
-        var alignment: Alignment {
-            self == .reviewed ? .center : .topLeading
-        }
-    }
-
-    struct Data {
-        let text: String
-        var isChecked: Bool
-        let type: ConsentType
-        let errorMessage: String?
-    }
-
-    @State private var data: Data
+    let data: ConsentData
+    let style: ConsentStyle
     let onClickCheckbox: (Bool) -> Void
+
+    private var isChecked: Binding<Bool> {
+        Binding(
+            get: { data.isChecked },
+            set: { newValue in onClickCheckbox(newValue) }
+        )
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Toggle(isOn: $data.isChecked) {
-                Text(data.text)
-                    .typography(data.type.typography)
-                    .foregroundColor(BankingTheme.colors.textPrimary)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .multilineTextAlignment(.leading)
+            if !(style is PlainConsentStyle) {
+                toggleCheckbox
             }
-            .toggleStyle(iOSCheckboxToggleStyle())
-            .padding(BankingTheme.dimensions.medium)
-            .frame(maxWidth: .infinity, alignment: data.type.alignment)
-            .background(data.type.backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: BankingTheme.dimensions.smallMedium))
-            .overlay(borderOverlay)
-            .onChange(of: data.isChecked) { newValue in
-                onClickCheckbox(newValue)
-            }
-
-            if let errorMessage = data.errorMessage, data.isChecked {
-                errorAlertView(message: errorMessage)
+            if style is PlainConsentStyle {
+                plainView
             }
         }
     }
 
-    // MARK: - Error Alert View
-    @ViewBuilder
-    private func errorAlertView(message: String) -> some View {
-        HStack(alignment: .top, spacing: BankingTheme.dimensions.microSmall) {
-            InlineAlert(
-                statusMessage: message,
-                alertType: .error,
-                mode: .borderless(hasIcon: true)
-            )
+    private var toggleCheckbox: some View {
+        Toggle(isOn: isChecked) {
+            Text(data.text)
+                .typography(style.typography)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .multilineTextAlignment(.leading)
         }
-        .padding(.top, BankingTheme.dimensions.small)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .toggleStyle(CheckboxToggleStyle(style: style))
+        .padding(BankingTheme.dimens.medium)
+        .frame(maxWidth: .infinity, alignment: style.alignment)
+        .background(style.backgroundColor)
+        .clipShape(RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium))
+        .overlay(borderOverlay)
     }
 
-    // MARK: - Border Overlay
+    private var plainView: some View {
+        HStack(alignment: .top, spacing: BankingTheme.dimens.smallMedium) {
+            if let icon = isChecked.wrappedValue ? style.checkedIcon : style.uncheckedIcon {
+                ComponentImage(icon)
+            }
+            Text(data.text)
+                .typography(style.typography)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .multilineTextAlignment(.leading)
+        }
+        .padding(BankingTheme.dimens.medium)
+        .frame(maxWidth: .infinity, alignment: style.alignment)
+    }
+
     @ViewBuilder
     private var borderOverlay: some View {
-        RoundedRectangle(cornerRadius: BankingTheme.dimensions.smallMedium)
-            .stroke(data.type.borderColor ?? .clear, lineWidth: 1)
+        if let borderColor = style.borderColor {
+            RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium)
+                .strokeBorder(borderColor, lineWidth: 1)
+        }
+    }
+}
+
+struct CheckboxToggleStyle: ToggleStyle {
+    let style: ConsentStyle
+
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: { configuration.isOn.toggle() }) {
+            HStack {
+                if let icon = configuration.isOn ? style.checkedIcon : style.uncheckedIcon {
+                    ComponentImage(icon)
+                }
+                configuration.label
+            }
+        }
+        .buttonStyle(.borderless)
+        .tint(.primary)
+    }
+}
+
+struct ContentView: View {
+    @State private var consentData = ConsentData(
+        text: "I agree to the terms and conditions",
+        isChecked: false
+    )
+
+    var body: some View {
+        VStack {
+            ConsentView(data: consentData, style: CheckboxConsentStyle()) { newValue in
+                consentData.isChecked = newValue
+            }
+            
+            ConsentView(data: consentData, style: PlainConsentStyle()) { newValue in
+                consentData.isChecked = newValue
+            }
+
+            ConsentView(data: consentData, style: ErrorConsentStyle()) { newValue in
+                consentData.isChecked = newValue
+            }
+        }
+        .padding()
     }
 }
