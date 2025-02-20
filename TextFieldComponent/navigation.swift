@@ -1,81 +1,59 @@
-import SwiftUI
+struct ConsentStyle: Identifiable, Equatable {
+    let id = UUID()
+    let uncheckedIcon: (any ComponentIcon)?
+    let checkedIcon: (any ComponentIcon)?
+    let typography: TypographyFont
+    let backgroundColor: Color
+    let borderColor: Color?
+    let alignment: Alignment
 
-struct ConsentView: View {
-    let data: ConsentData
-    let style: ConsentStyle
-    let onClickCheckbox: (Bool) -> Void
-
-    private var isChecked: Binding<Bool> {
-        Binding(
-            get: { data.isChecked },
-            set: { newValue in onClickCheckbox(newValue) }
-        )
+    init(
+        uncheckedIcon: (any ComponentIcon)? = nil,
+        checkedIcon: (any ComponentIcon)? = nil,
+        typography: TypographyFont,
+        backgroundColor: Color,
+        borderColor: Color? = nil,
+        alignment: Alignment
+    ) {
+        self.uncheckedIcon = uncheckedIcon
+        self.checkedIcon = checkedIcon
+        self.typography = typography
+        self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
+        self.alignment = alignment
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            contentView
-        }
-    }
+    static let checkbox = ConsentStyle(
+        uncheckedIcon: BankingTheme.icons.functional.checkboxBlack,
+        checkedIcon: BankingTheme.icons.functional.checked,
+        typography: BankingTheme.typography.bodySemiBold,
+        backgroundColor: BankingTheme.colors.illustrationGrey,
+        borderColor: BankingTheme.colors.textSecondary,
+        alignment: .topLeading
+    )
 
-    @ViewBuilder
-    private var contentView: some View {
-        if style == ConsentStyle.readOnly {
-            plainView
-        } else {
-            toggleCheckbox
-        }
-    }
+    static let readOnly = ConsentStyle(
+        typography: BankingTheme.typography.body,
+        backgroundColor: BankingTheme.colors.illustrationGrey,
+        alignment: .center
+    )
 
-    private var toggleCheckbox: some View {
-        Toggle(isOn: isChecked) {
-            Text(data.text)
-                .typography(style.typography)
-                .foregroundColor(BankingTheme.colors.textPrimary)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-        }
-        .toggleStyle(CheckboxToggleStyle(style: style))
-        .modifier(ConsentStyleModifier(style: style)) // ✅ Extracted common styles
-    }
+    static let error = ConsentStyle(
+        uncheckedIcon: BankingTheme.icons.functional.checkboxRed,
+        checkedIcon: BankingTheme.icons.functional.checked,
+        typography: BankingTheme.typography.bodySemiBold,
+        backgroundColor: BankingTheme.colors.errorContainer,
+        borderColor: BankingTheme.colors.errorBorder,
+        alignment: .topLeading
+    )
 
-    private var plainView: some View {
-        HStack(alignment: .top, spacing: BankingTheme.dimens.smallMedium) {
-            if let icon = isChecked.wrappedValue ? style.checkedIcon : style.uncheckedIcon {
-                ComponentImage(icon)
-            }
-
-            Text(data.text)
-                .typography(style.typography)
-                .foregroundColor(BankingTheme.colors.textPrimary)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-        }
-        .modifier(ConsentStyleModifier(style: style)) // ✅ Extracted common styles
-    }
-}
-
-
-
-
-
-struct ConsentStyleModifier: ViewModifier {
-    let style: ConsentStyle
-
-    func body(content: Content) -> some View {
-        content
-            .padding(BankingTheme.dimens.medium)
-            .frame(maxWidth: .infinity, alignment: style.alignment)
-            .background(style.backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium))
-            .overlay(borderOverlay)
-    }
-
-    @ViewBuilder
-    private var borderOverlay: some View {
-        if let borderColor = style.borderColor {
-            RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium)
-                .strokeBorder(borderColor, lineWidth: 1)
-        }
+    // ✅ Implement Equatable conformance
+    static func == (lhs: ConsentStyle, rhs: ConsentStyle) -> Bool {
+        return lhs.uncheckedIcon === rhs.uncheckedIcon &&
+               lhs.checkedIcon === rhs.checkedIcon &&
+               lhs.typography == rhs.typography &&
+               lhs.backgroundColor == rhs.backgroundColor &&
+               lhs.borderColor == rhs.borderColor &&
+               lhs.alignment == rhs.alignment
     }
 }
