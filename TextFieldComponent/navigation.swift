@@ -1,24 +1,18 @@
-fun ConsentsViewModel.onConsentReviewed(consentData: ConsentDocumentsData) {
-    _consentUiState.update { previousState ->
-        previousState.copy(
-            data = previousState.data?.updateDocumentReviewStatus(consentData)
-        )
-    }
+fun ConsentsViewModel.onConsentsErrorStateChanged() {
+    _consentUiState.value = _consentUiState.value.copy(
+        data = _consentUiState.value.data?.let { consentsData ->
+            consentsData.copy(
+                sections = consentsData.sections.map { section ->
+                    section.copy(
+                        consentDocuments = section.consentDocuments.map { document ->
+                            document.copy(
+                                error = if (document.isReviewed) null
+                                else "Error message will come from presenter {#000}"
+                            )
+                        }
+                    )
+                }
+            )
+        }
+    )
 }
-
-fun ConsentsData.updateDocumentReviewStatus(consentData: ConsentDocumentsData): ConsentsData = copy(
-    sections = sections.map { section ->
-        section.copy(
-            consentDocuments = section.consentDocuments.map { document ->
-                document.updateReviewStatusIfMatch(consentData)
-            }
-        )
-    }
-)
-
-fun ConsentDocumentsData.updateReviewStatusIfMatch(consentData: ConsentDocumentsData): ConsentDocumentsData =
-    if (this.consentName == consentData.consentName && this.consentVersion == consentData.consentVersion) {
-        copy(isReviewed = !this.isReviewed)
-    } else {
-        this
-    }
