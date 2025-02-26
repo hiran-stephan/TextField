@@ -1,25 +1,20 @@
-private fun getConsents() {
-    launch(_consentUiState) {
-        val consentDocuments = sessionDataProvider.getConsents()
-
-        // Group consents by consentType
-        val consentSections = consentDocuments
-            .groupBy { it.consentType }
-            .map { (type, documents) ->
-                ConsentSection(
-                    title = "Consent Type: $type",
-                    consentData = ConsentData(
-                        consentText = "Review required for type $type",
-                        isConsentProvided = false,  // Always false initially
-                        consentError = null  // Always null initially
-                    ),
-                    consentDocuments = documents
-                )
-            }
-
-        // Update UI state with new data
-        _consentUiState.value = _consentUiState.value.copy(
-            data = ConsentsData(sections = consentSections)
+private suspend fun getConsents(): List<ConsentData> {
+    return listOf(
+        ConsentData(
+            consentName = "consent-13.pdf",
+            consentType = "13",
+            consentVersion = "1234",
+            consentPath = "/content/dam/us-public/us-bank-digital-banking-service-agreement.pdf",
+            isReviewed = false,
+            error = null
+        ),
+        ConsentData(
+            consentName = "consent-14.pdf",
+            consentType = "14",
+            consentVersion = "1234",
+            consentPath = "/content/dam/us-public/us-bank-digital-banking-service-agreement.pdf",
+            isReviewed = false,
+            error = null
         )
-    }
+    )
 }
