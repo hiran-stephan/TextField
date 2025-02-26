@@ -1,20 +1,25 @@
-fun ConsentsViewModel.onValidateAndSubmit() {
-    val hasPendingConsent = _consentUiState.value.data?.sections
-        ?.flatMap { it.consentDocuments }
-        ?.any { !it.isReviewed } ?: false
+private fun getConsents() {
+    launch(_consentUiState) {
+        val consentDocuments = sessionDataProvider.getConsents()
 
-    val allConsentsProvided = _consentUiState.value.data?.sections
-        ?.all { it.consentData.isConsentProvided } ?: false
+        // Group consents by consentType
+        val consentSections = consentDocuments
+            .groupBy { it.consentType }
+            .map { (type, documents) ->
+                ConsentSection(
+                    title = "Consent Type: $type",
+                    consentData = ConsentData(
+                        consentText = "Review required for type $type",
+                        isConsentProvided = false,  // Always false initially
+                        consentError = null  // Always null initially
+                    ),
+                    consentDocuments = documents
+                )
+            }
 
-    if (hasPendingConsent) {
-        onConsentsErrorStateChanged()
-    }
-
-    if (!allConsentsProvided) {
-        onConsentMethodErrorChanged()
-    }
-
-    if (!hasPendingConsent && allConsentsProvided) {
-        updateConsentFunction()
+        // Update UI state with new data
+        _consentUiState.value = _consentUiState.value.copy(
+            data = ConsentsData(sections = consentSections)
+        )
     }
 }
