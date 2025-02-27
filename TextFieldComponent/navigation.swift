@@ -1,82 +1,70 @@
-class ConsentSectionPresenter(
-    private val contentFile: ContentFile?,
-    private val locale: Locale,
-    private val consentData: List<ConsentData> = emptyList(),
-    private val isCheckboxChecked: Boolean = false,
-    private val isConsentError: Boolean = false
-) {
+package com.cibc.consents.ui.screens.consents
 
-    /** --- Public Properties Exposed to UI --- **/
+import kotlinx.coroutines.flow.update
 
-    val consentType: String by lazy { consentData.firstOrNull()?.consentType.orEmpty() }
-    val title: String by lazy { getSectionTitle(consentType) }
-    val consentText: String by lazy { getConsentText(consentType) }
-    val isConsentChecked: Boolean = isCheckboxChecked
-    val isConsentRequired: Boolean = consentRequired(consentType)
-    val consentErrorMessage: String by lazy { if (isConsentError) "consent error message" else "" }
+class ConsentsViewModel {
 
-    /** --- Consent Document Mapping --- **/
+    /** --- UI State Management --- **/
     
-    val consentDocuments: List<ConsentDocumentData> = consentData.mapNotNull { consent ->
-        consent.consentName?.let {
-            ConsentDocumentData(
-                documentTitle = it,
-                documentType = consent.consentType,
-                documentVersion = consent.consentVersion,
-                documentPath = consent.consentPath,
-                isDocumentReviewed = consent.isReviewed,
-                documentError = consent.error.orEmpty(),
-                documentBadgeText = if (consent.isReviewed) reviewedStatusPillText else pendingReviewStatusPillText
+    fun onSubmitButtonClick() {
+        val redirect = navigationItem.redirect
+        if (redirect.isNotEmpty()) {
+            router.redirectToDeepLink(redirect)
+        } else {
+            router.navigateToAuthenticated()
+        }
+    }
+
+    fun onConsentDocumentReviewed(consentType: String) {
+        consentUiState.update { previousState ->
+            previousState.copy(
+                data = previousState.data?.updateReviewStatus(consentType)
             )
         }
     }
 
-    /** --- Private Properties --- **/
-
-    private val pendingReviewStatusPillText: String by lazy {
-        displayContent(ContentConstants.CONSENTS_DOCUMENT_PENDING_REVIEW_STATUS_PILL_TEXT)
-    }
-    private val reviewedStatusPillText: String by lazy {
-        displayContent(ContentConstants.CONSENTS_DOCUMENT_REVIEWED_STATUS_PILL_TEXT)
-    }
-
-    private val stepOneIconText: String by lazy {
-        displayContent(ContentConstants.STEP_1_ICON_TEXT)
-    }
-    private val stepTwoIconText: String by lazy {
-        displayContent(ContentConstants.STEP_2_ICON_TEXT)
-    }
-    private val stepOneTitleText: String by lazy {
-        displayContent(ContentConstants.STEP_1_TITLE_TEXT)
-    }
-    private val stepTwoTitleText: String by lazy {
-        displayContent(ContentConstants.STEP_2_TITLE_TEXT)
+    fun onConsentErrorStateChanged() {
+        consentUiState.update { previousState ->
+            previousState.copy(
+                data = previousState.data?.updateConsentsError()
+            )
+        }
     }
 
-    /** --- Utility Methods (Private) --- **/
-
-    private fun displayContent(key: String, forAccessibility: Boolean = false): String =
-        contentFile?.findContentValue(key, locale.lang, forAccessibility).orEmpty()
-
-    private fun getSectionTitle(consentType: String): String = when (consentType) {
-        BDSA_TYPE -> stepOneIconText + stepOneTitleText
-        EDCA_TYPE -> stepTwoIconText + stepTwoTitleText
-        else -> "Unknown Consent Type"
+    fun onConsentCheckboxChanged() {
+        consentUiState.update { previousState ->
+            previousState.copy(
+                isCheckboxChecked = !previousState.isCheckboxChecked
+            )
+        }
     }
 
-    private val consentTextMap = mapOf(
-        BDSA_TYPE to ContentConstants.CONSENTS_CHECKBOX_TEXT_FOR_BDSA_AGREEMENT_WHEN_EDCA_AGREEMENT_AVAILABLE,
-        EDCA_TYPE to ContentConstants.CONSENTS_CHECKBOX_TEXT_FOR_EDCA_AGREEMENT_ONLY
-    )
+    fun onConsentErrorChanged() {
+        consentUiState.update { previousState ->
+            previousState.copy(
+                isConsentError = !previousState.isConsentError
+            )
+        }
+    }
 
-    private fun getConsentText(consentType: String): String =
-        displayContent(consentTextMap[consentType] ?: "Consent text not available")
+    /** --- Utility Methods --- **/
 
-    private val consentRequiredMap = mapOf(
-        BDSA_TYPE to false,
-        EDCA_TYPE to true
-    )
+    private fun hasPendingConsentDocumentReview(): Boolean =
+        consentUiState.value.data?.groupedConsents?.values?.flatten()?.any { !it.isReviewed } ?: false
 
-    private fun consentRequired(consentType: String): Boolean =
-        consentRequiredMap[consentType] ?: false
+    fun validateAndSubmit() {
+        val hasPendingConsentDocument = hasPendingConsentDocumentReview()
+
+        if (hasPendingConsentDocument) {
+            onConsentErrorStateChanged()
+        }
+
+        if (!consentUiState.value.isCheckboxChecked) {
+            onConsentErrorChanged()
+        }
+
+        if (!hasPendingConsentDocument && consentUiState.value.isCheckboxChecked) {
+            TODO(reason = "Call update consent function from here to update consents")
+        }
+    }
 }
