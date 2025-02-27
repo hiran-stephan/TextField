@@ -5,10 +5,33 @@ class ConsentSectionPresenter(
     private val isCheckboxChecked: Boolean = false,
     private val isConsentError: Boolean = false
 ) {
-    private fun displayContent(key: String, forAccessibility: Boolean = false): String =
-        contentFile?.findContentValue(key, locale.lang, forAccessibility).orEmpty()
+
+    /** --- Public Properties Exposed to UI --- **/
 
     val consentType: String by lazy { consentData.firstOrNull()?.consentType.orEmpty() }
+    val title: String by lazy { getSectionTitle(consentType) }
+    val consentText: String by lazy { getConsentText(consentType) }
+    val isConsentChecked: Boolean = isCheckboxChecked
+    val isConsentRequired: Boolean = consentRequired(consentType)
+    val consentErrorMessage: String by lazy { if (isConsentError) "consent error message" else "" }
+
+    /** --- Consent Document Mapping --- **/
+    
+    val consentDocuments: List<ConsentDocumentData> = consentData.mapNotNull { consent ->
+        consent.consentName?.let {
+            ConsentDocumentData(
+                documentTitle = it,
+                documentType = consent.consentType,
+                documentVersion = consent.consentVersion,
+                documentPath = consent.consentPath,
+                isDocumentReviewed = consent.isReviewed,
+                documentError = consent.error.orEmpty(),
+                documentBadgeText = if (consent.isReviewed) reviewedStatusPillText else pendingReviewStatusPillText
+            )
+        }
+    }
+
+    /** --- Private Properties --- **/
 
     private val pendingReviewStatusPillText: String by lazy {
         displayContent(ContentConstants.CONSENTS_DOCUMENT_PENDING_REVIEW_STATUS_PILL_TEXT)
@@ -30,26 +53,10 @@ class ConsentSectionPresenter(
         displayContent(ContentConstants.STEP_2_TITLE_TEXT)
     }
 
-    val title: String by lazy { getSectionTitle(consentType) }
+    /** --- Utility Methods (Private) --- **/
 
-    val consentDocuments: List<ConsentDocumentData> = consentData.mapNotNull { consent ->
-        consent.consentName?.let {
-            ConsentDocumentData(
-                documentTitle = it,
-                documentType = consent.consentType,
-                documentVersion = consent.consentVersion,
-                documentPath = consent.consentPath,
-                isDocumentReviewed = consent.isReviewed,
-                documentError = consent.error.orEmpty(),
-                documentBadgeText = if (consent.isReviewed) reviewedStatusPillText else pendingReviewStatusPillText
-            )
-        }
-    }
-
-    val consentText: String by lazy { getConsentText(consentType) }
-    val isConsentChecked: Boolean = isCheckboxChecked
-    val isConsentRequired: Boolean = consentRequired(consentType)
-    val consentErrorMessage: String by lazy { if (isConsentError) "consent error message" else "" }
+    private fun displayContent(key: String, forAccessibility: Boolean = false): String =
+        contentFile?.findContentValue(key, locale.lang, forAccessibility).orEmpty()
 
     private fun getSectionTitle(consentType: String): String = when (consentType) {
         BDSA_TYPE -> stepOneIconText + stepOneTitleText
