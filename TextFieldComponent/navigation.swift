@@ -23,3 +23,4 @@ fun getSectionTitle(consentType: String): String {
           else -> false
       }
   }
+val consentType: String = consentData.firstOrNull()?.consentType ?: ""
