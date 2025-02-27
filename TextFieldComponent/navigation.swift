@@ -1,18 +1,20 @@
-let groupedConsents = self.model.state?.data?.groupedConsents ?? [:]
-
-ForEach(groupedConsents.keys.sorted(), id: \.self) { key in
-    if let values = groupedConsents[key] {
-        let presenter = viewModel.createConsentSectionPresenter(documentList: values)
-        let section = presenter.toSectionData()
-        
-        ConsentCaptureSectionView(
-            data: section,
-            onChangeConsent: { checked in
-                print("checked: \(checked)")
-            },
-            onChangeDocumentReviewStatus: { type, isReviewed in
-                print("type: \(type) - isReviewed: \(isReviewed)")
-            }
+private suspend fun getConsents(): List<ConsentData> {
+    return listOf(
+        ConsentData(
+            consentName = "consent-13.pdf",
+            consentType = "13",
+            consentVersion = "1234",
+            consentPath = "/content/dam/us-public/us-bank-digital-banking-service-agreement.pdf",
+            isReviewed = false,
+            error = null
+        ),
+        ConsentData(
+            consentName = "consent-14.pdf",
+            consentType = "14",
+            consentVersion = "1234",
+            consentPath = "/content/dam/us-public/us-bank-digital-banking-service-agreement.pdf",
+            isReviewed = false,
+            error = null
         )
-    }
+    )
 }
