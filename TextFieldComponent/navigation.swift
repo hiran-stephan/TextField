@@ -1,23 +1,27 @@
-fun ConsentsViewModel.onConsentDocumentReviewed(consentType: String) {
-    consentUiState.update { previousState ->
-        val consentData = previousState.findConsentByType(consentType) ?: return@update previousState
-        previousState.addAcceptedConsent(consentData)
+private fun getConsents() {
+    launch(consentUiState) {
+        val consents = consentsProvider.getConsents()
+        val groupedConsents = consents
+            .map { it.updateIfAccepted(consentUiState.value.acceptedConsents) } // Update only `isReviewed` and `error`
+            .groupBy { it.consentType }
+
+        consentUiState.update { previousState ->
+            previousState.copy(
+                data = ConsentsData(groupedConsents)
+            )
+        }
     }
 }
 
-// Helper function to find ConsentData by type
-private fun ConsentsUiState.findConsentByType(consentType: String): ConsentData? {
-    return this.data?.groupedConsents?.values
-        ?.flatten()
-        ?.find { it.consentType == consentType }
-}
-
-// Helper function to update acceptedConsents in state
-// Helper function to update acceptedConsents **only if not already present**
-private fun ConsentsUiState.addAcceptedConsent(consentData: ConsentData): ConsentsUiState {
-    return if (this.acceptedConsents.any { it.consentType == consentData.consentType }) {
-        this // Return unchanged state if consent is already accepted
+// Helper function to update only `isReviewed` and `error`
+private fun ConsentData.updateIfAccepted(acceptedConsents: List<ConsentData>): ConsentData {
+    val acceptedConsent = acceptedConsents.find { it.consentType == this.consentType }
+    return if (acceptedConsent != null) {
+        this.copy(
+            isReviewed = acceptedConsent.isReviewed, // Only update isReviewed
+            error = acceptedConsent.error // Only update error
+        )
     } else {
-        this.copy(acceptedConsents = this.acceptedConsents + consentData)
+        this // Return original if not in acceptedConsents
     }
 }
