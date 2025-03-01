@@ -13,8 +13,11 @@ private fun ConsentsUiState.findConsentByType(consentType: String): ConsentData?
 }
 
 // Helper function to update acceptedConsents in state
+// Helper function to update acceptedConsents **only if not already present**
 private fun ConsentsUiState.addAcceptedConsent(consentData: ConsentData): ConsentsUiState {
-    return this.copy(
-        acceptedConsents = this.acceptedConsents + consentData
-    )
+    return if (this.acceptedConsents.any { it.consentType == consentData.consentType }) {
+        this // Return unchanged state if consent is already accepted
+    } else {
+        this.copy(acceptedConsents = this.acceptedConsents + consentData)
+    }
 }
