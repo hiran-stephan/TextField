@@ -1,5 +1,7 @@
 import SwiftUI
 
+import SwiftUI
+
 extension String {
     func attributedWithErrorCode(highlightColor: Color, defaultColor: Color) -> AttributedString {
         var attributedString = AttributedString(self)
@@ -11,7 +13,12 @@ extension String {
 
             for match in matches {
                 let nsRange = match.range
-                if let attributedRange = Range(nsRange, in: attributedString.characters) {
+                
+                // Convert NSRange to AttributedString.Index range
+                if let lowerBound = attributedString.index(AttributedString.Index(utf16Offset: nsRange.location, in: attributedString), offsetBy: 0, limitedBy: attributedString.endIndex),
+                   let upperBound = attributedString.index(lowerBound, offsetBy: nsRange.length, limitedBy: attributedString.endIndex) {
+                    
+                    let attributedRange = lowerBound..<upperBound
                     attributedString[attributedRange].foregroundColor = highlightColor
                 }
             }
@@ -21,6 +28,7 @@ extension String {
         return attributedString
     }
 }
+
 
 
 
