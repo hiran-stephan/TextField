@@ -1,7 +1,5 @@
 import SwiftUI
 
-import SwiftUI
-
 extension String {
     func attributedWithErrorCode(highlightColor: Color, defaultColor: Color) -> AttributedString {
         var attributedString = AttributedString(self)
@@ -12,8 +10,8 @@ extension String {
             let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: nsString.length))
 
             for match in matches {
-                if let range = Range(match.range, in: self) {
-                    let attributedRange = attributedString.characters.index(range.lowerBound, within: attributedString)!..<attributedString.characters.index(range.upperBound, within: attributedString)!
+                let nsRange = match.range
+                if let attributedRange = Range(nsRange, in: attributedString.characters) {
                     attributedString[attributedRange].foregroundColor = highlightColor
                 }
             }
@@ -23,6 +21,7 @@ extension String {
         return attributedString
     }
 }
+
 
 
 
