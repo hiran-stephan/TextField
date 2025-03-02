@@ -1,26 +1,29 @@
 import SwiftUI
 
+import SwiftUI
+
 extension String {
     func attributedWithErrorCode(highlightColor: Color, defaultColor: Color) -> AttributedString {
         var attributedString = AttributedString(self)
-        
         let pattern = "\\(\\d{4,}\\)"  // Matches error codes like (0045)
-        
+
         if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
             let nsString = self as NSString
             let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: nsString.length))
-            
+
             for match in matches {
                 if let range = Range(match.range, in: self) {
-                    attributedString[range].foregroundColor = highlightColor
+                    let attributedRange = attributedString.characters.index(range.lowerBound, within: attributedString)!..<attributedString.characters.index(range.upperBound, within: attributedString)!
+                    attributedString[attributedRange].foregroundColor = highlightColor
                 }
             }
         }
-        
+
         attributedString.foregroundColor = defaultColor
         return attributedString
     }
 }
+
 
 
 public struct InlineAlert: View {
