@@ -1,27 +1,63 @@
-fun ConsentsViewModel.onConsentDocumentReviewed(consentType: String) {
-    consentUiState.update { previousState ->
-        val consentData = previousState.findConsentByType(consentType) ?: return@update previousState
-        previousState.addAcceptedConsent(consentData.markAsReviewed())
+import SwiftUI
+
+extension String {
+    func attributedWithErrorCode(highlightColor: Color, defaultColor: Color) -> AttributedString {
+        var attributedString = AttributedString(self)
+        
+        let pattern = "\\(\\d{4,}\\)"  // Matches error codes like (0045)
+        
+        if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
+            let nsString = self as NSString
+            let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: nsString.length))
+            
+            for match in matches {
+                if let range = Range(match.range, in: self) {
+                    attributedString[range].foregroundColor = highlightColor
+                }
+            }
+        }
+        
+        attributedString.foregroundColor = defaultColor
+        return attributedString
     }
 }
 
-// Helper function to find ConsentData by type
-private fun ConsentsUiState.findConsentByType(consentType: String): ConsentData? {
-    return this.data?.groupedConsents?.values
-        ?.flatten()
-        ?.find { it.consentType == consentType }
-}
 
-// Helper function to update acceptedConsents **only if not already present**
-private fun ConsentsUiState.addAcceptedConsent(consentData: ConsentData): ConsentsUiState {
-    return if (this.acceptedConsents.any { it.consentType == consentData.consentType }) {
-        this // Return unchanged state if consent is already accepted
-    } else {
-        this.copy(acceptedConsents = this.acceptedConsents + consentData)
+public struct InlineAlert: View {
+    let statusMessage: AttributedString
+    let alertType: AlertType
+    let mode: Mode
+    
+    public init(statusMessage: String, alertType: AlertType, mode: Mode = .bordered) {
+        self.statusMessage = statusMessage.attributedWithErrorCode(
+            highlightColor: BankingTheme.colors.error,  // Custom color for the error code
+            defaultColor: BankingTheme.colors.textPrimary // Default text color
+        )
+        self.alertType = alertType
+        self.mode = mode
+    }
+
+    public var body: some View {
+        switch mode {
+        case .bordered:
+            borderedView()
+        case .borderless(let hasIcon):
+            borderLessView(hasIcon)
+        }
     }
 }
 
-// Helper function to mark consent as reviewed
-private fun ConsentData.markAsReviewed(): ConsentData {
-    return this.copy(isReviewed = true)
+
+
+@ViewBuilder
+private func errorAlertView(message: String) -> some View {
+    HStack(alignment: .top, spacing: BankingTheme.dimens.microSmall) {
+        InlineAlert(
+            statusMessage: message,
+            alertType: .error,
+            mode: .borderless(hasIcon: true)
+        )
+    }
+    .padding(.top, BankingTheme.dimens.small)
+    .frame(maxWidth: .infinity, alignment: .topLeading)
 }
