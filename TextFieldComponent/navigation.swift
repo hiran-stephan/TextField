@@ -1,11 +1,11 @@
-private func createAttributedString() -> AttributedString {
-    var attributedString = AttributedString(statusMessage)
-    
+private func createAttributedString(statusMessage: AttributedString, errorCode: String?) -> AttributedString {
+    var mutableStatusMessage = statusMessage // Create a mutable copy
+
     if let errorCode = errorCode, !errorCode.isEmpty {
         var errorAttributedString = AttributedString(" \(errorCode)")
-        errorAttributedString.setAttributes(.init([.foregroundColor: errorColor])) // Set color correctly
-        attributedString.append(errorAttributedString) // Append to main message
+        errorAttributedString.setAttributes([.foregroundColor: BankingTheme.colors.textSecondary])
+        mutableStatusMessage.append(errorAttributedString) // Append to mutable copy
     }
 
-    return attributedString
+    return mutableStatusMessage // Return the modified version
 }
