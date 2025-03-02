@@ -1,12 +1,13 @@
 import SwiftUI
 
 extension AttributedString {
-    mutating func highlightErrorCodes(highlightColor: Color, defaultColor: Color) {
+    func withHighlightedErrorCodes(highlightColor: Color, defaultColor: Color) -> AttributedString {
+        var newAttributedString = self
         let pattern = "\\(\\d{4,}\\)" // Matches error codes like (0045)
 
         guard let regex = try? NSRegularExpression(pattern: pattern) else {
-            self.foregroundColor = defaultColor
-            return
+            newAttributedString.foregroundColor = defaultColor
+            return newAttributedString
         }
 
         let fullString = String(self) // Convert `AttributedString` to `String`
@@ -17,11 +18,12 @@ extension AttributedString {
             let nsRange = match.range
 
             guard let range = Range(nsRange, in: fullString),
-                  let attributedRange = self.range(of: fullString[range]) else { continue }
+                  let attributedRange = newAttributedString.range(of: fullString[range]) else { continue }
 
-            self[attributedRange].foregroundColor = highlightColor
+            newAttributedString[attributedRange].foregroundColor = highlightColor
         }
 
-        self.foregroundColor = defaultColor
+        newAttributedString.foregroundColor = defaultColor
+        return newAttributedString
     }
 }
