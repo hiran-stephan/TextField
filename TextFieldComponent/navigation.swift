@@ -1,32 +1,35 @@
 
 import SwiftUI
 
+import SwiftUI
+
 extension String {
     func attributedWithErrorCode(highlightColor: Color, defaultColor: Color) -> AttributedString {
         var attributedString = AttributedString(self)
         let pattern = "\\(\\d{4,}\\)"  // Matches error codes like (0045)
 
-        if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
-            let nsString = self as NSString
-            let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: nsString.length))
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            attributedString.foregroundColor = defaultColor
+            return attributedString
+        }
 
-            for match in matches {
-                let nsRange = match.range
+        let nsString = self as NSString
+        let matches = regex.matches(in: self, range: NSRange(location: 0, length: nsString.length))
 
-                // Convert NSRange to AttributedString.Index
-                if let lowerBound = attributedString.index(AttributedString.Index(utf16Offset: nsRange.location, in: attributedString)),
-                   let upperBound = attributedString.index(lowerBound, offsetBy: nsRange.length, limitedBy: attributedString.endIndex) {
-                    
-                    let attributedRange = lowerBound..<upperBound
-                    attributedString[attributedRange].foregroundColor = highlightColor
-                }
-            }
+        for match in matches.reversed() { // Process in reverse to avoid index shifting
+            let nsRange = match.range
+            
+            guard let range = Range(nsRange, in: self),
+                  let attributedRange = attributedString.range(of: self[range]) else { continue }
+
+            attributedString[attributedRange].foregroundColor = highlightColor
         }
 
         attributedString.foregroundColor = defaultColor
         return attributedString
     }
 }
+
 
 
 
