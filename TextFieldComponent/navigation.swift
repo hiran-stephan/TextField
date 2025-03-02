@@ -23,3 +23,8 @@ extension String {
         return attributedString
     }
 }
+
+let attributedStatusMessage = AttributedString(statusMessage).attributedWithErrorCode(
+        highlightColor: BankingTheme.colors.error,
+        defaultColor: BankingTheme.colors.textPrimary
+    )
