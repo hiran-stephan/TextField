@@ -1,29 +1,27 @@
-import SwiftUI
+@ViewBuilder
+private func errorAlertView(message: String, code: String?) -> some View {
+    var attributedString = AttributedString(message)
+    let errorCode = code ?? ""
 
-extension AttributedString {
-    func withHighlightedErrorCodes(highlightColor: Color, defaultColor: Color) -> AttributedString {
-        var newAttributedString = self
-        let pattern = "\\(\\d{4,}\\)" // Matches error codes like (0045)
-
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
-            newAttributedString.foregroundColor = defaultColor
-            return newAttributedString
-        }
-
-        let fullString = String(self) // Convert `AttributedString` to `String`
-        let nsString = fullString as NSString
-        let matches = regex.matches(in: fullString, range: NSRange(location: 0, length: nsString.length))
-
-        for match in matches.reversed() {
-            let nsRange = match.range
-
-            guard let range = Range(nsRange, in: fullString),
-                  let attributedRange = newAttributedString.range(of: fullString[range]) else { continue }
-
-            newAttributedString[attributedRange].foregroundColor = highlightColor
-        }
-
-        newAttributedString.foregroundColor = defaultColor
-        return newAttributedString
+    // Apply color attributes
+    if let messageRange = attributedString.range(of: message) {
+        attributedString[messageRange].foregroundColor = .primary // Change to your desired color
     }
+    
+    if !errorCode.isEmpty {
+        var errorAttributedString = AttributedString(" " + errorCode)
+        errorAttributedString.foregroundColor = .red // Change to your desired error color
+        
+        attributedString.append(errorAttributedString)
+    }
+
+    HStack(alignment: .top, spacing: BankingTheme.dimens.microSmall) {
+        InlineAlert(
+            statusMessage: attributedString,
+            alertType: .error,
+            mode: .borderless(hasIcon: true)
+        )
+    }
+    .padding(.top, BankingTheme.dimens.small)
+    .frame(maxWidth: .infinity, alignment: .topLeading)
 }
