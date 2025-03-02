@@ -63,3 +63,18 @@ private func errorAlertView(message: String) -> some View {
     .padding(.top, BankingTheme.dimens.small)
     .frame(maxWidth: .infinity, alignment: .topLeading)
 }
+
+public init(
+    statusMessage: String,
+    alertType: AlertType,
+    mode: Mode = .bordered
+) {
+    self.init(
+        statusMessage: AttributedString(statusMessage).attributedWithErrorCode(
+            highlightColor: BankingTheme.colors.error,
+            defaultColor: BankingTheme.colors.textPrimary
+        ),
+        alertType: alertType,
+        mode: mode
+    )
+}
