@@ -1,15 +1,20 @@
-let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+let titleLabel = UILabel()
+titleLabel.text = title
+titleLabel.font = UIFont.preferredFont(forTextStyle: .headline) // Matches system font
+titleLabel.textAlignment = .center
+titleLabel.numberOfLines = 0
+titleLabel.textColor = UIColor.label // Auto-adapts to Light/Dark Mode
+titleLabel.accessibilityTraits = .header
 
-          // Create a custom UILabel for the title
-          let titleLabel = UILabel()
-          titleLabel.text = title
-          titleLabel.font = UIFont.boldSystemFont(ofSize: 17)
-          titleLabel.textAlignment = .center
-          titleLabel.accessibilityTraits = .header
+let titleContainer = UIView()
+titleContainer.addSubview(titleLabel)
 
-          // Apply NSAttributedString for custom title styling
-          let attributedTitle = NSAttributedString(string: title, attributes: [
-              .font: UIFont.boldSystemFont(ofSize: 17),
-              .foregroundColor: UIColor.black
-          ])
-          alertController.setValue(attributedTitle, forKey: "attributedTitle")
+titleLabel.translatesAutoresizingMaskIntoConstraints = false
+NSLayoutConstraint.activate([
+    titleLabel.leadingAnchor.constraint(equalTo: titleContainer.leadingAnchor),
+    titleLabel.trailingAnchor.constraint(equalTo: titleContainer.trailingAnchor),
+    titleLabel.topAnchor.constraint(equalTo: titleContainer.topAnchor),
+    titleLabel.bottomAnchor.constraint(equalTo: titleContainer.bottomAnchor)
+])
+
+alertController.setValue(titleContainer, forKey: "contentViewController") // Safe & Native Look
