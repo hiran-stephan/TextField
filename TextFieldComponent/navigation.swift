@@ -1,20 +1,40 @@
-let titleLabel = UILabel()
-titleLabel.text = title
-titleLabel.font = UIFont.preferredFont(forTextStyle: .headline) // Matches system font
-titleLabel.textAlignment = .center
-titleLabel.numberOfLines = 0
-titleLabel.textColor = UIColor.label // Auto-adapts to Light/Dark Mode
-titleLabel.accessibilityTraits = .header
+// Create a custom UIViewController to wrap the title container
+class AlertTitleViewController: UIViewController {
+    private let titleText: String
 
-let titleContainer = UIView()
-titleContainer.addSubview(titleLabel)
+    init(title: String) {
+        self.titleText = title
+        super.init(nibName: nil, bundle: nil)
+    }
 
-titleLabel.translatesAutoresizingMaskIntoConstraints = false
-NSLayoutConstraint.activate([
-    titleLabel.leadingAnchor.constraint(equalTo: titleContainer.leadingAnchor),
-    titleLabel.trailingAnchor.constraint(equalTo: titleContainer.trailingAnchor),
-    titleLabel.topAnchor.constraint(equalTo: titleContainer.topAnchor),
-    titleLabel.bottomAnchor.constraint(equalTo: titleContainer.bottomAnchor)
-])
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-alertController.setValue(titleContainer, forKey: "contentViewController") // Safe & Native Look
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Title Label (Matches Native Style)
+        let titleLabel = UILabel()
+        titleLabel.text = titleText
+        titleLabel.font = UIFont.preferredFont(forTextStyle: .headline) // Uses system font
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 0
+        titleLabel.textColor = UIColor.label // Adapts to Light/Dark mode
+        titleLabel.accessibilityTraits = .header // Ensure VoiceOver treats it as a header
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Container View
+        view.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+            titleLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)
+        ])
+    }
+}
+
+// Usage: Assign Custom Title View Controller to UIAlertController
+let titleViewController = AlertTitleViewController(title: title)
+alertController.setValue(titleViewController, forKey: "contentViewController") // ✅ Now it won't crash!
