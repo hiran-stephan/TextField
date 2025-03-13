@@ -1,4 +1,26 @@
-val problemsList = error?.toProblemsData().orEmpty()
+override suspend fun getConsents(): Flow<NetworkResultState<List<ConsentData>>> =
+    safeApiCall { requestId ->
+        val response = profileApiService.getConsents(requestId)
 
-val isNicknameRetrieved: Boolean = problemsList.none { it.message == ERROR_CODE_NICKNAME_NOT_RETRIEVED }
-val isShowHideRetrieved: Boolean = problemsList.none { it.message == ERROR_CODE_SHOW_HIDE_NOT_RETRIEVED }
+        return@safeApiCall when (response.status) {
+            200 -> {
+                val consents: List<ConsentData> = response.consents.map { consent ->
+                    ConsentData(
+                        consentName = consent.consentName.orEmpty(),
+                        consentVersion = consent.consentVersion.orEmpty(),
+                        consentType = consent.consentType.orEmpty(),
+                        consentPath = consent.consentPath.orEmpty()
+                    )
+                }
+                NetworkResultState.Success(consents)
+            }
+            204 -> {
+                // No pending consents, return an empty list
+                NetworkResultState.Success(emptyList())
+            }
+            else -> {
+                // Handle unexpected status codes
+                NetworkResultState.Error("Unexpected response: ${response.status}")
+            }
+        }
+    }
