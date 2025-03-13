@@ -1,16 +1,21 @@
-suspend inline fun <reified T> GlobalCallbackRequestBuilder.safeClientCall(
+suspend inline fun <reified T : Any> GlobalCallbackRequestBuilder.safeClientCall(
     referenceId: String,
-    result: GlobalCallbackRequestBuilder.(T?) -> Unit = {},  // Make result nullable
+    result: GlobalCallbackRequestBuilder.(T) -> Unit = {},
     block: GlobalCallbackRequestBuilder.() -> HttpResponse
-): T? {
+): T {
     try {
         val response = block(this)
         val statusCode = response.status.value
 
         if (statusCode == 204) {
-            // No Content - Return null instead of deserializing
+            // Create an empty response object
+            val emptyResponse = createEmptyResponse<T>()
+            
+            // Pass emptyResponse to result() instead of returning it directly
+            result(this, emptyResponse)
+            
             globalCallbacks.onGlobalSuccess(referenceId, response = response)
-            return null
+            return emptyResponse
         }
 
         try {
