@@ -1,26 +1,40 @@
-override suspend fun getConsents(): Flow<NetworkResultState<List<ConsentData>>> =
-    safeApiCall { requestId ->
-        val response = profileApiService.getConsents(requestId)
+suspend inline fun <reified T> GlobalCallbackRequestBuilder.safeClientCall(
+    referenceId: String,
+    result: GlobalCallbackRequestBuilder.(T?) -> Unit = {},  // Make result nullable
+    block: GlobalCallbackRequestBuilder.() -> HttpResponse
+): T? {
+    try {
+        val response = block(this)
+        val statusCode = response.status.value
 
-        return@safeApiCall when (response.status) {
-            200 -> {
-                val consents: List<ConsentData> = response.consents.map { consent ->
-                    ConsentData(
-                        consentName = consent.consentName.orEmpty(),
-                        consentVersion = consent.consentVersion.orEmpty(),
-                        consentType = consent.consentType.orEmpty(),
-                        consentPath = consent.consentPath.orEmpty()
-                    )
-                }
-                NetworkResultState.Success(consents)
+        if (statusCode == 204) {
+            // No Content - Return null instead of deserializing
+            globalCallbacks.onGlobalSuccess(referenceId, response = response)
+            return null
+        }
+
+        try {
+            response.body<T>().also {
+                result(this, it)
+                globalCallbacks.onGlobalSuccess(referenceId, response = response)
             }
-            204 -> {
-                // No pending consents, return an empty list
-                NetworkResultState.Success(emptyList())
+        } catch (e: Exception) {
+            throw BundleException(e, response)
+        }
+    } catch (e: Exception) {
+        when (e) {
+            is BundleException -> {
+                globalCallbacks.onGlobalError(referenceId, response = e.response, exception = e.exception)
+                throw e.exception
+            }
+            is StepUpException, is NetworkErrorException -> {
+                globalCallbacks.onGlobalError(referenceId, response = e.response, exception = e)
+                throw e
             }
             else -> {
-                // Handle unexpected status codes
-                NetworkResultState.Error("Unexpected response: ${response.status}")
+                globalCallbacks.onGlobalError(referenceId, response = null, exception = e)
+                throw e
             }
         }
     }
+}
