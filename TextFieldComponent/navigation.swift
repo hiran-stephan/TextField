@@ -1,45 +1,30 @@
-suspend inline fun <reified T : Any> GlobalCallbackRequestBuilder.safeClientCall(
-    referenceId: String,
-    result: GlobalCallbackRequestBuilder.(T) -> Unit = {},
-    block: GlobalCallbackRequestBuilder.() -> HttpResponse
-): T {
-    try {
-        val response = block(this)
-        val statusCode = response.status.value
+private suspend fun getConsents(): List<ConsentData> {
+    var consents: List<ConsentData> = emptyList()
 
-        if (statusCode == 204) {
-            // Create an empty response object
-            val emptyResponse = createEmptyResponse<T>()
-            
-            // Pass emptyResponse to result() instead of returning it directly
-            result(this, emptyResponse)
-            
-            globalCallbacks.onGlobalSuccess(referenceId, response = response)
-            return emptyResponse
-        }
+    repository.getConsents().collect { result ->
+        when (result) {
+            is NetworkResultState.Loading -> {
+                featureRouter.parent.trackBlockingLoading(result.id, isLoading = true)
+            }
+            is NetworkResultState.Success -> {
+                consents = result.data // Handles 200 OK (parsed list) & 204 No Content (empty list)
+            }
+            is NetworkResultState.Error -> {
+                val errorResponse = result.message
 
-        try {
-            response.body<T>().also {
-                result(this, it)
-                globalCallbacks.onGlobalSuccess(referenceId, response = response)
-            }
-        } catch (e: Exception) {
-            throw BundleException(e, response)
-        }
-    } catch (e: Exception) {
-        when (e) {
-            is BundleException -> {
-                globalCallbacks.onGlobalError(referenceId, response = e.response, exception = e.exception)
-                throw e.exception
-            }
-            is StepUpException, is NetworkErrorException -> {
-                globalCallbacks.onGlobalError(referenceId, response = e.response, exception = e)
-                throw e
-            }
-            else -> {
-                globalCallbacks.onGlobalError(referenceId, response = null, exception = e)
-                throw e
+                // Handle 204 gracefully
+                if (result.exception is BundleException && result.exception.response?.status?.value == 204) {
+                    consents = emptyList()
+                } else {
+                    _loginAction.update {
+                        it.copy(
+                            showConsentsErrorDialog = true,
+                            error = errorResponse
+                        )
+                    }
+                }
             }
         }
     }
+    return consents
 }
