@@ -1,30 +1,19 @@
-private suspend fun getConsents(): List<ConsentData> {
-    var consents: List<ConsentData> = emptyList()
+private fun ConsentsViewModel.hasPendingConsent(): Boolean {
+    return consentUiState.value.findConsentByType(EDCA_TYPE)
+        ?.let { !consentUiState.value.isCheckboxChecked } ?: false
+}
 
-    repository.getConsents().collect { result ->
-        when (result) {
-            is NetworkResultState.Loading -> {
-                featureRouter.parent.trackBlockingLoading(result.id, isLoading = true)
-            }
-            is NetworkResultState.Success -> {
-                consents = result.data // Handles 200 OK (parsed list) & 204 No Content (empty list)
-            }
-            is NetworkResultState.Error -> {
-                val errorResponse = result.message
 
-                // Handle 204 gracefully
-                if (result.exception is BundleException && result.exception.response?.status?.value == 204) {
-                    consents = emptyList()
-                } else {
-                    _loginAction.update {
-                        it.copy(
-                            showConsentsErrorDialog = true,
-                            error = errorResponse
-                        )
-                    }
-                }
-            }
-        }
+
+fun ConsentsViewModel.onValidateAndSubmit() {
+    analyticsHelper.trackReviewAgreementsSubmitAction()
+
+    val hasPendingConsent = hasPendingConsent()
+    val hasPendingReview = hasPendingConsentDocumentReview()
+
+    if (hasPendingConsent || hasPendingReview) {
+        onConsentValidationFailed()
+    } else {
+        updateConsents()
     }
-    return consents
 }
