@@ -1,19 +1,17 @@
-private fun ConsentsViewModel.hasPendingConsent(): Boolean {
-    return consentUiState.value.findConsentByType(EDCA_TYPE)
-        ?.let { !consentUiState.value.isCheckboxChecked } ?: false
-}
+private fun getSectionStepIndicatorText(consentType: String): String =
+    getStepIndicatorText(consentType, isAccessibility = false)
 
+private fun getSectionStepIndicatorAccessibilityText(consentType: String): String =
+    getStepIndicatorText(consentType, isAccessibility = true)
 
-
-fun ConsentsViewModel.onValidateAndSubmit() {
-    analyticsHelper.trackReviewAgreementsSubmitAction()
-
-    val hasPendingConsent = hasPendingConsent()
-    val hasPendingReview = hasPendingConsentDocumentReview()
-
-    if (hasPendingConsent || hasPendingReview) {
-        onConsentValidationFailed()
-    } else {
-        updateConsents()
+private fun getStepIndicatorText(consentType: String, isAccessibility: Boolean): String {
+    return when (consentType) {
+        DBSA_TYPE -> if (consentCount == 1) {
+            if (isAccessibility) stepOneIconAccessibilityText else stepOneIconText
+        } else {
+            if (isAccessibility) stepTwoIconAccessibilityText else stepTwoIconText
+        }
+        EDCA_TYPE -> if (isAccessibility) stepOneIconAccessibilityText else stepOneIconText
+        else -> StringUtils.EMPTY
     }
 }
