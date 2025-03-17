@@ -1,17 +1,22 @@
-private fun getSectionStepIndicatorText(consentType: String): String =
-    getStepIndicatorText(consentType, isAccessibility = false)
-
-private fun getSectionStepIndicatorAccessibilityText(consentType: String): String =
-    getStepIndicatorText(consentType, isAccessibility = true)
-
-private fun getStepIndicatorText(consentType: String, isAccessibility: Boolean): String {
-    return when (consentType) {
-        DBSA_TYPE -> if (consentCount == 1) {
-            if (isAccessibility) stepOneIconAccessibilityText else stepOneIconText
-        } else {
-            if (isAccessibility) stepTwoIconAccessibilityText else stepTwoIconText
+class AdobeAnalyticsWrapperImpl: AdobeAnalyticsWrapper {
+    
+    func removeCachedIdentities(namespace: String) {
+        Identity.getIdentities { identities, error in
+            guard let identities = identities else { return }
+            let items = identities.getIdentityItems(forNamespace: namespace)
+            for item in items {
+                Identity.removeIdentity(item, namespace: namespace)
+            }
         }
-        EDCA_TYPE -> if (isAccessibility) stepOneIconAccessibilityText else stepOneIconText
-        else -> StringUtils.EMPTY
+    }
+
+    func syncIdentifiers(namespace: String, ucid: String) -> Bool {
+        let item = IdentityItem(id: ucid, authenticatedState: .authenticated, primary: false)
+
+        let identityMap = IdentityMap()
+        identityMap.addItem(item, forNamespace: namespace)
+        Identity.updateIdentities(identityMap)
+        
+        return true
     }
 }
