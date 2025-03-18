@@ -70,3 +70,9 @@ public struct CellCheckboxView: View {
         }
     }
 }
+
+
+enum CheckboxStyle {
+    case compact
+    case boxed
+}
