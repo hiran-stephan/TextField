@@ -1,5 +1,4 @@
-let bundlePath = Bundle.main.bundlePath
-let targetPath = (bundlePath as NSString).deletingLastPathComponent // Moves up one level
-let commonPath = (targetPath as NSString).appendingPathComponent("Common/Key.plist")
-
-print("Dynamically Generated Path: \(commonPath)")
+if let derivedDataPath = ProcessInfo.processInfo.environment["SOURCE_ROOT"] {
+    let targetPath = (derivedDataPath as NSString).appendingPathComponent("Target/Common/Key.plist")
+    print("Dynamic Target Path: \(targetPath)")
+}
