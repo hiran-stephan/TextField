@@ -1,5 +1,5 @@
-let fileManager = FileManager.default
-if let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
-    let plistPath = documentsDirectory.appendingPathComponent("Key.plist").path
-    print("Plist Path in Documents: \(plistPath)")
-}
+let bundlePath = Bundle.main.bundlePath
+let targetPath = (bundlePath as NSString).deletingLastPathComponent // Moves up one level
+let commonPath = (targetPath as NSString).appendingPathComponent("Common/Key.plist")
+
+print("Dynamically Generated Path: \(commonPath)")
