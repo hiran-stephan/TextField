@@ -1,7 +1,14 @@
+public struct NoPaddingTextFieldStyle: TextFieldStyle {
+    public var foregroundColor: Color = BankingTheme.colors.textPrimary
+    public var backgroundColor: Color = .clear
+    public var horizontalPadding: CGFloat = 0
 
+    public init() {}
 
-
-if let derivedDataPath = ProcessInfo.processInfo.environment["SOURCE_ROOT"] {
-    let targetPath = (derivedDataPath as NSString).appendingPathComponent("Target/Common/Key.plist")
-    print("Dynamic Target Path: \(targetPath)")
+    public func body(content: Content) -> some View {
+        content
+            .foregroundColor(foregroundColor)
+            .background(backgroundColor)
+            .padding(.horizontal, horizontalPadding)
+    }
 }
