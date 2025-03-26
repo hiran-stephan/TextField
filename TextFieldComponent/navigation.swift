@@ -1,46 +1,33 @@
-@State private var isFocused: Bool = false
-
-private var effectiveState: DropdownState {
-        if state == .disabled {
-            return .disabled
-        } else if state == .error && isFocused {
-            return .focusedError
-        } else if state == .error {
-            return .error
-        } else if isFocused {
-            return .focused
-        } else {
-            return .default
-        }
+private var borderColor: Color {
+    if state == .disabled {
+        return BankingTheme.colors.disabled
+    } else if state == .error && isFocused {
+        return BankingTheme.colors.error
+    } else if state == .error {
+        return BankingTheme.colors.error
+    } else if isFocused {
+        return BankingTheme.colors.textPrimary
+    } else {
+        return BankingTheme.colors.textSecondary
     }
+}
+
+private var borderWidth: CGFloat {
+    (isFocused && state != .disabled) ? 2 : 1
+}
+
+private var backgroundColor: Color {
+    if state == .disabled {
+        return BankingTheme.colors.disabledBackground
+    } else if state == .error {
+        return BankingTheme.colors.errorContainer
+    } else {
+        return BankingTheme.colors.onPrimary
+    }
+}
+
+private var textColor: Color {
+    (state == .disabled) ? BankingTheme.colors.disabled : BankingTheme.colors.textPrimary
+}
 
 
-Menu {
-               ForEach(items) { item in
-                   Button(action: {
-                       selectedItem = item
-                       isFocused = false
-                   }) {
-                       if selectedItem == item {
-                           Label(item.displayTitle, systemImage: "checkmark")
-                       } else {
-                           Text(item.displayTitle)
-                       }
-                   }
-               }
-           }
-
-.simultaneousGesture(
-                TapGesture().onEnded {
-                    isFocused = true
-                }
-            )
-
-
-.background(effectiveState.backgroundColor)
-                .cornerRadius(BankingTheme.dimens.smallMedium)
-                .overlay(
-                    RoundedRectangle(cornerRadius: BankingTheme.dimens.smallMedium)
-                        .inset(by: 0.5)
-                        .stroke(effectiveState.borderColor, lineWidth: effectiveState.borderWidth)
-                )
