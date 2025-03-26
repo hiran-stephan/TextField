@@ -2,8 +2,26 @@ struct CustomDropdown: View {
     let title: String
     let items: [String]
     @Binding var selectedItem: String
-    var showError: Bool = false
-    var errorMessage: String? = nil
+    var showError: Bool
+    var errorMessage: String?
+
+    private let tooltip: ToolTipButton?
+
+    init(
+        title: String,
+        items: [String],
+        selectedItem: Binding<String>,
+        showError: Bool = false,
+        errorMessage: String? = nil,
+        tooltip: ToolTipButton? = nil
+    ) {
+        self.title = title
+        self.items = items
+        self._selectedItem = selectedItem
+        self.showError = showError
+        self.errorMessage = errorMessage
+        self.tooltip = tooltip
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -12,8 +30,9 @@ struct CustomDropdown: View {
                     .font(.body)
                     .foregroundColor(.primary)
 
-                Image(systemName: "info.circle")
-                    .foregroundColor(.gray)
+                if let tooltip = tooltip {
+                    tooltip
+                }
             }
 
             Menu {
@@ -40,77 +59,6 @@ struct CustomDropdown: View {
                         .stroke(showError ? Color.red : Color.gray, lineWidth: 1)
                 )
             }
-
-            if showError, let message = errorMessage {
-                HStack(spacing: 4) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.red)
-                        .font(.caption)
-                    Text(message)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-                .padding(.top, 2)
-            }
-        }
-    }
-}
-
-
-@State private var accountType: String = ""
-
-var body: some View {
-    CustomDropdown(
-        title: "Label",
-        items: ["Deposit", "Loan", "Card"],
-        selectedItem: $accountType,
-        showError: accountType.isEmpty,
-        errorMessage: "Error message (code#)"
-    )
-    .padding()
-}
-
-
-
-struct CustomPickerDropdown: View {
-    let title: String
-    let items: [String]
-    @Binding var selectedItem: String
-    var showError: Bool = false
-    var errorMessage: String? = nil
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 4) {
-                Text(title)
-                    .font(.body)
-                    .foregroundColor(.primary)
-                Image(systemName: "info.circle")
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(.gray)
-            }
-
-            Picker(selection: $selectedItem, label:
-                HStack {
-                    Text(selectedItem.isEmpty ? "Please select an item" : selectedItem)
-                        .foregroundColor(selectedItem.isEmpty ? .secondary : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(.gray)
-                }
-                .padding(.horizontal, 16)
-                .frame(height: 56)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(showError ? Color.red : Color.gray, lineWidth: 1)
-                )
-            ) {
-                ForEach(items, id: \.self) {
-                    Text($0).tag($0)
-                }
-            }
-            .pickerStyle(.menu)
 
             if showError, let message = errorMessage {
                 HStack(spacing: 4) {
