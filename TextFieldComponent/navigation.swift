@@ -1,33 +1,35 @@
-private var borderColor: Color {
-    if state == .disabled {
-        return BankingTheme.colors.disabled
-    } else if state == .error && isFocused {
-        return BankingTheme.colors.error
-    } else if state == .error {
-        return BankingTheme.colors.error
-    } else if isFocused {
-        return BankingTheme.colors.textPrimary
-    } else {
-        return BankingTheme.colors.textSecondary
+fun RecoverUserIdViewModel.filterPhoneNumber(number: String): String {
+    val isIntl = recoverUserIdState.value.isInternationalPhoneNumber
+    val characterLimit = if (isIntl)
+        RecoverUserIdConstants.PHONE_NUMBER_INTERNATIONAL_CHARACTER_LIMIT
+    else
+        RecoverUserIdConstants.PHONE_NUMBER_NORTH_AMERICAN_CHARACTER_LIMIT
+
+    val validPattern = "[0-9]".toRegex() // Only digits
+    return number.filter { validPattern.matches(it.toString()) }
+        .take(characterLimit)
+}
+
+fun RecoverUserIdViewModel.filterTaxId(number: String): String {
+    val characterLimit = if (recoverUserIdState.value.isSSNorTIN)
+        RecoverUserIdConstants.SSN_CHARACTER_LIMIT
+    else
+        RecoverUserIdConstants.SIN_CHARACTER_LIMIT
+
+    val validPattern = "[0-9]".toRegex()
+    return number.filter { validPattern.matches(it.toString()) }
+        .take(characterLimit)
+}
+
+fun RecoverUserIdViewModel.filterAccountNumber(number: String): String {
+    val characterLimit = when (recoverUserIdState.value.accountType) {
+        "Deposit" -> RecoverUserIdConstants.ACCOUNT_NUMBER_CHARACTER_LIMIT
+        "Loan" -> RecoverUserIdConstants.LOAN_NUMBER_CHARACTER_LIMIT
+        "Card" -> RecoverUserIdConstants.CARD_NUMBER_CHARACTER_LIMIT
+        else -> RecoverUserIdConstants.ACCOUNT_NUMBER_CHARACTER_LIMIT
     }
+
+    val validPattern = "[0-9]".toRegex()
+    return number.filter { validPattern.matches(it.toString()) }
+        .take(characterLimit)
 }
-
-private var borderWidth: CGFloat {
-    (isFocused && state != .disabled) ? 2 : 1
-}
-
-private var backgroundColor: Color {
-    if state == .disabled {
-        return BankingTheme.colors.disabledBackground
-    } else if state == .error {
-        return BankingTheme.colors.errorContainer
-    } else {
-        return BankingTheme.colors.onPrimary
-    }
-}
-
-private var textColor: Color {
-    (state == .disabled) ? BankingTheme.colors.disabled : BankingTheme.colors.textPrimary
-}
-
-
