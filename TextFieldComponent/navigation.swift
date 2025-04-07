@@ -1,32 +1,11 @@
-fun LoginViewModel.onDisplayRecoveredUserId(friendlyId: String?) {
-    val cleanedId = friendlyId?.trim()
+@State private var didCheckFriendlyId = false
 
-    // Return early if input is null or blank
-    if (cleanedId.isNullOrBlank()) return
+.task {
+    guard !didCheckFriendlyId else { return }
 
-    updateLoginActionIfNeeded()
-    updateLoginStateIfNeeded(cleanedId)
-}
-
-private fun updateLoginActionIfNeeded() {
-    val currentState = _loginAction.value
-    val needsUpdate = !currentState.showUserListTrailingIcon || currentState.isSavedUserIdFormAvailable
-
-    if (needsUpdate) {
-        _loginAction.update {
-            it.copy(
-                showUserListTrailingIcon = true,
-                isSavedUserIdFormAvailable = false
-            )
-        }
+    if let friendlyId = navigationItem.friendlyId, !friendlyId.isEmpty {
+        loginForm.prefillUserNameWith(friendlyId: friendlyId)
     }
-}
 
-private fun updateLoginStateIfNeeded(friendlyId: String) {
-    _loginState.update { previousState ->
-        if (previousState.friendlyId == friendlyId) {
-            return@update previousState // No change needed
-        }
-        previousState.copy(friendlyId = friendlyId)
-    }
+    didCheckFriendlyId = true
 }
