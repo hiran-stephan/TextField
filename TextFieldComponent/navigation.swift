@@ -1,33 +1,9 @@
-struct TextFieldViewModelInputFilterModifier: ViewModifier {
-    @Binding var text: String
-    let filter: (String) -> String
-    let action: (() -> Void)?
+let groupedConsents = self.model.state?.data?.groupedConsents ?? [:]
 
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: text) { newValue in
-                let newFiltered = filter(newValue)
-                if newValue != newFiltered {
-                    text = newFiltered
-                }
-                action?()
-            }
+let sortedGroupedConsents = groupedConsents
+    .map { ($0.key, $0.value) } // (String, [ConsentData])
+    .sorted { lhs, rhs in
+        let lhsType = lhs.1.first?.consentType ?? ""
+        let rhsType = rhs.1.first?.consentType ?? ""
+        return lhsType < rhsType
     }
-}
-
-
-extension View {
-    func replaceText(
-        _ text: Binding<String>,
-        using filter: @escaping (String) -> String,
-        action: (() -> Void)? = nil
-    ) -> some View {
-        modifier(TextFieldViewModelInputFilterModifier(text: text, filter: filter, action: action))
-    }
-}
-
-    .replaceText($phoneNumber, using: viewModel.filterPhoneNumber(number:), action: {
-        viewModel.onChangePhoneNumber(phoneNumber: phoneNumber)
-    })
-
-
