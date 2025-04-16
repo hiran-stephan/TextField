@@ -1,9 +1,15 @@
-let groupedConsents = self.model.state?.data?.groupedConsents ?? [:]
+sudo rm -rf /Users/Stephan/Library/Java/JavaVirtualMachines/corretto-22.0.2
+sudo rm -rf /Library/Java/JavaVirtualMachines/jdk-17.jdk
+                                                                            
+                                                                            
+export JAVA_HOME=/Users/Stephan/Library/Java/JavaVirtualMachines/corretto-17.0.12/Contents/Home
 
-let sortedGroupedConsents = groupedConsents
-    .map { ($0.key, $0.value) } // (String, [ConsentData])
-    .sorted { lhs, rhs in
-        let lhsType = lhs.1.first?.consentType ?? ""
-        let rhsType = rhs.1.first?.consentType ?? ""
-        return lhsType < rhsType
-    }
+
+echo 'export JAVA_HOME=/Users/Stephan/Library/Java/JavaVirtualMachines/corretto-17.0.12/Contents/Home' >> ~/.zshrc
+source ~/.zshrc
+
+/usr/libexec/java_home -V
+
+java -version
+
+
