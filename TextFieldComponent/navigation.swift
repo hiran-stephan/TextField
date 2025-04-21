@@ -1,5 +1,7 @@
-private func inputState(for field: RecoverUserIdField, using presenter: RecoverUserIdFieldErrorPresenter) -> InputFieldState {
-    presenter.getError(field: field) != nil ? .error : .default
-}
-inputFieldState: inputState(for: .fieldPhoneNumber, using: recoverUserIdFieldErrorPresenter),
-
+let finalState: InputFieldState = {
+    switch inputFieldState {
+    case .error: return isFocused ? .errorFocused : .error
+    case .default: return isFocused ? .focused : .default
+    default: return inputFieldState
+    }
+}()
