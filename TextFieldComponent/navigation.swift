@@ -1,10 +1,1 @@
-private var finalInputFieldState: InputFieldState {
-      switch inputFieldState {
-      case .error:
-          return isFocused ? .errorFocused : .error
-      case .default:
-          return isFocused ? .focused : .default
-      default:
-          return inputFieldState
-      }
-  }
+println("phoneNumberType: $phoneNumberType, phoneNumber: $phoneNumber, idType: $idType, idNumber: $idNumber, wwwAuthenticationType: $wwwAuthenticationType, accountNumber: $accountNumber, profilingId: $profilingId, pageId: $pageId")
