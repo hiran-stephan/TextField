@@ -1,1 +1,13 @@
-println("phoneNumberType: $phoneNumberType, phoneNumber: $phoneNumber, idType: $idType, idNumber: $idNumber, wwwAuthenticationType: $wwwAuthenticationType, accountNumber: $accountNumber, profilingId: $profilingId, pageId: $pageId")
+println(
+    """
+    searchFriendlyId called with:
+    phoneNumberType: $phoneNumberType
+    phoneNumber     : $phoneNumber
+    idType          : $idType
+    idNumber        : $idNumber
+    wwwAuthType     : $wwwAuthenticationType
+    accountNumber   : $accountNumber
+    profilingId     : $profilingId
+    pageId          : $pageId
+    """.trimIndent()
+)
