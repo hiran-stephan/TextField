@@ -144,6 +144,7 @@
 		3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheet.swift; sourceTree = "<group>"; };
 		3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheetManager.swift; sourceTree = "<group>"; };
 		3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeSpaceTile.swift; sourceTree = "<group>"; };
+		3BCAC2412DBBE39A001CC0C9 /* AccountPreferencesDetailsViewModel_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = AccountPreferencesDetailsViewModel_LLD.docx; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
@@ -224,6 +225,7 @@
 				3B647CD12CB82C2B007D837D /* MockData.swift */,
 				3B647CD32CCA7D4B007D837D /* navigation.swift */,
 				3BFADE2D2D4BEA5B00E8B532 /* header.zip */,
+				3BCAC2412DBBE39A001CC0C9 /* AccountPreferencesDetailsViewModel_LLD.docx */,
 				3B647CE02CFF7F4A007D837D /* 489.mp4 */,
 				3B647CDE2CF8F676007D837D /* RPReplay_Final1732819761.MP4 */,
 				3B647CDF2CF8F67D007D837D /* ScreenRecording_11-28-2024 13-57-02_1.MP4 */,
