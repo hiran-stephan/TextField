@@ -62,6 +62,7 @@
 		3BCAC2462DBC07E5001CC0C9 /* AccountPreferencesViewModels_LLD.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2452DBC07E4001CC0C9 /* AccountPreferencesViewModels_LLD.md */; };
 		3BCAC2482DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */; };
 		3BCAC24A2DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */; };
+		3BCAC24C2DC146F4001CC0C9 /* ComponentChanges.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */; };
 		3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B112C9AE3F9008208AC /* Mapper.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
@@ -151,6 +152,7 @@
 		3BCAC2452DBC07E4001CC0C9 /* AccountPreferencesViewModels_LLD.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AccountPreferencesViewModels_LLD.md; sourceTree = "<group>"; };
 		3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AccountPreferencesViewModelLLD_Confluence.md; sourceTree = "<group>"; };
 		3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AccountPreferencesViewModels_Full_LLD.md; sourceTree = "<group>"; };
+		3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = ComponentChanges.md; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				3BCAC2442DBBF0ED001CC0C9 /* AccountPreferencesViewModels_LLD_With_Tables.docx */,
 				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
 				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
+				3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */,
 				3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */,
 				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
 				3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */,
@@ -465,6 +468,7 @@
 				3BFADE2E2D4BEA5B00E8B532 /* header.zip in Resources */,
 				3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */,
 				3BCAC2462DBC07E5001CC0C9 /* AccountPreferencesViewModels_LLD.md in Resources */,
+				3BCAC24C2DC146F4001CC0C9 /* ComponentChanges.md in Resources */,
 				3BCAC2482DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
