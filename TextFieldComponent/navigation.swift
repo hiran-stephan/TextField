@@ -1,2 +1,1 @@
-
-Manages UI state and user interactions for the Verify User ID screen, including displaying the user ID, handling content loading, tracking analytics, and supporting navigation and copy actions.
+Handles state, input validation, and user interactions for the Recover User ID screen, including form management, tooltip visibility, API calls, analytics tracking, and navigation within the recovery flow.
