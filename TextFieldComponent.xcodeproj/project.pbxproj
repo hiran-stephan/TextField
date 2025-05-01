@@ -68,6 +68,7 @@
 		3BCAC2522DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */; };
 		3BCAC2542DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */; };
 		3BCAC2562DC3CF82001CC0C9 /* LLD_Router_Repository.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */; };
+		3BCAC2582DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */; };
 		3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B112C9AE3F9008208AC /* Mapper.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
@@ -163,6 +164,7 @@
 		3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = RecoverUserId_SharedChanges.md; sourceTree = "<group>"; };
 		3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserIdViewModel.md; sourceTree = "<group>"; };
 		3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LLD_Router_Repository.md; sourceTree = "<group>"; };
+		3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserId_LLD_Constants.md; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 				3BCAC24F2DC14E1C001CC0C9 /* AnalyticsChanges.md */,
 				3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */,
 				3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */,
+				3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */,
 				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
 				3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */,
 				3BCAC2442DBBF0ED001CC0C9 /* AccountPreferencesViewModels_LLD_With_Tables.docx */,
@@ -481,6 +484,7 @@
 				3BCAC24A2DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md in Resources */,
 				3BCAC24E2DC14A23001CC0C9 /* ComponentChangesExtended.md in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
+				3BCAC2582DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md in Resources */,
 				3BFADE2E2D4BEA5B00E8B532 /* header.zip in Resources */,
 				3BCAC2522DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md in Resources */,
 				3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */,
