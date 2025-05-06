@@ -89,12 +89,7 @@ let items: [ProfileItemData] = [
     ),
     .init(
         primaryLabel: "Home address",
-        primaryText: """
-            1600 Pennsylvania Avenue NW
-            Washington, DC
-            20500
-            United States
-        """
+        primaryText: "1600 Pennsylvania Avenue NW\nWashington, DC\n20500\nUnited States"
     )
 ]
 
