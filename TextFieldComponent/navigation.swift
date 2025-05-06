@@ -106,3 +106,36 @@ VStack(spacing: 0) {
 }
 .background(Color.white)
 .clipShape(RoundedRectangle(cornerRadius: 12))
+
+
+public struct ProfileItemCardView: View {
+    let items: [ProfileItemData]
+    let onEditTapped: (ProfileItemData) -> Void
+
+    public var body: some View {
+        VStack(spacing: 0) {
+            ForEach(items.indices, id: \.self) { index in
+                ProfileItemView(data: items[index]) {
+                    onEditTapped(items[index])
+                }
+
+                if index < items.count - 1 {
+                    Divider()
+                        .padding(.leading, BankingTheme.dimens.medium)
+                }
+            }
+        }
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.gray.opacity(0.1))
+        )
+    }
+}
+
+ProfileItemCardView(items: items) { item in
+    print("Edit tapped for \(item.primaryLabel)")
+}
+.padding()
+.background(Color(UIColor.systemGroupedBackground))
