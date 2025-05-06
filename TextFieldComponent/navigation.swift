@@ -1,117 +1,113 @@
-import SwiftUI
+public struct ProfileItemData: Identifiable {
+    public let id: String
 
-public struct ListItemView<TrailingContent: View>: View {
-    private let listItemData: ListItemData
-    private let trailingContent: () -> TrailingContent
+    public var primaryLabel: String
+    public var primaryText: String
+    public var secondaryLabel: String?
+    public var secondaryText: String?
+    public var showsEditIcon: Bool
 
     public init(
-        listItemData: ListItemData,
-        @ViewBuilder trailingContent: @escaping () -> TrailingContent
+        id: String = UUID().uuidString,
+        primaryLabel: String,
+        primaryText: String,
+        secondaryLabel: String? = nil,
+        secondaryText: String? = nil,
+        showsEditIcon: Bool = true
     ) {
-        self.listItemData = listItemData
-        self.trailingContent = trailingContent
+        self.id = id
+        self.primaryLabel = primaryLabel
+        self.primaryText = primaryText
+        self.secondaryLabel = secondaryLabel
+        self.secondaryText = secondaryText
+        self.showsEditIcon = showsEditIcon
     }
+}
 
-    public init(listItemData: ListItemData) where TrailingContent == EmptyView {
-        self.listItemData = listItemData
-        self.trailingContent = { EmptyView() }
+import SwiftUI
+
+public struct ProfileItemView: View {
+    let data: ProfileItemData
+    let onEditTapped: (() -> Void)?
+
+    public init(data: ProfileItemData, onEditTapped: (() -> Void)? = nil) {
+        self.data = data
+        self.onEditTapped = onEditTapped
     }
 
     public var body: some View {
-        HStack(alignment: .top, spacing: BankingTheme.spacing.medium) {
-            // Leading content
-            VStack(alignment: .leading, spacing: 4) {
-                Text(listItemData.primaryText)
-                    .typography(BankingTheme.typography.body)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 8) {
+                labelBlock(label: data.primaryLabel, value: data.primaryText)
 
-                if let secondaryText = listItemData.secondaryText {
-                    Text(secondaryText)
-                        .typography(BankingTheme.typography.bodySmall)
+                if let secondaryLabel = data.secondaryLabel,
+                   let secondaryText = data.secondaryText {
+                    labelBlock(label: secondaryLabel, value: secondaryText)
                 }
             }
 
             Spacer()
 
-            // Trailing content
-            VStack(alignment: .trailing, spacing: 4) {
-                if let data = listItemData.data {
-                    Text(data)
-                        .multilineTextAlignment(.trailing)
-                        .typography(BankingTheme.typography.bodySemiBold)
+            if data.showsEditIcon, let onEditTapped {
+                Button(action: onEditTapped) {
+                    Image(systemName: "pencil")
+                        .foregroundColor(BankingTheme.colors.iconPrimary)
                 }
-
-                trailingContent()
+                .buttonStyle(.plain)
+                .padding(.top, 4)
             }
         }
         .padding(.horizontal, BankingTheme.dimens.medium)
         .padding(.vertical, BankingTheme.dimens.medium)
     }
-}
 
+    @ViewBuilder
+    private func labelBlock(label: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .typography(BankingTheme.typography.bodySmall)
 
-
-
-
-import SwiftUI
-
-public struct ListItemData: Identifiable {
-    public var id: String { primaryText }
-
-    public var primaryText: String
-    public var secondaryText: String?
-    public var data: String?
-
-    public init(
-        primaryText: String,
-        secondaryText: String? = nil,
-        data: String? = nil
-    ) {
-        self.primaryText = primaryText
-        self.secondaryText = secondaryText
-        self.data = data
-    }
-}
-
-
-struct ProfilePage: View {
-    private let profileItems: [ListItemData] = [
-        .init(primaryText: "Primary email address", secondaryText: "primary_email@cibc.com"),
-        .init(primaryText: "Secondary email address", secondaryText: "secondary_email@cibc.com"),
-        .init(primaryText: "Home phone", secondaryText: "(647) 123-4567"),
-        .init(primaryText: "Mobile phone", secondaryText: "(647) 123-4567"),
-        .init(
-            primaryText: "Home address",
-            data: """
-                  1600 Pennsylvania Avenue NW
-                  Washington, DC
-                  20500
-                  United States
-                  """
-        )
-    ]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("My Profile")
-                .font(.title2)
-                .padding(.horizontal)
-
-            ListCardView(listCellData: profileItems) { item in
-                ListItemView(listItemData: item) {
-                    Button(action: {
-                        print("Edit tapped for \(item.primaryText)")
-                    }) {
-                        Image(systemName: "pencil")
-                            .foregroundColor(.blue)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-
-            Spacer()
+            Text(value)
+                .typography(BankingTheme.typography.bodySemiBold)
+                .multilineTextAlignment(.leading)
         }
-        .padding()
-        .background(Color(UIColor.systemGroupedBackground))
     }
 }
 
+let items: [ProfileItemData] = [
+    .init(
+        primaryLabel: "Primary email address",
+        primaryText: "primary_email@cibc.com",
+        secondaryLabel: "Secondary email address",
+        secondaryText: "secondary_email@cibc.com"
+    ),
+    .init(
+        primaryLabel: "Home phone",
+        primaryText: "(647) 123-4567",
+        secondaryLabel: "Mobile phone",
+        secondaryText: "(647) 123-4567"
+    ),
+    .init(
+        primaryLabel: "Home address",
+        primaryText: """
+            1600 Pennsylvania Avenue NW
+            Washington, DC
+            20500
+            United States
+        """
+    )
+]
+
+VStack(spacing: 0) {
+    ForEach(items.indices, id: \.self) { index in
+        ProfileItemView(data: items[index]) {
+            print("Edit tapped for \(items[index].primaryLabel)")
+        }
+
+        if index < items.count - 1 {
+            Divider().padding(.leading, BankingTheme.dimens.medium)
+        }
+    }
+}
+.background(Color.white)
+.clipShape(RoundedRectangle(cornerRadius: 12))
