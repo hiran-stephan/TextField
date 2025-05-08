@@ -119,3 +119,28 @@ val validationRules = listOf<ValidationRule<CharSequence>>(
         message = ChangeUserIdConstants.VALIDATION_MESSAGE_INVALID_CHARS
     )
 )
+
+
+fun updateNewUsername(username: String) {
+    val trimmed = username.trim()
+
+    val results = validationRules.map { rule ->
+        val status = when (rule.isValid(trimmed)) {
+            true -> ValidationStatus.VALID
+            false, null -> ValidationStatus.INVALID
+        }
+
+        ValidationResult(
+            ruleId = rule.id,
+            status = status,
+            message = rule.message
+        )
+    }
+
+    _changeUserIdUiState.update { previousState ->
+        previousState.copy(
+            newUsername = trimmed,
+            newUserIdValidationResults = results
+        )
+    }
+}
