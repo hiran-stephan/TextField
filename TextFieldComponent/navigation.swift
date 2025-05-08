@@ -1,141 +1,70 @@
-public struct ProfileItemData: Identifiable {
-    public let id: String
-
-    public var primaryLabel: String
-    public var primaryText: String
-    public var secondaryLabel: String?
-    public var secondaryText: String?
-    public var showsEditIcon: Bool
-
-    public init(
-        id: String = UUID().uuidString,
-        primaryLabel: String,
-        primaryText: String,
-        secondaryLabel: String? = nil,
-        secondaryText: String? = nil,
-        showsEditIcon: Bool = true
-    ) {
-        self.id = id
-        self.primaryLabel = primaryLabel
-        self.primaryText = primaryText
-        self.secondaryLabel = secondaryLabel
-        self.secondaryText = secondaryText
-        self.showsEditIcon = showsEditIcon
-    }
+enum class ValidationStatus {
+    INITIAL, VALID, INVALID
 }
 
-import SwiftUI
+data class ValidationResult(
+    val ruleId: Int,
+    val status: ValidationStatus,
+    val message: String
+)
 
-public struct ProfileItemView: View {
-    let data: ProfileItemData
-    let onEditTapped: (() -> Void)?
+data class ChangeUserIdUiState(
+    val content: ContentFile? = null,
+    val oldUsername: String = StringUtils.EMPTY,
+    val newUsername: String = StringUtils.EMPTY,
+    val reEnteredUsername: String = StringUtils.EMPTY,
+    val data: Any? = null,
+    val isLoading: Boolean = false,
+    val error: Throwable? = null,
+    val validationResults: List<ValidationResult> = emptyList()
+) : UiState<ChangeUserIdUiState> {
+    val hasData: Boolean = true
+    val hasError: Boolean = error != null
 
-    public init(data: ProfileItemData, onEditTapped: (() -> Void)? = nil) {
-        self.data = data
-        self.onEditTapped = onEditTapped
-    }
-
-    public var body: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 8) {
-                labelBlock(label: data.primaryLabel, value: data.primaryText)
-
-                if let secondaryLabel = data.secondaryLabel,
-                   let secondaryText = data.secondaryText {
-                    labelBlock(label: secondaryLabel, value: secondaryText)
-                }
-            }
-
-            Spacer()
-
-            if data.showsEditIcon, let onEditTapped {
-                Button(action: onEditTapped) {
-                    Image(systemName: "pencil")
-                        .foregroundColor(BankingTheme.colors.iconPrimary)
-                }
-                .buttonStyle(.plain)
-                .padding(.top, 4)
-            }
-        }
-        .padding(.horizontal, BankingTheme.dimens.medium)
-        .padding(.vertical, BankingTheme.dimens.medium)
-    }
-
-    @ViewBuilder
-    private func labelBlock(label: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .typography(BankingTheme.typography.bodySmall)
-
-            Text(value)
-                .typography(BankingTheme.typography.bodySemiBold)
-                .multilineTextAlignment(.leading)
-        }
-    }
+    override fun error(id: String, error: Throwable?) = copy(isLoading = false, error = error)
+    override fun loading(id: String, loading: Boolean) = copy(isLoading = loading)
 }
 
-let items: [ProfileItemData] = [
-    .init(
-        primaryLabel: "Primary email address",
-        primaryText: "primary_email@cibc.com",
-        secondaryLabel: "Secondary email address",
-        secondaryText: "secondary_email@cibc.com"
-    ),
-    .init(
-        primaryLabel: "Home phone",
-        primaryText: "(647) 123-4567",
-        secondaryLabel: "Mobile phone",
-        secondaryText: "(647) 123-4567"
-    ),
-    .init(
-        primaryLabel: "Home address",
-        primaryText: "1600 Pennsylvania Avenue NW\nWashington, DC\n20500\nUnited States"
+
+
+private val validationRules = listOf<ValidationRule<CharSequence>>(
+    MinMaxLength(8, 32, "Between 8 and 32 characters"),
+    AtLeastTwoCharactersAndTwoNumbersRule("At least 2 letters and 2 numbers"),
+    NoAllowedUsernameCharactersRule("No invalid characters (',\\,>,<)")
+)
+
+// Initialize UI state with INITIAL validation status
+private val _changeUserIdUiState = MutableStateFlow(
+    ChangeUserIdUiState(
+        validationResults = validationRules.map {
+            ValidationResult(
+                ruleId = it.id,
+                status = ValidationStatus.INITIAL,
+                message = it.message
+            )
+        }
     )
-]
+)
+val changeUserIdUiState = _changeUserIdUiState.asStateFlow()
 
-VStack(spacing: 0) {
-    ForEach(items.indices, id: \.self) { index in
-        ProfileItemView(data: items[index]) {
-            print("Edit tapped for \(items[index].primaryLabel)")
+
+fun validateNewUserId(input: String) {
+    val results = validationRules.map { rule ->
+        val status = when (rule.isValid(input)) {
+            true -> ValidationStatus.VALID
+            false, null -> ValidationStatus.INVALID
         }
 
-        if index < items.count - 1 {
-            Divider().padding(.leading, BankingTheme.dimens.medium)
-        }
-    }
-}
-.background(Color.white)
-.clipShape(RoundedRectangle(cornerRadius: 12))
-
-
-public struct ProfileItemCardView: View {
-    let items: [ProfileItemData]
-    let onEditTapped: (ProfileItemData) -> Void
-
-    public var body: some View {
-        VStack(spacing: 0) {
-            ForEach(items.indices, id: \.self) { index in
-                ProfileItemView(data: items[index]) {
-                    onEditTapped(items[index])
-                }
-
-                if index < items.count - 1 {
-                    Divider()
-                        .padding(.leading, BankingTheme.dimens.medium)
-                }
-            }
-        }
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray.opacity(0.1))
+        ValidationResult(
+            ruleId = rule.id,
+            status = status,
+            message = rule.message
         )
     }
+
+    _changeUserIdUiState.value = _changeUserIdUiState.value.copy(
+        newUsername = input,
+        validationResults = results
+    )
 }
 
-ProfileItemCardView(items: items) { item in
-    print("Edit tapped for \(item.primaryLabel)")
-}
-.padding()
-.background(Color(UIColor.systemGroupedBackground))
