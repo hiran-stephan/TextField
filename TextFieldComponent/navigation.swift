@@ -68,3 +68,27 @@ fun validateNewUserId(input: String) {
     )
 }
 
+class ChangeUserIdValidationPresenter(
+    private val validationResults: List<ValidationResult> = emptyList(),
+    private val validationRules: List<ValidationRule<CharSequence>> = emptyList(),
+    private val contentFile: ContentFile? = null,
+    private val locale: Locale
+) {
+    val presentedResults: List<ValidationResult>
+        get() = if (validationResults.isNotEmpty()) {
+            validationResults
+        } else {
+            validationRules.map {
+                ValidationResult(
+                    ruleId = it.id,
+                    status = ValidationStatus.INITIAL,
+                    message = it.message // Or use displayContent(it.id)
+                )
+            }
+        }
+
+    private fun displayContent(
+        key: String,
+        forAccessibility: Boolean = false
+    ): String = contentFile.findContentValue(key, locale.lang, forAccessibility)
+}
