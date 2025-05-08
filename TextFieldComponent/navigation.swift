@@ -92,3 +92,30 @@ class ChangeUserIdValidationPresenter(
         forAccessibility: Boolean = false
     ): String = contentFile.findContentValue(key, locale.lang, forAccessibility)
 }
+
+object ChangeUserIdConstants {
+    const val CHANGEUSERID_ROUTER_SCOPE = "changeuserid-router"
+
+    // Validation limits
+    const val USERID_MIN_LENGTH = 8
+    const val USERID_MAX_LENGTH = 32
+
+    // Validation messages
+    const val VALIDATION_MESSAGE_LENGTH = "Between $USERID_MIN_LENGTH and $USERID_MAX_LENGTH characters"
+    const val VALIDATION_MESSAGE_CHAR_AND_NUM = "At least 2 letters and 2 numbers"
+    const val VALIDATION_MESSAGE_INVALID_CHARS = "No invalid characters (',\\,>,<)"
+}
+
+val validationRules = listOf<ValidationRule<CharSequence>>(
+    ValidationRule.MinMaxLength(
+        minimum = ChangeUserIdConstants.USERID_MIN_LENGTH,
+        maximum = ChangeUserIdConstants.USERID_MAX_LENGTH,
+        message = ChangeUserIdConstants.VALIDATION_MESSAGE_LENGTH
+    ),
+    ValidationRule.AtLeastTwoCharactersAndTwoNumbersRule(
+        message = ChangeUserIdConstants.VALIDATION_MESSAGE_CHAR_AND_NUM
+    ),
+    ValidationRule.NoAllowedUsernameCharactersRule(
+        message = ChangeUserIdConstants.VALIDATION_MESSAGE_INVALID_CHARS
+    )
+)
