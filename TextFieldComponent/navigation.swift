@@ -80,3 +80,54 @@ func mapStatus(_ status: ValidationStatus) -> ValidationStatus {
 
 StandardCheck(checks: mapValidationResultsToChecks(viewModel.validationChecks))
 
+enum PasswordStrengthState {
+    case notApplicable
+    case notAcceptable
+    case moderate
+    case good
+
+    var description: String {
+        switch self {
+        case .notApplicable: return "N/A"
+        case .notAcceptable: return "Not acceptable"
+        case .moderate: return "Moderate"
+        case .good: return "Good"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .notAcceptable: return .red
+        case .moderate: return .orange
+        case .good: return .green
+        default: return .gray
+        }
+    }
+}
+
+struct StandardCheck: View {
+    let checks: [CriteriaCheckModel]
+    let strengthState: PasswordStrengthState?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(checks) { check in
+                CriteriaCheck(model: check)
+            }
+
+            if let strength = strengthState {
+                Text("Strength: \(strength.description)")
+                    .font(.body.weight(.semibold))
+                    .foregroundColor(strength.color)
+                    .padding(.top, 8)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+
+StandardCheck(
+    checks: passwordRulesMapped,
+    strengthState: .notAcceptable
+)
