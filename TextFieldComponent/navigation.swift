@@ -1,33 +1,34 @@
-struct UserIdRuleItem: Identifiable {
-    let id: Int
-    let message: String
-    let status: ValidationStatus
-}
-
 enum ValidationStatus {
     case initial
     case valid
     case invalid
 }
 
+struct CriteriaCheckModel: Identifiable {
+    let id: Int
+    let message: String
+    let status: ValidationStatus
+}
 
-import SwiftUI
-
-struct UserIdRuleRow: View {
-    let rule: UserIdRuleItem
+struct CriteriaCheck: View {
+    let model: CriteriaCheckModel
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: iconName)
+                .resizable()
+                .frame(width: 16, height: 16)
                 .foregroundColor(iconColor)
-            Text(rule.message)
+
+            Text(model.message)
                 .font(.body)
                 .foregroundColor(.primary)
         }
+        .padding(.vertical, 4)
     }
 
     private var iconName: String {
-        switch rule.status {
+        switch model.status {
         case .valid: return "checkmark.circle.fill"
         case .invalid: return "xmark.octagon.fill"
         case .initial: return "circle"
@@ -35,7 +36,7 @@ struct UserIdRuleRow: View {
     }
 
     private var iconColor: Color {
-        switch rule.status {
+        switch model.status {
         case .valid: return .green
         case .invalid: return .red
         case .initial: return .gray
@@ -43,28 +44,24 @@ struct UserIdRuleRow: View {
     }
 }
 
-struct UserIdRulesSection: View {
-    let rules: [UserIdRuleItem]
+
+struct StandardCheck: View {
+    let checks: [CriteriaCheckModel]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            ForEach(rules) { rule in
-                UserIdRuleRow(rule: rule)
+            ForEach(checks) { check in
+                CriteriaCheck(model: check)
             }
         }
+        .padding(.vertical, 8) // corresponds to "Padding/2xs" or "4xs"
     }
 }
 
 
-UserIdRulesSection(rules: [
-    UserIdRuleItem(id: 1, message: "Between 8 and 32 characters", status: .valid),
-    UserIdRuleItem(id: 2, message: "At least 2 letters and 2 numbers", status: .initial),
-    UserIdRuleItem(id: 3, message: "No invalid characters (',\\,>,<)", status: .invalid)
-])
-
-func mapToUserIdRuleItems(_ results: [ValidationResult]) -> [UserIdRuleItem] {
+func mapValidationResultsToChecks(_ results: [ValidationResult]) -> [CriteriaCheckModel] {
     return results.map {
-        UserIdRuleItem(
+        CriteriaCheckModel(
             id: Int($0.ruleId),
             message: $0.message,
             status: mapStatus($0.status)
@@ -72,14 +69,14 @@ func mapToUserIdRuleItems(_ results: [ValidationResult]) -> [UserIdRuleItem] {
     }
 }
 
-private func mapStatus(_ sharedStatus: ValidationStatus) -> ValidationStatus {
-    switch sharedStatus {
+func mapStatus(_ status: ValidationStatus) -> ValidationStatus {
+    switch status {
     case .initial: return .initial
     case .valid: return .valid
     case .invalid: return .invalid
-    @unknown default: return .initial // safe fallback
     }
 }
 
-let uiRules = mapToUserIdRuleItems(presenter.validationChecks)
-UserIdRulesSection(rules: uiRules)
+
+StandardCheck(checks: mapValidationResultsToChecks(viewModel.validationChecks))
+
