@@ -147,3 +147,31 @@ Group {
 }
 .accessibilityElement(children: .contain)
 .accessibilityLabel(accessibilityText ?? "")
+
+
+fun ValidationStatus.toAccessibilityText(): String {
+    return when (this) {
+        ValidationStatus.VALID -> "Met"
+        ValidationStatus.INVALID -> "Not met"
+        ValidationStatus.INITIAL -> "Not yet met"
+    }
+}
+
+ValidationResult(
+    ruleId = it.id,
+    status = ValidationStatus.INITIAL,
+    message = it.message,
+    accessibilityText = ValidationStatus.INITIAL.toAccessibilityText()
+)
+
+
+ValidationResult(
+    ruleId = rule.id,
+    status = status,
+    message = rule.message,
+    accessibilityText = status.toAccessibilityText()
+)
+
+
+
+
