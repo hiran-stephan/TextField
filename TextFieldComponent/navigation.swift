@@ -80,30 +80,7 @@ func mapStatus(_ status: ValidationStatus) -> ValidationStatus {
 
 StandardCheck(checks: mapValidationResultsToChecks(viewModel.validationChecks))
 
-enum PasswordStrengthState {
-    case notApplicable
-    case notAcceptable
-    case moderate
-    case good
 
-    var description: String {
-        switch self {
-        case .notApplicable: return "N/A"
-        case .notAcceptable: return "Not acceptable"
-        case .moderate: return "Moderate"
-        case .good: return "Good"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .notAcceptable: return .red
-        case .moderate: return .orange
-        case .good: return .green
-        default: return .gray
-        }
-    }
-}
 
 struct StandardCheck: View {
     let checks: [CriteriaCheckModel]
@@ -116,18 +93,48 @@ struct StandardCheck: View {
             }
 
             if let strength = strengthState {
-                Text("Strength: \(strength.description)")
-                    .font(.body.weight(.semibold))
-                    .foregroundColor(strength.color)
-                    .padding(.top, 8)
+                PasswordStrengthView(strength: strength)
             }
         }
         .padding(.vertical, 8)
     }
 }
 
+struct PasswordStrengthView: View {
+    let strength: PasswordStrengthState
 
-StandardCheck(
-    checks: passwordRulesMapped,
-    strengthState: .notAcceptable
-)
+    var body: some View {
+        if !strength.description.isEmpty {
+            Text("Strength: \(strength.description)")
+                .font(.body.weight(.semibold))
+                .foregroundColor(strength.color)
+                .padding(.top, 8)
+        }
+    }
+}
+
+enum PasswordStrengthState {
+    case blank
+    case notAccepted
+    case moderate
+    case strong
+
+    var description: String {
+        switch self {
+        case .blank: return ""
+        case .notAccepted: return "Not acceptable"
+        case .moderate: return "Moderate"
+        case .strong: return "Strong"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .notAccepted: return .red
+        case .moderate: return .orange
+        case .strong: return .green
+        case .blank: return .clear
+        }
+    }
+}
+
