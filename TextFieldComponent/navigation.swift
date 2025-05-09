@@ -138,3 +138,12 @@ enum PasswordStrengthState {
     }
 }
 
+
+
+Group {
+    ForEach(checks) { check in
+        CriteriaCheckView(model: check)
+    }
+}
+.accessibilityElement(children: .contain)
+.accessibilityLabel(accessibilityText ?? "")
