@@ -21,3 +21,22 @@ extension ChangeUserIdValidationPresenter {
         }
     }
 }
+
+val validationResults: List<ValidationResult>
+    get() {
+        val trimmedUserId = userId.trim()
+        return validationRules.map { rule ->
+            val status = when {
+                trimmedUserId.isEmpty() -> ValidationStatus.UNKNOWN
+                rule.isValid(trimmedUserId) == true -> ValidationStatus.VALID
+                else -> ValidationStatus.INVALID
+            }
+
+            ValidationResult(
+                ruleId = rule.id,
+                status = status,
+                message = rule.message,
+                accessibilityText = getAccessibilityTextFor(status)
+            )
+        }
+    }
