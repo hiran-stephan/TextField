@@ -40,3 +40,24 @@ val validationResults: List<ValidationResult>
             )
         }
     }
+
+import SwiftUI
+
+struct AccessibleListContainer<Content: View>: View {
+    let accessibilityLabel: String
+    let content: () -> Content
+
+    var body: some View {
+        Group {
+            content()
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+AccessibleListContainer(accessibilityLabel: accessibilityText ?? "") {
+    ForEach(checks) { check in
+        CriteriaCheckView(model: check)
+    }
+}
