@@ -46,3 +46,34 @@ class ChangeUserIdValidationPresenter(
         return contentFile?.findContentValue(key, locale.lang, forAccessibility = true) ?: ""
     }
 }
+
+
+import Foundation
+
+extension CriteriaCheckStatus {
+    init(from status: ValidationStatus) {
+        switch status {
+        case .valid: self = .valid
+        case .invalid: self = .invalid
+        case .unknown: self = .unknown
+        }
+    }
+}
+
+func mapToCriteriaCheckModels(from results: [ValidationResult]) -> [CriteriaCheckModel] {
+    return results.map {
+        CriteriaCheckModel(
+            id: it.ruleId,
+            message: it.message,
+            status: CriteriaCheckStatus(from: it.status),
+            accessibilityText: it.accessibilityText
+        )
+    }
+}
+
+
+StandardCheckView(
+    checks: mapToCriteriaCheckModels(from: presenter.getValidationResults()),
+    passwordStrength: nil, // or your PasswordStrengthModel
+    accessibilityText: "Your user ID must have:"
+)
