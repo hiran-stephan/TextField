@@ -129,3 +129,11 @@ class ChangeUserIdValidationPresenter(
         const val CHANGE_USERID_NEW_USERID_DOT_ACCESSIBILITY_TEXT = "change_userid_accessibility_dot"
     }
 }
+
+
+let dummyStrength = StrengthModel(label: "Password Strength", strength: .moderate)
+
+StandardCheckView(
+    checks: checks,
+    strength: dummyStrength
+)
