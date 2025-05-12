@@ -56,3 +56,76 @@ enum class Strength(val message: String) {
     NotAccepted("Not accepted"),
     Blank("")
 }
+
+
+package com.cibc.changeuserid.ui.screens.changeuserid.presenters
+
+import com.cibc.services.remoteresource.data.models.ContentFileMasthead
+import com.cibc.services.utilities.forms.validation.*
+import java.util.Locale
+
+class ChangeUserIdValidationPresenter(
+    private val userId: String = "",
+    private val contentFile: ContentFileMasthead? = null,
+    private val locale: Locale
+) {
+
+    private val validationRules = listOf(
+        ValidationRule.MinMaxLength(
+            minimum = USER_ID_MIN_LENGTH,
+            maximum = USER_ID_MAX_LENGTH,
+            message = VALIDATION_MESSAGE_LENGTH
+        ),
+        ValidationRule.AtLeastTwoCharactersAndTwoNumbersRule(
+            message = VALIDATION_MESSAGE_CHAR_NUM
+        ),
+        ValidationRule.NoAllowedUsernameCharactersRule(
+            message = VALIDATION_MESSAGE_INVALID_CHARS
+        )
+    )
+
+    private val validationEngine = InputValidationEngine(validationRules)
+
+    val validationResults: List<ValidationResult>
+        get() = validationEngine.validate(userId)
+
+    val strength: Strength
+        get() = validationEngine.strength(userId) // Optional: for consistency
+
+    val userIdCriteria: List<UserIdValidationResult>
+        get() = validationResults.map { result ->
+            val rule = validationRules.find { it.id == result.ruleId }!!
+            UserIdValidationResult(
+                ruleId = result.ruleId,
+                status = result.status,
+                message = displayContent(rule.message),
+                accessibilityText = getAccessibilityTextFor(result.status)
+            )
+        }
+
+    private fun displayContent(key: String, forAccessibility: Boolean = false): String {
+        return contentFile?.findContentValue(key, locale.language, forAccessibility).orEmpty()
+    }
+
+    private fun getAccessibilityTextFor(status: ValidationStatus): String {
+        val key = when (status) {
+            ValidationStatus.VALID -> CHANGE_USERID_GREEN_CHECK_ACCESSIBILITY_TEXT
+            ValidationStatus.INVALID -> CHANGE_USERID_RED_CHECK_ACCESSIBILITY_TEXT
+            ValidationStatus.UNKNOWN -> CHANGE_USERID_NEW_USERID_DOT_ACCESSIBILITY_TEXT
+        }
+        return displayContent(key, forAccessibility = true)
+    }
+
+    companion object {
+        const val USER_ID_MIN_LENGTH = 6
+        const val USER_ID_MAX_LENGTH = 18
+
+        const val VALIDATION_MESSAGE_LENGTH = "change_userid_validation_length"
+        const val VALIDATION_MESSAGE_CHAR_NUM = "change_userid_validation_char_num"
+        const val VALIDATION_MESSAGE_INVALID_CHARS = "change_userid_validation_invalid_chars"
+
+        const val CHANGE_USERID_GREEN_CHECK_ACCESSIBILITY_TEXT = "change_userid_accessibility_valid"
+        const val CHANGE_USERID_RED_CHECK_ACCESSIBILITY_TEXT = "change_userid_accessibility_invalid"
+        const val CHANGE_USERID_NEW_USERID_DOT_ACCESSIBILITY_TEXT = "change_userid_accessibility_dot"
+    }
+}
