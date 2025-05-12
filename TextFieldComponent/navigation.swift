@@ -1,63 +1,58 @@
-extension CriteriaCheckStatus {
-    init(status: ValidationStatus) {
-        switch status.name {
-        case "VALID": self = .valid
-        case "INVALID": self = .invalid
-        case "UNKNOWN": self = .unknown
-        default: self = .unknown
-        }
-    }
-}
+package com.cibc.services.utilities.forms.validation
 
-extension ChangeUserIdValidationPresenter {
-    func toCriteriaCheckModels() -> [CriteriaCheckModel] {
-        return validationResults.map { result in
-            CriteriaCheckModel(
-                id: Int(result.ruleId),
-                message: result.message,
-                status: CriteriaCheckStatus(status: result.status),
-                accessibilityText: result.accessibilityText
-            )
-        }
-    }
-}
+class InputValidationEngine(
+    private val rules: List<ValidationRule>
+) {
 
-val validationResults: List<ValidationResult>
-    get() {
-        val trimmedUserId = userId.trim()
-        return validationRules.map { rule ->
+    fun validate(input: String): List<ValidationResult> {
+        val trimmed = input.trim()
+        return rules.map { rule ->
             val status = when {
-                trimmedUserId.isEmpty() -> ValidationStatus.UNKNOWN
-                rule.isValid(trimmedUserId) == true -> ValidationStatus.VALID
+                trimmed.isEmpty() -> ValidationStatus.UNKNOWN
+                rule.isValid(trimmed) -> ValidationStatus.VALID
                 else -> ValidationStatus.INVALID
             }
 
             ValidationResult(
                 ruleId = rule.id,
-                status = status,
-                message = rule.message,
-                accessibilityText = getAccessibilityTextFor(status)
+                status = status
             )
         }
     }
 
-import SwiftUI
+    fun strength(input: String): Strength = when {
+        input.isBlank() -> Strength.Blank
+        !isAccepted(input) -> Strength.NotAccepted
+        isStrongPassword(input) -> Strength.Strong
+        isModeratePassword(input) -> Strength.Moderate
+        else -> Strength.NotAccepted
+    }
 
-struct AccessibleListContainer<Content: View>: View {
-    let accessibilityLabel: String
-    let content: () -> Content
+    private fun isAccepted(input: String): Boolean =
+        rules.all { it.isValid(input) == true }
 
-    var body: some View {
-        Group {
-            content()
-        }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(accessibilityLabel)
+    private fun isModeratePassword(input: String): Boolean =
+        isAccepted(input) && input.length < MIN_LENGTH_STRONG_PASSWORD
+
+    private fun isStrongPassword(input: String): Boolean =
+        isAccepted(input) &&
+            (ValidationRule.StrongPasswordRule().isValid(input) == true ||
+             input.length >= MIN_LENGTH_STRONG_PASSWORD)
+
+    companion object {
+        const val MIN_LENGTH_STRONG_PASSWORD = 17
     }
 }
 
-AccessibleListContainer(accessibilityLabel: accessibilityText ?? "") {
-    ForEach(checks) { check in
-        CriteriaCheckView(model: check)
-    }
+
+data class ValidationResult(
+    val ruleId: Int,
+    val status: ValidationStatus
+)
+
+enum class Strength(val message: String) {
+    Strong("strong"),
+    Moderate("Moderate"),
+    NotAccepted("Not accepted"),
+    Blank("")
 }
