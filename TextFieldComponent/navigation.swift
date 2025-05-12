@@ -77,3 +77,17 @@ StandardCheckView(
     passwordStrength: nil, // or your PasswordStrengthModel
     accessibilityText: "Your user ID must have:"
 )
+
+public struct CriteriaCheckModel: Identifiable {
+    public let id: Int
+    public let message: String
+    public let status: CriteriaCheckStatus
+    public let accessibilityText: String
+
+    public init(id: Int, message: String, status: CriteriaCheckStatus, accessibilityText: String) {
+        self.id = id
+        self.message = message
+        self.status = status
+        self.accessibilityText = accessibilityText
+    }
+}
