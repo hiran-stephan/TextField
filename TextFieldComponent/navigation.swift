@@ -192,3 +192,23 @@ public enum Strength {
         }
     }
 }
+
+public extension ChangeUserIdValidationPresenter {
+    func toStrengthModel() -> StrengthModel? {
+        guard let strength = self.strength else {
+            return nil
+        }
+
+        return StrengthModel(
+            label: strength.label,
+            strength: Strength(name: strength.strength.name), // uses the String-based init
+            description: strength.description
+        )
+    }
+}
+
+StandardCheckView(
+    checks: presenter.toCriteriaCheckModels(),
+    strength: presenter.toStrengthModel(),
+    accessibilityTextForChecks: nil
+)
