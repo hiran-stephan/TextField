@@ -144,18 +144,19 @@ data class StrengthModel(
     val description: String
 )
 
-fun getPasswordStrengthModel(): StrengthModel {
-    val strength = inputValidator.strength(password)
+val passwordStrengthModel: StrengthModel
+    get() {
+        val strength = inputValidator.strength(password)
+        val label = displayContent(PASSWORD_STRENGTH_LABEL_KEY)
+        val description = getDescriptionFor(strength)
 
-    val label = displayContent(PASSWORD_STRENGTH_LABEL_KEY)
-    val description = getDescriptionFor(strength)
+        return StrengthModel(
+            label = label,
+            strength = strength,
+            description = description
+        )
+    }
 
-    return StrengthModel(
-        label = label,
-        strength = strength,
-        description = description
-    )
-}
 
 private fun getDescriptionFor(strength: Strength): String {
     val key = when (strength) {
