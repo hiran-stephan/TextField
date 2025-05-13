@@ -171,3 +171,24 @@ private fun getDescriptionFor(strength: Strength): String {
 
 
 
+public enum Strength {
+    case blank, notAccepted, moderate, strong
+
+    public init(name: String) {
+        switch name.uppercased() {
+        case "STRONG": self = .strong
+        case "MODERATE": self = .moderate
+        case "NOT_ACCEPTED": self = .notAccepted
+        default: self = .blank
+        }
+    }
+
+    var textColor: Color {
+        switch self {
+        case .strong: return BankingTheme.colors.onSuccess
+        case .moderate: return BankingTheme.colors.onWarning
+        case .notAccepted: return BankingTheme.colors.error
+        case .blank: return .clear
+        }
+    }
+}
