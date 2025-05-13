@@ -137,3 +137,36 @@ StandardCheckView(
     checks: checks,
     strength: dummyStrength
 )
+
+data class StrengthModel(
+    val label: String,
+    val strength: Strength,
+    val description: String
+)
+
+fun getPasswordStrengthModel(): StrengthModel {
+    val strength = inputValidator.strength(password)
+
+    val label = displayContent(PASSWORD_STRENGTH_LABEL_KEY)
+    val description = getDescriptionFor(strength)
+
+    return StrengthModel(
+        label = label,
+        strength = strength,
+        description = description
+    )
+}
+
+private fun getDescriptionFor(strength: Strength): String {
+    val key = when (strength) {
+        Strength.STRONG -> PASSWORD_STRENGTH_STRONG
+        Strength.MODERATE -> PASSWORD_STRENGTH_MODERATE
+        Strength.NOT_ACCEPTED -> PASSWORD_STRENGTH_NOT_ACCEPTABLE
+        Strength.BLANK -> PASSWORD_STRENGTH_BLANK
+    }
+
+    return displayContent(key)
+}
+
+
+
