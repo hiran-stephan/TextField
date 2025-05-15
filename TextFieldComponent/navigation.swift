@@ -212,3 +212,10 @@ StandardCheckView(
     strength: presenter.toStrengthModel(),
     accessibilityTextForChecks: nil
 )
+
+Jenkins is currently taking a longer time to complete pipelines for pull requests.
+When we receive a review comment on a PR and make a commit to address it, the validation process through Jenkins takes considerable time. This delay not only affects the PR in question but also impacts other team members who are dependent on those changes for their tasks, causing a broader bottleneck.
+
+As a result, even if we receive approvals promptly, we still experience significant delays in merging the PR due to the time it takes for all checks to pass.
+
+
