@@ -1,15 +1,11 @@
-package com.cibc.changeuserid.ui.screens.changeuserid.presenters
-
-import com.cibc.services.messagecatalogue.MessageCatalogueImpl
-import com.cibc.services.utilities.tools.errors.ProblemData
-import kotlin.test.*
-
 class ChangeUserIdFieldErrorPresenterTest {
 
     private fun problemsData(): List<ProblemData> = listOf(
         ProblemData(field = "oldUsername", code = "0255"),
         ProblemData(field = "newUsername", code = "0258"),
         ProblemData(field = "reenterUsername", code = "0257"),
+        ProblemData(field = "oldUsername", code = "0256"),
+        ProblemData(field = "newUsername", code = "0259")
     )
 
     private fun messageCatalogueData(): MessageCatalogueImpl {
@@ -29,33 +25,39 @@ class ChangeUserIdFieldErrorPresenterTest {
     @BeforeTest
     fun setup() {
         val messageCatalogue = messageCatalogueData()
-        presenter = ChangeUserIdFieldErrorPresenter(messageCatalogue).apply {
-            problems = problemsData()
-        }
+        presenter = ChangeUserIdFieldErrorPresenter(messageCatalogue, problemsData())
     }
 
     @Test
-    fun `test current user id field error`() {
+    fun `test 0255 current user id error`() {
         val error = presenter.getError(ChangeUserIdField.FIELD_CURRENT_USERID)
-        assertEquals("Enter your current user ID.", error?.message)
+        assertEquals("Enter your current user ID.", error?.errorMessage)
     }
 
     @Test
-    fun `test new user id field error`() {
-        val error = presenter.getError(ChangeUserIdField.FIELD_NEW_USERID)
-        assertEquals("Enter your new user ID.", error?.message)
+    fun `test 0256 current user id too short error`() {
+        val error = presenter.getError(ChangeUserIdField.FIELD_CURRENT_USERID)
+        assertEquals("The current user ID you entered is too short. Please try again.", error?.errorMessage)
     }
 
     @Test
-    fun `test confirm new user id field error`() {
+    fun `test 0257 retype user id mismatch error`() {
         val error = presenter.getError(ChangeUserIdField.FIELD_RETYPE_USERID)
-        assertEquals("The new user IDs you entered don't match. Please try again.", error?.message)
+        assertEquals("The new user IDs you entered don't match. Please try again.", error?.errorMessage)
     }
 
     @Test
-    fun `test no error when no matching code`() {
-        val presenterWithNoError = ChangeUserIdFieldErrorPresenter(messageCatalogueData())
-        val error = presenterWithNoError.getError(ChangeUserIdField.FIELD_CURRENT_USERID)
-        assertNull(error)
+    fun `test 0258 new user id blank error`() {
+        val error = presenter.getError(ChangeUserIdField.FIELD_NEW_USERID)
+        assertEquals("Enter your new user ID.", error?.errorMessage)
+    }
+
+    @Test
+    fun `test 0259 new user id same as current error`() {
+        val error = presenter.getError(ChangeUserIdField.FIELD_NEW_USERID)
+        assertEquals(
+            "Your new user ID is the same as your current user ID. Please choose a different one.",
+            error?.errorMessage
+        )
     }
 }
