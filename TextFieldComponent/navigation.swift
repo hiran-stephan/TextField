@@ -20,3 +20,15 @@ Our questions:
 Should state_change-password_biometric-confirmation and state_change-password_biometric-fail be considered state events or should they be tracked as user actions?
 
 Where should we ideally place the call for state_change-password_biometric-details, given that the biometric prompt is handled by the system and not under our direct control?
+
+
+                                                                                                                                                                                                        git config --global user.name
+                                                                                                                                                                                                        git config --global user.email
+                                                                                                                                                                                                        git config user.name
+                                                                                                                                                                                                        git config user.email
+                                                                                                                                                                                                        git config --global user.name "Your Name"
+                                                                                                                                                                                                        git config --global user.email "your.email@example.com"
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        git config user.name "Your Name"
+                                                                                                                                                                                                        git config user.email "your.email@example.com"
+
