@@ -62,3 +62,11 @@ class ChangeUserIdConfirmUserIdValidationPresenterTest {
         assertEquals(false, presenterEmpty.isUserIdMatching)
     }
 }
+
+
+val message: String?
+    get() = when {
+        reEnteredUsername.isEmpty() -> null
+        newUsername == reEnteredUsername -> displayContent(CHANGE_USERID_CONFIRM_USERID_FIELD_SUCCESS_MESSAGE)
+        else -> displayContent(CHANGE_USERID_CONFIRM_USERID_FIELD_ERROR_MESSAGE)
+    }
