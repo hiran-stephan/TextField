@@ -8,3 +8,7 @@ val message: String
     } else {
         StringUtils.EMPTY
     }
+
+
+val isUserIdMatching: Boolean
+    get() = reEnteredUsername.isNotEmpty() && newUsername == reEnteredUsername
