@@ -92,3 +92,18 @@ object DefaultRegexPatternProvider : RegexPatternProvider {
     override val usernameTwoCharTwoNumbers = RegExPatterns.REGEX_USERNAME_AT_LEAST_TWO_LETTERS_AND_TWO_NUMBERS
     override val usernameNoRestrictedCharacters = RegExPatterns.REGEX_USERNAME_NOT_ALLOWED_CHARACTERS
 }
+
+class InputValidator(
+    private val rules: List<ValidationRule>,
+    private val regexProvider: RegexPatternProvider = DefaultRegexPatternProvider
+) {
+    // ...
+
+    private fun isStrongPassword(input: String): Boolean =
+        isAccepted(input) && (
+            StrongPasswordRule(
+                message = "Strong Password",
+                pattern = regexProvider.strongPasswordPattern
+            ).isValid(input) || input.length >= MIN_LENGTH_STRONG_PASSWORD
+        )
+}
