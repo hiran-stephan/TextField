@@ -1,72 +1,71 @@
-import com.cibc.changeuserid.ContentConstants
-import com.cibc.changeuserid.ui.screens.changeuserid.presenters.ChangeUserIdConfirmUserIdValidationPresenter
-import com.cibc.services.remoteresource.data.models.BaseContentFile
-import com.cibc.services.utilities.Locale
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+package com.cibc.changeuserid.presenters
 
-class ChangeUserIdConfirmUserIdValidationPresenterTest {
+import com.cibc.changeuserid.ui.screens.changeuserid.presenters.ChangeUserIdValidationPresenter
+import com.cibc.services.utilities.forms.validation.ValidationStatus
+import com.cibc.testcontent.getChangeUserIdContent
+import kotlin.test.*
 
-    private lateinit var presenter: ChangeUserIdConfirmUserIdValidationPresenter
-    private val contentFileMock: BaseContentFile = getChangeUserIdContent().changeUserIdContent
+class ChangeUserIdValidationPresenterTest {
+
+    private val contentFileMock = getChangeUserIdContent().changeUserIdContent
     private val locale = Locale(appRegion = "US")
 
-    @BeforeTest
-    fun setup() {
-        presenter = ChangeUserIdConfirmUserIdValidationPresenter(
-            newUsername = "user123",
-            reEnteredUsername = "user123",
+    private fun createPresenter(userId: String): ChangeUserIdValidationPresenter {
+        return ChangeUserIdValidationPresenter(
+            userId = userId,
             contentFile = contentFileMock,
             locale = locale
         )
     }
 
     @Test
-    fun `message should return success when usernames match`() {
-        val expected = contentFileMock.findContentValue(
-            ContentConstants.CHANGE_USERID_CONFIRM_USERID_FIELD_SUCCESS_MESSAGE,
-            locale.lang
-        )
-        assertEquals(expected, presenter.message)
-        assertEquals(true, presenter.isUserIdMatching)
+    fun `should return UNKNOWN status for blank userId`() {
+        val presenter = createPresenter("")
+
+        presenter.userIdValidationResults.forEach {
+            assertEquals(ValidationStatus.UNKNOWN, it.status)
+        }
     }
 
     @Test
-    fun `message should return error when usernames do not match`() {
-        val presenterMismatch = ChangeUserIdConfirmUserIdValidationPresenter(
-            newUsername = "user123",
-            reEnteredUsername = "user456",
-            contentFile = contentFileMock,
-            locale = locale
-        )
+    fun `should return INVALID status for short userId`() {
+        val presenter = createPresenter("a1")
 
-        val expected = contentFileMock.findContentValue(
-            ContentConstants.CHANGE_USERID_CONFIRM_USERID_FIELD_ERROR_MESSAGE,
-            locale.lang
-        )
-        assertEquals(expected, presenterMismatch.message)
-        assertEquals(false, presenterMismatch.isUserIdMatching)
+        val invalidResults = presenter.userIdValidationResults.filter {
+            it.status == ValidationStatus.INVALID
+        }
+
+        assertTrue(invalidResults.isNotEmpty())
     }
 
     @Test
-    fun `message should be empty when reEnteredUsername is empty`() {
-        val presenterEmpty = ChangeUserIdConfirmUserIdValidationPresenter(
-            newUsername = "user123",
-            reEnteredUsername = "",
-            contentFile = contentFileMock,
-            locale = locale
-        )
+    fun `should return INVALID status for userId with restricted characters`() {
+        val presenter = createPresenter("abc@123")
 
-        assertEquals("", presenterEmpty.message)
-        assertEquals(false, presenterEmpty.isUserIdMatching)
+        val restrictedCharRule = presenter.userIdValidationResults.find {
+            it.ruleId == VALIDATE_USERNAME_ALLOWED_CHAR
+        }
+
+        assertEquals(ValidationStatus.INVALID, restrictedCharRule?.status)
+    }
+
+    @Test
+    fun `should return INVALID for missing two letters and two numbers`() {
+        val presenter = createPresenter("abcdefg")
+
+        val rule = presenter.userIdValidationResults.find {
+            it.ruleId == VALIDATE_USERNAME_TWO_CHAR_AND_TWO_NUMBERS
+        }
+
+        assertEquals(ValidationStatus.INVALID, rule?.status)
+    }
+
+    @Test
+    fun `should return VALID for correct userId`() {
+        val presenter = createPresenter("ab1234cd")
+
+        presenter.userIdValidationResults.forEach {
+            assertEquals(ValidationStatus.VALID, it.status)
+        }
     }
 }
-
-
-val message: String?
-    get() = when {
-        reEnteredUsername.isEmpty() -> null
-        newUsername == reEnteredUsername -> displayContent(CHANGE_USERID_CONFIRM_USERID_FIELD_SUCCESS_MESSAGE)
-        else -> displayContent(CHANGE_USERID_CONFIRM_USERID_FIELD_ERROR_MESSAGE)
-    }
