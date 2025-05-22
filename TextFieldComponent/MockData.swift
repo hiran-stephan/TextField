@@ -69,3 +69,10 @@ class InputValidatorTest {
         assertEquals(StrengthStatus.STRONG, status)
     }
 }
+
+
+private val usernameTwoLettersTwoDigitsPattern: Regex =
+    Regex("^(?=(?:.*[A-Za-z]){2,})(?=(?:.*\\d){2,}).+$")
+
+private val usernameAllowedCharactersPattern: Regex =
+    Regex("^[a-zA-Z0-9]*$")
