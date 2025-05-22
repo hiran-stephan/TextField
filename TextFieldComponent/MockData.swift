@@ -76,3 +76,19 @@ private val usernameTwoLettersTwoDigitsPattern: Regex =
 
 private val usernameAllowedCharactersPattern: Regex =
     Regex("^[a-zA-Z0-9]*$")
+
+
+
+interface RegexPatternProvider {
+    val strongPasswordPattern: String
+    val emailPattern: String
+    val usernameTwoCharTwoNumbers: String
+    val usernameNoRestrictedCharacters: String
+}
+
+object DefaultRegexPatternProvider : RegexPatternProvider {
+    override val strongPasswordPattern = RegExPatterns.REGEX_STRONG_PASSWORD
+    override val emailPattern = RegExPatterns.EMAIL_ADDRESS
+    override val usernameTwoCharTwoNumbers = RegExPatterns.REGEX_USERNAME_AT_LEAST_TWO_LETTERS_AND_TWO_NUMBERS
+    override val usernameNoRestrictedCharacters = RegExPatterns.REGEX_USERNAME_NOT_ALLOWED_CHARACTERS
+}
