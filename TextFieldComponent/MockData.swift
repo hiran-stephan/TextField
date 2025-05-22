@@ -107,3 +107,15 @@ class InputValidator(
             ).isValid(input) || input.length >= MIN_LENGTH_STRONG_PASSWORD
         )
 }
+
+private val testRegexProvider = object : RegexPatternProvider {
+    override val strongPasswordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$" // example
+    override val emailPattern = ".*"
+    override val usernameTwoCharTwoNumbers = ".*"
+    override val usernameNoRestrictedCharacters = ".*"
+}
+
+private val inputValidator = InputValidator(
+    rules = listOf(minMaxRule, lettersNumbersRule, allowedCharsRule),
+    regexProvider = testRegexProvider
+)
