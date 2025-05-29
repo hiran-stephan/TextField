@@ -1,18 +1,108 @@
-export JAVA_HOME=/Users/Stephan/Library/Java/JavaVirtualMachines/corretto-17.0.12/Contents/Home
-export PATH=$JAVA_HOME/bin:$PATH
+struct ManageAlertCardView: View {
+    let id: UUID = UUID()
+    let label: String
+    let secondaryLabel: String?
+    let tertiaryLabel: String?
+    let backgroundColor: Color
+    let trailingView: TrailingView?
+    let action: (() -> Void)?
 
-source ~/.zshrc
+    init(
+        label: String,
+        secondaryLabel: String? = nil,
+        tertiaryLabel: String? = nil,
+        backgroundColor: Color = BankingTheme.colors.surfaceVariant,
+        trailingView: TrailingView? = nil,
+        action: (() -> Void)? = nil
+    ) {
+        self.label = label
+        self.secondaryLabel = secondaryLabel
+        self.tertiaryLabel = tertiaryLabel
+        self.backgroundColor = backgroundColor
+        self.trailingView = trailingView
+        self.action = action
+    }
 
+    var body: some View {
+        Group {
+            if let action = action {
+                Button(action: action) {
+                    cardBody
+                }
+                .buttonStyle(ManageAlertCardViewButtonModifier())
+            } else {
+                cardBody
+                    .accessibilityElement(children: .combine)
+            }
+        }
+        .background(backgroundColor)
+        .cornerRadius(BankingTheme.spacing.medium)
+    }
 
-nano .zshrc
+    private var cardBody: some View {
+        VStack(alignment: .leading, spacing: BankingTheme.dimens.small) {
+            HStack(alignment: .top, spacing: BankingTheme.dimens.smallMedium) {
+                labelSection
+                    .layoutPriority(1) // Prioritize label section for space
 
-echo $JAVA_HOME
+                trailingIcon
+                    .fixedSize() // Prevent icon from stretching
+            }
 
-java -version
+            if let tertiaryLabel = tertiaryLabel {
+                Divider()
+                    .frame(height: BankingTheme.spacing.stroke)
+                    .background(BankingTheme.colors.borderDefault)
+                    .accessibilityHidden(true)
 
-/usr/libexec/java_home -V
+                Text(tertiaryLabel)
+                    .typography(BankingTheme.typography.bodySmall)
+                    .foregroundColor(BankingTheme.colors.textSecondary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+        }
+        .padding(BankingTheme.dimens.medium)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
 
-sudo rm -rf /Users/Stephan/Library/Java/JavaVirtualMachines/corretto-22.0.2
-sudo rm -rf /Library/Java/JavaVirtualMachines/corretto-17.0.11.jdk
+    private var labelSection: some View {
+        VStack(alignment: .leading, spacing: BankingTheme.spacing.noPadding) {
+            Text(label)
+                .typography(BankingTheme.typography.bodySemiBold)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(nil)
 
+            if let secondaryLabel = secondaryLabel {
+                Text(secondaryLabel)
+                    .typography(BankingTheme.typography.bodySmall)
+                    .foregroundColor(BankingTheme.colors.textSecondary)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
 
+    private var trailingIcon: some View {
+        switch trailingView {
+        case .disclosure(let image):
+            return AnyView(
+                image
+                    .resizable()
+                    .frame(
+                        width: BankingTheme.spacing.actionIconSize,
+                        height: BankingTheme.spacing.actionIconSize
+                    )
+            )
+        case .none:
+            return AnyView(EmptyView())
+        }
+    }
+
+    enum TrailingView {
+        case disclosure(Image)
+    }
+}
