@@ -106,3 +106,26 @@ struct ManageAlertCardView: View {
         case disclosure(Image)
     }
 }
+
+
+private fun ConsentsViewModel.getConsentValidationErrorCount(): Int {
+    var errorCount = 0
+
+    // Count how many grouped consents are not reviewed
+    val unreviewedCount = consentUiState.value.data
+        ?.groupedConsents
+        ?.values
+        ?.flatten()
+        ?.count { !it.isReviewed } ?: 0
+    errorCount += unreviewedCount
+
+    // Count checkbox unchecked (1 error if unchecked)
+    val isCheckboxUnchecked = consentUiState.value
+        .findConsentByType(EDCA_TYPE)
+        ?.let { !consentUiState.value.isCheckboxChecked } ?: false
+    if (isCheckboxUnchecked) {
+        errorCount += 1
+    }
+
+    return errorCount
+}
