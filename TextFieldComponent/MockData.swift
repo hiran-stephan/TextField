@@ -129,3 +129,7 @@ private fun ConsentsViewModel.getConsentValidationErrorCount(): Int {
 
     return errorCount
 }
+
+
+[*/src/commonTest/**/*.kt]
+max_line_length = off
