@@ -1,50 +1,61 @@
-struct ManageAlertsAlertSettingsScreen: View {
-    @State var isToggled: Bool = false
+struct ManageAlertChannelData: Identifiable {
+    let id = UUID()
+    let primaryLabel: String
+    let secondaryLabel: String
+    let inputViewText: String
+    var isChecked: Bool
+    var state: CheckboxState
+}
 
-    // Example hardcoded data object
-    private let multipleChannelData = ManageAlertMultipleChannelData(
-        titleLabel: "Contact method",
-        primaryChannelData: ManageAlertChannelData(
-            primaryLabel: "My messages",
-            secondaryLabel: "",
-            inputViewText: "",
-            isChecked: true,
-            state: .selected
-        ),
-        secondaryChannelData: ManageAlertChannelData(
-            primaryLabel: "Push notification",
-            secondaryLabel: "",
-            inputViewText: "",
-            isChecked: false,
-            state: .default
-        )
-    )
+
+struct ManageAlertMultipleChannelData: Identifiable {
+    let id = UUID()
+    let titleLabel: String
+    var channels: [ManageAlertChannelData]
+}
+
+struct ManageAlertMultipleChannelView: View {
+    let title: String
+    @Binding var channels: [ManageAlertChannelData]
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .typography(BankingTheme.typography.body)
+                .foregroundColor(BankingTheme.colors.textPrimary)
+
+            ForEach($channels) { $channel in
+                ManageAlertChannelView(
+                    label: channel.primaryLabel,
+                    secondaryLabel: channel.secondaryLabel,
+                    isChecked: $channel.isChecked,
+                    checkBoxState: $channel.state,
+                    inputText: channel.inputViewText,
+                    action: {
+                        print("\(channel.primaryLabel) tapped")
+                    }
+                )
+            }
+        }
+    }
+}
+
+
+struct ManageAlertsAlertSettingsScreen: View {
+    @State private var channels: [ManageAlertChannelData] = [
+        .init(primaryLabel: "My messages", secondaryLabel: "", inputViewText: "", isChecked: true, state: .selected),
+        .init(primaryLabel: "Push notification", secondaryLabel: "", inputViewText: "", isChecked: false, state: .default),
+        .init(primaryLabel: "Email", secondaryLabel: "abc@aol.com", inputViewText: "", isChecked: false, state: .default),
+        .init(primaryLabel: "Text message", secondaryLabel: "123-456-7890", inputViewText: "", isChecked: false, state: .default)
+    ]
 
     var body: some View {
         ScrollView {
-            contentView
-        }
-    }
-
-    @ViewBuilder
-    private var contentView: some View {
-        VStack(alignment: .center, spacing: BankingTheme.dimens.extraLarge) {
-            ManageAlertSectionHeadingView(
-                label: "Alert turned on",
-                secondaryLabel: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                trailingView: .toggle(isOn: $isToggled)
+            ManageAlertMultipleChannelView(
+                title: "Contact method",
+                channels: $channels
             )
-            .onChange(of: isToggled) { newValue in
-                isToggled = newValue
-            }
-            .manageAlertBackgroundCardStyle()
-            .padding(BankingTheme.dimens.medium)
-            .background(BankingTheme.colors.surfaceVariant)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-
-            // ✅ Pass full data object
-            ManageAlertMultipleChannelView(multipleChannelData)
-                .padding(.horizontal)
+            .padding()
         }
     }
 }
