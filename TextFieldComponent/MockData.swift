@@ -30,7 +30,7 @@ struct ManageAlertMultipleChannelView: View {
                     secondaryLabel: channel.secondaryLabel,
                     isChecked: $channel.isChecked,
                     checkBoxState: $channel.state,
-                    inputText: channel.inputViewText,
+                    inputViewText: $channel.inputViewText,
                     action: {
                         print("\(channel.primaryLabel) tapped")
                     }
@@ -39,6 +39,7 @@ struct ManageAlertMultipleChannelView: View {
         }
     }
 }
+
 
 
 struct ManageAlertsAlertSettingsScreen: View {
