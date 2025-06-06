@@ -1,62 +1,27 @@
-struct ManageAlertChannelData: Identifiable {
-    let id = UUID()
-    let primaryLabel: String
-    let secondaryLabel: String
-    let inputViewText: String
-    var isChecked: Bool
-    var state: CheckboxState
-}
-
-
-struct ManageAlertMultipleChannelData: Identifiable {
-    let id = UUID()
-    let titleLabel: String
-    var channels: [ManageAlertChannelData]
-}
-
-struct ManageAlertMultipleChannelView: View {
-    let title: String
-    @Binding var channels: [ManageAlertChannelData]
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .typography(BankingTheme.typography.body)
-                .foregroundColor(BankingTheme.colors.textPrimary)
-
-            ForEach($channels) { $channel in
-                ManageAlertChannelView(
-                    label: channel.primaryLabel,
-                    secondaryLabel: channel.secondaryLabel,
-                    isChecked: $channel.isChecked,
-                    checkBoxState: $channel.state,
-                    inputViewText: $channel.inputViewText,
-                    action: {
-                        print("\(channel.primaryLabel) tapped")
-                    }
-                )
-            }
-        }
-    }
-}
-
-
-
-struct ManageAlertsAlertSettingsScreen: View {
-    @State private var channels: [ManageAlertChannelData] = [
-        .init(primaryLabel: "My messages", secondaryLabel: "", inputViewText: "", isChecked: true, state: .selected),
-        .init(primaryLabel: "Push notification", secondaryLabel: "", inputViewText: "", isChecked: false, state: .default),
-        .init(primaryLabel: "Email", secondaryLabel: "abc@aol.com", inputViewText: "", isChecked: false, state: .default),
-        .init(primaryLabel: "Text message", secondaryLabel: "123-456-7890", inputViewText: "", isChecked: false, state: .default)
-    ]
-
-    var body: some View {
-        ScrollView {
-            ManageAlertMultipleChannelView(
-                title: "Contact method",
-                channels: $channels
+@ViewBuilder
+private func createChannelView(channel: ManageAlertChannelData, action: (() -> Void)? = nil) -> some View {
+    ManageAlertChannelView(
+        label: channel.primaryLabel,
+        secondaryLabel: channel.secondaryLabel,
+        leadingView: {
+            CheckboxView(
+                isChecked: Binding.constant(channel.isChecked ?? false),
+                state: Binding.constant(channel.state ?? .default)
             )
-            .padding()
-        }
+        },
+        action: action
+    )
+}
+
+leadingView: {
+    if let isChecked = channel.isChecked, let state = channel.state {
+        CheckboxView(
+            isChecked: Binding.constant(isChecked),
+            state: Binding.constant(state)
+        )
+    } else {
+        EmptyView()
     }
 }
+
+
