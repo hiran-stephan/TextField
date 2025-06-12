@@ -1,27 +1,12 @@
-@ViewBuilder
-private func createChannelView(channel: ManageAlertChannelData, action: (() -> Void)? = nil) -> some View {
-    ManageAlertChannelView(
-        label: channel.primaryLabel,
-        secondaryLabel: channel.secondaryLabel,
-        leadingView: {
-            CheckboxView(
-                isChecked: Binding.constant(channel.isChecked ?? false),
-                state: Binding.constant(channel.state ?? .default)
+extension ManageAlertsAlertSettingsPresenter {
+    func toChannelDataList() -> [ManageAlertChannelData] {
+        contactTypeDataList().map { type in
+            ManageAlertChannelData(
+                primaryLabel: type.contactType.name,
+                secondaryLabel: type.contactValue ?? "",
+                isChecked: type.isSelected,
+                state: .default // Add logic if you support other states
             )
-        },
-        action: action
-    )
-}
-
-leadingView: {
-    if let isChecked = channel.isChecked, let state = channel.state {
-        CheckboxView(
-            isChecked: Binding.constant(isChecked),
-            state: Binding.constant(state)
-        )
-    } else {
-        EmptyView()
+        }
     }
 }
-
-
