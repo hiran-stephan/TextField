@@ -57,3 +57,38 @@ fun contactTypeDataList(preferenceDetailsList: List<PreferenceDetailData>): List
         )
     }
 }
+
+
+fun updatePreferenceDetailItem(deliveryMethod: String, selected: Boolean) {
+    _manageAlertsAlertSettingsUiState.update { state ->
+        val existingList = state.preferenceDetailsList
+
+        val updatedList = when {
+            // 1. Exists & selected → update
+            existingList.any { it.deliveryMethod == deliveryMethod } && selected -> {
+                existingList.map {
+                    if (it.deliveryMethod == deliveryMethod) it.copy(selected = true) else it
+                }
+            }
+
+            // 2. Exists & unselected → remove
+            existingList.any { it.deliveryMethod == deliveryMethod } && !selected -> {
+                existingList.filterNot { it.deliveryMethod == deliveryMethod }
+            }
+
+            // 3. Doesn't exist & selected → add
+            selected -> {
+                existingList + PreferenceDetailData(
+                    id = null, // no id expected
+                    deliveryMethod = deliveryMethod,
+                    selected = true
+                )
+            }
+
+            // 4. Doesn't exist & unselected → do nothing
+            else -> existingList
+        }
+
+        state.copy(preferenceDetailsList = updatedList)
+    }
+}
