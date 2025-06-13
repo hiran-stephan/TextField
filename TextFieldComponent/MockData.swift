@@ -105,3 +105,26 @@ fun contactTypeDataList(preferenceDetailsList: List<PreferenceDetailData>): List
         )
     }
 }
+
+fun updatePreferenceDetailItem(id: String?, deliveryMethod: String, selected: Boolean) {
+    _manageAlertsAlertSettingsUiState.update { state ->
+        val currentList = state.preferenceDetailList
+
+        val updatedList = currentList
+            .filterNot { it.deliveryMethod == deliveryMethod } // Always remove the current item if it exists
+            .let { filteredList ->
+                if (selected) {
+                    // Add it back only if selected is true
+                    filteredList + PreferenceDetailData(
+                        id = id,
+                        deliveryMethod = deliveryMethod,
+                        selected = true
+                    )
+                } else {
+                    filteredList // Do nothing (item stays removed)
+                }
+            }
+
+        state.copy(preferenceDetailList = updatedList)
+    }
+}
