@@ -1,12 +1,9 @@
-extension ManageAlertsAlertSettingsPresenter {
-    func toChannelDataList() -> [ManageAlertChannelData] {
-        contactTypeDataList().map { type in
-            ManageAlertChannelData(
-                primaryLabel: type.contactType.name,
-                secondaryLabel: type.contactValue ?? "",
-                isChecked: type.isSelected,
-                state: .default // Add logic if you support other states
-            )
-        }
-    }
+fun getThresholdValue(purposeCode: String): String? {
+    return selectedAlertPreferenceData.subscriptions
+        ?.firstOrNull { it.purposeCode == purposeCode }
+        ?.threshold
+        ?.thresholdValue
 }
+
+val alertInputFieldValue = getThresholdValue(purposeCode)
+
