@@ -7,3 +7,8 @@ fun getThresholdValue(purposeCode: String): String? {
 
 val alertInputFieldValue = getThresholdValue(purposeCode)
 
+
+val id = subscriptions
+        .flatMap { it.preferenceDetails }
+        .firstOrNull { it.deliveryMethod == contactTypeName }
+        ?.id
