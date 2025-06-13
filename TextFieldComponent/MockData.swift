@@ -48,3 +48,9 @@ fun mapToManageAlertsContactTypes(
     }
 }
 
+val preferenceDetailsList = alertSettingsData
+    .selectedAlertPreferenceData
+    .subscriptions
+    ?.flatMap { it.preferenceDetails }
+    ?.map { it.toPreferenceDetailData() }
+    ?: emptyList()
