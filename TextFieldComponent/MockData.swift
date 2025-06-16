@@ -22,3 +22,9 @@ val selected = state.alertContactPreferences["SMS"]?.selected
 
 val selectedPrefs = state.alertContactPreferences.values.filter { it.selected }
 
+
+val alertSubscriptionData = _manageAlertsAlertSettingsUiState.value
+    .alertSettingsData
+    ?.selectedAlertPreferenceData
+    ?.subscriptions
+    ?.firstOrNull { it.purposeCode == purposeCode }
