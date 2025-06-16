@@ -1,44 +1,29 @@
-val alertContactPreferences: Map<String, PreferenceDetailData> = emptyMap()
+val selectedPreference = _manageAlertsAlertSettingsUiState.value.alertSettingsData?.selectedAlertPreferenceData
+val purposeCode = selectedPreference?.purposeCode
 
-val preferenceDetailsMap = ...
-    ?.map { it.toPreferenceDetailData() }
-    ?.associateBy { it.deliveryMethod } ?: emptyMap()
-
-_manageAlertsAlertSettingsUiState.update {
-    it.copy(alertContactPreferences = preferenceDetailsMap)
+?.firstOrNull { it.purposeCode == purposeCode }
+?.run {
+    copy(
+        thresholdData = thresholdData?.copy(
+            thresholdValue = alertInputFieldText
+        ) ?: ThresholdData(null, alertInputFieldText),
+        preferenceDetailDataList = alertContactPreferences.values.filter { it.selected }
+    )
 }
 
-val existingMap = state.alertContactPreferences.toMutableMap()
-existingMap[deliveryMethod] = PreferenceDetailData(
-    id = existingMap[deliveryMethod]?.id,
-    deliveryMethod = deliveryMethod,
-    selected = selected
-)
-state.copy(alertContactPreferences = existingMap)
-
-
-val selected = state.alertContactPreferences["SMS"]?.selected
-
-
-val selectedPrefs = state.alertContactPreferences.values.filter { it.selected }
-
-
-val alertSubscriptionData = _manageAlertsAlertSettingsUiState.value
-    .alertSettingsData
-    ?.selectedAlertPreferenceData
-    ?.subscriptions
-    ?.firstOrNull { it.purposeCode == purposeCode }
-
-
-val updatedAlertSubscription = uiState.alertSettingsData
-    ?.selectedAlertPreferenceData
-    ?.subscriptions
-    ?.firstOrNull { it.purposeCode == purposeCode }
-    ?.let { subscription ->
-        subscription.copy(
-            thresholdData = subscription.thresholdData?.copy(
-                thresholdValue = alertInputFieldText
-            ) ?: ThresholdData(thresholdId = null, thresholdValue = alertInputFieldText),
-            preferenceDetailDataList = alertContactPreferences.values.toList()
+if (!alertFormVisible)
+    
+    else if (alertFormVisible && alertContactPreferences.isNotEmpty()) {
+    
+    
+    if (!alertFormVisible && purposeCode != null) {
+        deleteAlertPreferences(...)
+        return
+    }
+    
+    updatedAlertSubscription?.let {
+        createAlertPreferences(
+            alertSubscriptionData = it,
+            accountId = alertSettingsNavigationItem.accountId ?: StringUtils.EMPTY
         )
     }
