@@ -30,19 +30,15 @@ val alertSubscriptionData = _manageAlertsAlertSettingsUiState.value
     ?.firstOrNull { it.purposeCode == purposeCode }
 
 
-// Get the matching subscription
-    val updatedSubscriptions = uiState.alertSettingsData
-        ?.selectedAlertPreferenceData
-        ?.subscriptions
-        ?.map { subscription ->
-            if (subscription.purposeCode == purposeCode) {
-                subscription.copy(
-                    thresholdData = subscription.thresholdData?.copy(
-                        thresholdValue = alertInputFieldText
-                    ) ?: ThresholdData(thresholdId = null, thresholdValue = alertInputFieldText),
-                    preferenceDetailDataList = alertContactPreferences.values.toList()
-                )
-            } else {
-                subscription
-            }
-        }
+val updatedAlertSubscription = uiState.alertSettingsData
+    ?.selectedAlertPreferenceData
+    ?.subscriptions
+    ?.firstOrNull { it.purposeCode == purposeCode }
+    ?.let { subscription ->
+        subscription.copy(
+            thresholdData = subscription.thresholdData?.copy(
+                thresholdValue = alertInputFieldText
+            ) ?: ThresholdData(thresholdId = null, thresholdValue = alertInputFieldText),
+            preferenceDetailDataList = alertContactPreferences.values.toList()
+        )
+    }
