@@ -1,26 +1,17 @@
-private fun buildAlertSettingsState(configData: AlertSettingsConfigData): ManageAlertsAlertSettingsUiState {
-    val preferenceDetails = configData
-        .selectedAlertPreferenceData
-        .subscriptions
+un ManageAlertsConfigSubscription.getInitialAlertContactPreferences(): Map<String, PreferenceDetailData> {
+    return subscriptions
         ?.flatMap { it.preferenceDetailDataList }
         ?.associateBy { it.deliveryMethod } ?: emptyMap()
+}
 
-    val isAnySubscriptionActive = configData
-        .selectedAlertPreferenceData
-        .subscriptions
-        ?.any { it.active == true } == true
+fun ManageAlertsConfigSubscription.isAlertFormVisible(): Boolean {
+    val isAnySubscriptionActive = subscriptions?.any { it.active == true } == true
+    return isAnySubscriptionActive || alwaysOn
+}
 
-    val isAlertAlwaysOn = configData.selectedAlertPreferenceData.alwaysOn
-    val purposeCode = configData.selectedAlertPreferenceData.purposeCode
-    val thresholdValue = configData.selectedAlertPreferenceData.subscriptions
+fun ManageAlertsConfigSubscription.getInitialThresholdValue(): String? {
+    return subscriptions
         ?.firstOrNull { it.purposeCode == purposeCode }
         ?.thresholdData
         ?.thresholdValue
-
-    return ManageAlertsAlertSettingsUiState(
-        alertSettingsData = configData,
-        alertContactPreferences = preferenceDetails,
-        alertFormVisible = isAnySubscriptionActive || isAlertAlwaysOn,
-        alertInputFieldText = thresholdValue
-    )
 }
