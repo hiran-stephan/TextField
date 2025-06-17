@@ -1,53 +1,37 @@
-internal fun saveAlertPreference() {
-    val uiState = _manageAlertsAlertSettingsUiState.value
-    val alertPreference = uiState.alertSettingsData?.selectedAlertPreferenceData
-    val alertFormVisible = uiState.alertFormVisible
-    val alertInputFieldText = uiState.alertInputFieldText
-    val selectedContacts = uiState.alertContactPreferences.values.filter { it.selected }
-    val purposeCode = alertPreference?.purposeCode
+internal fun saveAlertPreference(
+    alertFormVisible: Boolean,
+    alertInputFieldText: String,
+    selectedContactTypes: List<AlertContactPreferenceData>,
+    selectedAlertPreferenceData: AlertSettingsData?,
+    alertSettingsData: AlertSettingsData?,
+    accountId: String
+)
 
-    when {
-        !alertFormVisible -> handleDeletePreference(alertPreference, purposeCode)
 
-        alertPreference != null -> handleUpdatePreference(alertPreference, alertInputFieldText, selectedContacts)
+val purposeCode = selectedAlertPreferenceData?.purposeCode
+val alertPreference = alertSettingsData
+    ?.selectedAlertPreferenceData
+    ?.subscriptions
+    ?.firstOrNull { it.purposeCode == purposeCode }
 
-        purposeCode != null -> handleCreatePreference(purposeCode, alertInputFieldText, selectedContacts)
-    }
+when {
+    !alertFormVisible ->
+        handleDeletePreference(alertPreference?.id, purposeCode)
+
+    alertPreference != null ->
+        handleUpdatePreference(alertPreference, alertInputFieldText, selectedContactTypes)
+
+    purposeCode != null ->
+        handleCreatePreference(purposeCode, alertInputFieldText, selectedContactTypes, accountId)
 }
 
-private fun handleDeletePreference(alertPreference: AlertSubscriptionData?, purposeCode: String?) {
-    val alertId = alertPreference?.id
-    if (alertId != null && purposeCode != null) {
-        deleteAlertPreferences(alertId = alertId, purposeCode = purposeCode)
-    }
-}
 
-private fun handleUpdatePreference(
-    alertPreference: AlertSubscriptionData,
-    inputText: String,
-    selectedContacts: List<AlertContactPreferenceData>
-) {
-    val updatedPreference = alertPreference.copy(
-        thresholdData = alertPreference.thresholdData?.copy(thresholdValue = inputText)
-            ?: ThresholdData(thresholdId = null, thresholdValue = inputText),
-        preferenceDetailDataList = selectedContacts
-    )
-    updateAlertPreferences(AlertsData(alertSubscriptionDataList = listOf(updatedPreference)))
-}
-
-private fun handleCreatePreference(
-    purposeCode: String,
-    inputText: String,
-    selectedContacts: List<AlertContactPreferenceData>
-) {
-    val newSubscription = AlertSubscriptionData(
-        purposeCode = purposeCode,
-        thresholdData = ThresholdData(thresholdId = null, thresholdValue = inputText),
-        preferenceDetailDataList = selectedContacts
-    )
-    createAlertPreferences(
-        alertSubscriptionData = newSubscription,
-        accountId = alertSettingsNavigationItem.accountId
-    )
-}
+saveAlertPreference(
+    alertFormVisible = uiState.alertFormVisible,
+    alertInputFieldText = uiState.alertInputFieldText,
+    selectedContactTypes = uiState.alertContactPreferences.values.filter { it.selected },
+    selectedAlertPreferenceData = uiState.alertSettingsData?.selectedAlertPreferenceData,
+    alertSettingsData = uiState.alertSettingsData,
+    accountId = alertSettingsNavigationItem.accountId
+)
 
