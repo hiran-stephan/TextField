@@ -1,37 +1,26 @@
-internal fun saveAlertPreference(
-    alertFormVisible: Boolean,
-    alertInputFieldText: String,
-    selectedContactTypes: List<AlertContactPreferenceData>,
-    selectedAlertPreferenceData: AlertSettingsData?,
-    alertSettingsData: AlertSettingsData?,
-    accountId: String
-)
+private fun buildAlertSettingsState(configData: AlertSettingsConfigData): ManageAlertsAlertSettingsUiState {
+    val preferenceDetails = configData
+        .selectedAlertPreferenceData
+        .subscriptions
+        ?.flatMap { it.preferenceDetailDataList }
+        ?.associateBy { it.deliveryMethod } ?: emptyMap()
 
+    val isAnySubscriptionActive = configData
+        .selectedAlertPreferenceData
+        .subscriptions
+        ?.any { it.active == true } == true
 
-val purposeCode = selectedAlertPreferenceData?.purposeCode
-val alertPreference = alertSettingsData
-    ?.selectedAlertPreferenceData
-    ?.subscriptions
-    ?.firstOrNull { it.purposeCode == purposeCode }
+    val isAlertAlwaysOn = configData.selectedAlertPreferenceData.alwaysOn
+    val purposeCode = configData.selectedAlertPreferenceData.purposeCode
+    val thresholdValue = configData.selectedAlertPreferenceData.subscriptions
+        ?.firstOrNull { it.purposeCode == purposeCode }
+        ?.thresholdData
+        ?.thresholdValue
 
-when {
-    !alertFormVisible ->
-        handleDeletePreference(alertPreference?.id, purposeCode)
-
-    alertPreference != null ->
-        handleUpdatePreference(alertPreference, alertInputFieldText, selectedContactTypes)
-
-    purposeCode != null ->
-        handleCreatePreference(purposeCode, alertInputFieldText, selectedContactTypes, accountId)
+    return ManageAlertsAlertSettingsUiState(
+        alertSettingsData = configData,
+        alertContactPreferences = preferenceDetails,
+        alertFormVisible = isAnySubscriptionActive || isAlertAlwaysOn,
+        alertInputFieldText = thresholdValue
+    )
 }
-
-
-saveAlertPreference(
-    alertFormVisible = uiState.alertFormVisible,
-    alertInputFieldText = uiState.alertInputFieldText,
-    selectedContactTypes = uiState.alertContactPreferences.values.filter { it.selected },
-    selectedAlertPreferenceData = uiState.alertSettingsData?.selectedAlertPreferenceData,
-    alertSettingsData = uiState.alertSettingsData,
-    accountId = alertSettingsNavigationItem.accountId
-)
-
