@@ -29,11 +29,17 @@ val alertPreference =
             }
         }
 
-val alertPreference =
-    _manageAlertsAlertSettingsUiState.value.alertSettingsData
-        ?.selectedAlertPreferenceData
-        ?.subscriptions
-        ?.firstOrNull { subscription ->
-            subscription.purposeCode == purposeCode &&
-            (accountId == null || subscription.productData?.productNumber == accountId)
+override suspend fun updateAlert(
+    referenceId: String,
+    updateAlertSubscriptionRequestApiDataList: UpdateAlertSubscriptionRequestApiDataList,
+): Boolean {
+    return builder.safeClientCall(referenceId) {
+        client.put {
+            url {
+                path(API_ALERTS)
+                appendSessionToken()
+            }
+            setBody(updateAlertSubscriptionRequestApiDataList)
         }
+    }
+}
