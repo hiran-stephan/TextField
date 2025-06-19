@@ -28,3 +28,12 @@ val alertPreference =
                 subscription.purposeCode == purposeCode
             }
         }
+
+val alertPreference =
+    _manageAlertsAlertSettingsUiState.value.alertSettingsData
+        ?.selectedAlertPreferenceData
+        ?.subscriptions
+        ?.firstOrNull { subscription ->
+            subscription.purposeCode == purposeCode &&
+            (accountId == null || subscription.productData?.productNumber == accountId)
+        }
