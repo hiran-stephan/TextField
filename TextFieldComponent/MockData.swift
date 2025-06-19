@@ -12,4 +12,6 @@ private var alertSuccessMessageId: String? {
     showAlertPreferenceUpdateSuccessMessage = model.state?.showAlertPreferenceUpdateSuccessMessage
 }
 
-
+.onReceive(model.statePublisher.map { $0.showAlertPreferenceUpdateSuccessMessage?.id }.removeDuplicates()) { _ in
+    self.showAlertPreferenceUpdateSuccessMessage = model.state?.showAlertPreferenceUpdateSuccessMessage
+}
