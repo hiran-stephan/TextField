@@ -15,3 +15,16 @@ fun ManageAlertsConfigSubscription.getInitialThresholdValue(): String? {
         ?.thresholdData
         ?.thresholdValue
 }
+
+val alertPreference =
+    _manageAlertsAlertSettingsUiState.value.alertSettingsData
+        ?.selectedAlertPreferenceData
+        ?.subscriptions
+        ?.firstOrNull { subscription ->
+            if (accountId != null) {
+                subscription.purposeCode == purposeCode &&
+                subscription.productData?.productNumber == accountId
+            } else {
+                subscription.purposeCode == purposeCode
+            }
+        }
