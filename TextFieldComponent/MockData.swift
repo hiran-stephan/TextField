@@ -15,3 +15,6 @@ private var alertSuccessMessageId: String? {
 .onReceive(model.statePublisher.map { $0.showAlertPreferenceUpdateSuccessMessage?.id }.removeDuplicates()) { _ in
     self.showAlertPreferenceUpdateSuccessMessage = model.state?.showAlertPreferenceUpdateSuccessMessage
 }
+
+
+.sortedBy { it.showAddMobileNumberLink } // false (default) comes first, true goes last
