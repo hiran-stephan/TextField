@@ -18,3 +18,11 @@ private var alertSuccessMessageId: String? {
 
 
 .sortedBy { it.showAddMobileNumberLink } // false (default) comes first, true goes last
+
+
+SecondaryButton {
+    Text(alertSettingsPresenter.alertCancelButtonText)
+        .accessibilityLabel(alertSettingsPresenter.alertCancelButtonAccessibilityText)
+} action: {
+    viewModel.onCancelClicked()
+}
