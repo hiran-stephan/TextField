@@ -43,3 +43,8 @@ try {
 
     body
 }
+
+
+.takeIf { it }?.let {
+    repositoryAlertsCache.clear()
+}
