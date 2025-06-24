@@ -26,3 +26,20 @@ SecondaryButton {
 } action: {
     viewModel.onCancelClicked()
 }
+
+
+try {
+    val body = when (response.status) {
+        HttpStatusCode.NoContent -> null
+        else -> response.body<T>()
+    }
+
+    result(this, body) // Always call result
+
+    globalCallbacks.onGlobalSuccess(
+        referenceId = referenceId,
+        response = response
+    )
+
+    body
+}
