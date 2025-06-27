@@ -80,32 +80,59 @@ class ManageAlertsSubCategoriesViewModelTest {
     }
 
     @Test
-    fun `fetchResources sets content on success`() = runTest {
-        val expectedContent = mockManageAlertsContent()
-        coEvery { repository.fetchResources() } returns flowOf(
-            StateResult.success(ManageAlertsResourceState(manageAlertsContent = expectedContent))
-        )
+        fun `test fetchResources success`() = runTest {
+            val expectedContent = getContentFile()
+            coEvery { repository.fetchResources() } returns flow {
+                emit(NetworkResultState.Success(id = "id", data = expectedContent))
+            }
 
-        manageAlertsSubCategoriesViewModel.fetchResources()
+            manageAlertsSubCategoriesViewModel.fetchResources()
 
-        val state = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesResourceState.value
-        assertEquals(expectedContent, state.content)
-        assertNull(state.error)
-    }
+            val actual = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesResourceUiState.value.content
+            assertEquals(expectedContent, actual)
+        }
 
-    @Test
-    fun `fetchResources sets error on failure`() = runTest {
-        val exception = ProblemsException("Network failure")
-        coEvery { repository.fetchResources() } returns flowOf(
-            StateResult.failure(exception)
-        )
+        @Test
+        fun `test fetchResources failure`() = runTest {
+            coEvery { repository.fetchResources() } returns flow {
+                emit(NetworkResultState.Failure(id = "id", exception = Exception("error")))
+            }
 
-        manageAlertsSubCategoriesViewModel.fetchResources()
+            manageAlertsSubCategoriesViewModel.fetchResources()
 
-        val state = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesResourceState.value
-        assertNull(state.content)
-        assertEquals(exception, state.error)
-    }
+            val actual = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesResourceUiState.value.content
+            assertNull(actual)
+        }
+
+        @Test
+        fun `updateShouldShowInfoDialogState should update shouldShowInfoDialog`() {
+            manageAlertsSubCategoriesViewModel.updateShouldShowInfoDialogState(true)
+            val stateTrue = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value
+            assertTrue(stateTrue.shouldShowInfoDialog)
+
+            manageAlertsSubCategoriesViewModel.updateShouldShowInfoDialogState(false)
+            val stateFalse = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value
+            assertFalse(stateFalse.shouldShowInfoDialog)
+        }
+
+        @Test
+        fun `detachViewModel should clear showAlertPreferenceUpdateSuccessMessage`() = runTest {
+            // Simulate incoming event
+            val message = EventData.MessageEvent("Saved!")
+            eventQueue.sendEvent(ALERT_PREFERENCE_UPDATE_SUCCESS_MESSAGE, message)
+
+            manageAlertsSubCategoriesViewModel.checkAlertPreferenceUpdateSuccessMessageStatus()
+            advanceUntilIdle()
+
+            val beforeDetach = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value
+            assertEquals(message, beforeDetach.showAlertPreferenceUpdateSuccessMessage)
+
+            // Detach
+            manageAlertsSubCategoriesViewModel.detachViewModel()
+
+            val afterDetach = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value
+            assertNull(afterDetach.showAlertPreferenceUpdateSuccessMessage)
+        }
 
     @Test
     fun `attachViewModel triggers loadCategoryPreferences`() = runTest {
