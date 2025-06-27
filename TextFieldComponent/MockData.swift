@@ -127,3 +127,10 @@ class ManageAlertsSubCategoryAlertPresenterTest {
         return ManageAlertsSubCategoryAlertPresenter(mockContentFile, locale, sub)
     }
 }
+
+
+
+assertEquals(mockContentFile.findContentValue(MANAGE_ALERTS_OFF_TITLE, locale.language), presenter.alertActiveText)
+
+
+val configData = ManageAlertsTestUtils.getManageAlertsConfigData()["servicing"]?.first()
