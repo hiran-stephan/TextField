@@ -1,50 +1,45 @@
-./gradlew --refresh-dependencies
-
-
-nano ~/.gradle/gradle.properties
-
-private var alertSuccessMessageId: String? {
-    model.state?.showAlertPreferenceUpdateSuccessMessage?.id
-}
-
-.onReceive(Just(alertSuccessMessageId).removeDuplicates()) { id in
-    guard let _ = id else { return }
-    showAlertPreferenceUpdateSuccessMessage = model.state?.showAlertPreferenceUpdateSuccessMessage
-}
-
-.onReceive(model.statePublisher.map { $0.showAlertPreferenceUpdateSuccessMessage?.id }.removeDuplicates()) { _ in
-    self.showAlertPreferenceUpdateSuccessMessage = model.state?.showAlertPreferenceUpdateSuccessMessage
-}
-
-
-.sortedBy { it.showAddMobileNumberLink } // false (default) comes first, true goes last
-
-
-SecondaryButton {
-    Text(alertSettingsPresenter.alertCancelButtonText)
-        .accessibilityLabel(alertSettingsPresenter.alertCancelButtonAccessibilityText)
-} action: {
-    viewModel.onCancelClicked()
-}
-
-
-try {
-    val body = when (response.status) {
-        HttpStatusCode.NoContent -> null
-        else -> response.body<T>()
-    }
-
-    result(this, body) // Always call result
-
-    globalCallbacks.onGlobalSuccess(
-        referenceId = referenceId,
-        response = response
+@Test
+fun `alertActiveText returns OFF title when alert is disabled`() {
+    subscription = subscription.copy(
+        subscriptions = emptyList(),
+        alwaysOn = false
     )
+    presenter = ManageAlertsSubCategoryAlertPresenter(mockContentFile, locale, subscription)
 
-    body
+    assertEquals(displayContent(MANAGE_ALERTS_OFF_TITLE), presenter.alertActiveText)
+}
+
+@Test
+fun `alert is enabled when alwaysOn is true`() {
+    subscription = subscription.copy(alwaysOn = true)
+    presenter = ManageAlertsSubCategoryAlertPresenter(mockContentFile, locale, subscription)
+
+    assertTrue(presenter.isAlertEnabled)
+}
+
+@Test
+fun `alertDescription is null when preferenceDetailDataList is empty`() {
+    subscription = subscription.copy(subscriptions = listOf(
+        ManageAlertsConfigSubscriptionData(preferenceDetailDataList = emptyList())
+    ))
+    presenter = ManageAlertsSubCategoryAlertPresenter(mockContentFile, locale, subscription)
+
+    assertNull(presenter.alertDescription)
+}
+
+@Test
+fun `alertDescription formats multiple delivery methods with proper conjunction`() {
+    // Setup with 3+ delivery methods
+    val methods = listOf("Email", "SMS", "Push")
+    // mock displayContent and subscription accordingly...
+    assertEquals("Email, Push and SMS", presenter.alertDescription)
+}
+
+@Test
+fun `unknown delivery method appears last in alertDescription`() {
+    val unknownMethod = DeliveryMethod("UNKNOWN", "Unknown")
+    // setup subscription with unknown method + known methods
+    assertTrue(presenter.alertDescription?.endsWith("Unknown") == true)
 }
 
 
-.takeIf { it }?.let {
-    repositoryAlertsCache.clear()
-}
