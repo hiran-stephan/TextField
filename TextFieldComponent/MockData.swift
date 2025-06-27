@@ -152,3 +152,15 @@ fun getPresenterFor(category: String): ManageAlertsSubCategoryAlertPresenter {
 
     return ManageAlertsSubCategoryAlertPresenter(mockContentFile, locale, sub)
 }
+
+@Test
+fun `alertTitle for servicing config`() {
+    presenter = getPresenterFor("servicing")
+    assertEquals("Contact information changed", presenter.alertTitle)
+}
+
+@Test
+fun `alertTitle for Reminders config`() {
+    presenter = getPresenterFor("Reminders")
+    assertEquals("Starting balance above amount", presenter.alertTitle)
+}
