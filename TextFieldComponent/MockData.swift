@@ -109,4 +109,58 @@ class ManageAlertsSubCategoriesViewModelTest {
             assertEquals(expectedException, state.error)
         }
     }
+    
+    @Test
+    fun `updateShouldShowInfoDialogState updates UI state`() = runTest {
+        // When
+        manageAlertsSubCategoriesViewModel.updateShouldShowInfoDialogState(true)
+
+        // Then
+        val actual = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value.shouldShowInfoDialog
+        assertTrue(actual)
+    }
+    
+    @Test
+    fun `checkAlertPreferenceUpdateSuccessMessageStatus handles success message event`() = runTest {
+        // Given
+        val expectedMessage = "Update success"
+        val eventData = EventData.MessageEvent(
+            message = expectedMessage,
+            eventId = ALERT_PREFERENCE_UPDATE_SUCCESS_MESSAGE
+        )
+
+        // Inject the event into the queue before calling the method
+        eventQueue.addEvent(
+            purposeId = ALERT_PREFERENCE_UPDATE_SUCCESS_MESSAGE,
+            eventData = eventData
+        )
+
+        // When
+        manageAlertsSubCategoriesViewModel.checkAlertPreferenceUpdateSuccessMessageStatus()
+
+        // Let coroutines collect the event
+        advanceUntilIdle()
+
+        // Then
+        val actual = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value
+        assertEquals(expectedMessage, actual.showAlertPreferenceUpdateSuccessMessage?.message)
+    }
+
+    @Test
+    fun `detachViewModel clears alert success message`() = runTest {
+        // First simulate success message
+        val event = EventData.MessageEvent("Success", ALERT_PREFERENCE_UPDATE_SUCCESS_MESSAGE)
+        manageAlertsSubCategoriesViewModel.checkAlertPreferenceUpdateSuccessMessageStatus()
+        eventQueue.addEvent(ALERT_PREFERENCE_UPDATE_SUCCESS_MESSAGE, event)
+
+        advanceUntilIdle()
+
+        // Now call detach
+        manageAlertsSubCategoriesViewModel.detachViewModel()
+
+        // Then
+        val actual = manageAlertsSubCategoriesViewModel.manageAlertsSubCategoriesUiState.value
+        assertNull(actual.showAlertPreferenceUpdateSuccessMessage)
+    }
+
 }
