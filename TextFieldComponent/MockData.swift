@@ -134,3 +134,21 @@ assertEquals(mockContentFile.findContentValue(MANAGE_ALERTS_OFF_TITLE, locale.la
 
 
 val configData = ManageAlertsTestUtils.getManageAlertsConfigData()["servicing"]?.first()
+
+
+fun getPresenterFor(category: String): ManageAlertsSubCategoryAlertPresenter {
+    val configData = ManageAlertsTestUtils.getManageAlertsConfigData()[category]?.first()
+        ?: error("No config found for $category")
+
+    val sub = ManageAlertsConfigSubscription(
+        name = configData.name,
+        alwaysOn = configData.alwaysOn,
+        purposeCode = configData.purposeCode,
+        categoryId = configData.categoryId,
+        subCategoryId = configData.subCategoryId,
+        alertType = configData.alertType,
+        subscriptions = alertsApiData.alertSubscriptions.map { it.toAlertSubscriptionData() }
+    )
+
+    return ManageAlertsSubCategoryAlertPresenter(mockContentFile, locale, sub)
+}
