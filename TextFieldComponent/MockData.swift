@@ -30,3 +30,7 @@ override fun associateAlertCategories(
         activeSubscriptions = activeSubscriptions
     )
 }
+
+
+val activeSubscriptionsCount = alerts.sumOf { it.activeSubscriptions ?: 0 }
+val totalSubscriptionsCount = alerts.sumOf { it.totalSubscriptions ?: 0 }
