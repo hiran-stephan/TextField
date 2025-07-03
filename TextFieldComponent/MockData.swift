@@ -1,22 +1,31 @@
-@Test
-fun `loadCategoryPreferences success updates state`() = runTest {
-    val categoryId = "testCategory"
-    val expectedData = ManageAlertsTestUtils.getAlertsAccountsPreferenceData(category = categoryId)
+fun associateAlertCategories(
+    config: ManageAlertsConfigData,
+    allConfigsForCategory: List<ManageAlertsConfigData>,
+    subscriptions: List<AlertSubscriptionApiData>
+): ManageAlertsConfigSubscription
 
-    everySuspend {
-        repository.fetchAAlertAccountsConfig(categoryId = categoryId, alertId = "")
-    } returns flow {
-        emit(NetworkResultState.Success(id = "id", data = expectedData))
-    }
+override fun associateAlertCategories(
+    config: ManageAlertsConfigData,
+    allConfigsForCategory: List<ManageAlertsConfigData>,
+    subscriptions: List<AlertSubscriptionApiData>
+): ManageAlertsConfigSubscription {
+    val matchingSubscriptions = subscriptions.filter { it.purposeCode == config.purposeCode }
 
-    verify(VerifyMode.Ordered) {
-        selectAccountViewModel.loadAccounts(categoryId = categoryId, alertId = "")
-    }
-
-    verifySuspend {
-        repository.fetchAAlertAccountsConfig(categoryId = categoryId, alertId = "")
-    }
-
-    val actualResult = selectAccountViewModel.manageAlertSelectAccountUiState.value.alertsAccountsPreferenceData
-    assertEquals(expectedData, actualResult)
+    return ManageAlertsConfigSubscription(
+        name = config.name,
+        alwaysOn = config.alwaysOn,
+        purposeCode = config.purposeCode,
+        categoryId = config.categoryId,
+        subCategoryId = config.subCategoryId,
+        alertType = config.alertType,
+        contactTypes = config.contactTypes,
+        inputField = config.inputField,
+        qualifiers = config.qualifiers,
+        subscriptions = matchingSubscriptions.map { it.toAlertSubscriptionData() },
+        totalSubscriptions = allConfigsForCategory.size,
+        activeSubscriptions = matchingSubscriptions.count { it.active == true }
+    )
 }
+
+val totalSubscriptions = allConfigsForCategory.count { it.categoryId == config.categoryId }
+
