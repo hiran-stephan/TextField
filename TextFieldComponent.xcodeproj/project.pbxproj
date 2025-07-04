@@ -169,6 +169,8 @@
 		3BCAC25A2E18623E001CC0C9 /* ManageAlerts_DI_Module_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_DI_Module_LLD.docx; sourceTree = "<group>"; };
 		3BCAC25B2E186610001CC0C9 /* ManageAlertsRepository_LLD_Updated.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRepository_LLD_Updated.docx; sourceTree = "<group>"; };
 		3BCAC25C2E1868B4001CC0C9 /* ManageAlertsBusinessLogic_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsBusinessLogic_LLD.docx; sourceTree = "<group>"; };
+		3BCAC25D2E186B97001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRoutingNavigation_LLD.docx; sourceTree = "<group>"; };
+		3BCAC25E2E186BDC001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; name = ManageAlertsRoutingNavigation_LLD.docx; path = ../../Downloads/ManageAlertsRoutingNavigation_LLD.docx; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
@@ -241,9 +243,11 @@
 				3BCAC24D2DC14A23001CC0C9 /* ComponentChangesExtended.md */,
 				3BCAC24F2DC14E1C001CC0C9 /* AnalyticsChanges.md */,
 				3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */,
+				3BCAC25D2E186B97001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */,
 				3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */,
 				3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */,
 				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
+				3BCAC25E2E186BDC001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */,
 				3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */,
 				3BCAC25C2E1868B4001CC0C9 /* ManageAlertsBusinessLogic_LLD.docx */,
 				3BCAC2442DBBF0ED001CC0C9 /* AccountPreferencesViewModels_LLD_With_Tables.docx */,
