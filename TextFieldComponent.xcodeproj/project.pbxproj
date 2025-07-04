@@ -166,6 +166,7 @@
 		3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LLD_Router_Repository.md; sourceTree = "<group>"; };
 		3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserId_LLD_Constants.md; sourceTree = "<group>"; };
 		3BCAC2592E185D93001CC0C9 /* ManageAlertsRepository_LLD_Full.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRepository_LLD_Full.docx; sourceTree = "<group>"; };
+		3BCAC25A2E18623E001CC0C9 /* ManageAlerts_DI_Module_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_DI_Module_LLD.docx; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
@@ -243,6 +244,7 @@
 				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
 				3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */,
 				3BCAC2442DBBF0ED001CC0C9 /* AccountPreferencesViewModels_LLD_With_Tables.docx */,
+				3BCAC25A2E18623E001CC0C9 /* ManageAlerts_DI_Module_LLD.docx */,
 				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
 				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
 				3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */,
