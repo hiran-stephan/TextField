@@ -90,16 +90,13 @@ Email and phone number are retrieved securely and only when required.
 All network calls follow secure communication protocols and input validations.
 
 9. Summary Table
-                                ### ✅ Summary Table
-
-                                | **Method**                         | **Responsibility**                                             | **Returns**                         |
-                                |-----------------------------------|----------------------------------------------------------------|-------------------------------------|
-                                | `fetchAlerts()`                   | Fetch all alert configs and user subscriptions                | `Flow<GroupedAlertConfig>`          |
-                                | `fetchCategoryAlertPreferences()` | Fetch alert preferences for a specific category               | `Flow<SubcategoryGroupedAlertConfig>` |
-                                | `createAlert()`                   | Create a new alert subscription                                | `Flow<Boolean>`                     |
-                                | `deleteAlert()`                   | Delete an existing alert subscription                          | `Flow<Boolean>`                     |
-                                | `updateAlert()`                   | Update an existing alert subscription                          | `Flow<Boolean>`                     |
-                                | `fetchResources()`                | Download & cache alert config resources                        | `Flow<ResourceConfig>`              |
-                                | `fetchAlertAccountsConfig()`      | Retrieve eligible accounts for a given alert                   | `Flow<AccountPreferenceData>`       |
-                                | `fetchAlertsSettings()`           | Fetch settings for a specific alert/account                    | `Flow<AlertSettingsConfig>`         |
-                                | `fetchCustomerContactData()`      | Get the user’s primary contact details (email/phone)           | `Flow<ContactInfo>`                 |
+                                Method    Responsibility    Returns
+                                fetchAlerts()    Fetch all alert configs and user subscriptions    Flow<GroupedAlertConfig>
+                                fetchCategoryAlertPreferences()    Fetch alert preferences for a specific category    Flow<SubcategoryGroupedAlertConfig>
+                                createAlert()    Create a new alert subscription    Flow<Boolean>
+                                deleteAlert()    Delete an existing alert subscription    Flow<Boolean>
+                                updateAlert()    Update an existing alert subscription    Flow<Boolean>
+                                fetchResources()    Download & cache alert config resources    Flow<ResourceConfig>
+                                fetchAlertAccountsConfig()    Retrieve eligible accounts for a given alert    Flow<AccountPreferenceData>
+                                fetchAlertsSettings()    Fetch settings for a specific alert/account    Flow<AlertSettingsConfig>
+                                fetchCustomerContactData()    Get the user’s primary contact details (email/phone)    Flow<ContactInfo>
