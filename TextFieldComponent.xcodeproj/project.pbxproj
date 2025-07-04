@@ -165,6 +165,7 @@
 		3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserIdViewModel.md; sourceTree = "<group>"; };
 		3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LLD_Router_Repository.md; sourceTree = "<group>"; };
 		3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserId_LLD_Constants.md; sourceTree = "<group>"; };
+		3BCAC2592E185D93001CC0C9 /* ManageAlertsRepository_LLD_Full.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRepository_LLD_Full.docx; sourceTree = "<group>"; };
 		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
@@ -246,6 +247,7 @@
 				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
 				3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */,
 				3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */,
+				3BCAC2592E185D93001CC0C9 /* ManageAlertsRepository_LLD_Full.docx */,
 				3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */,
 				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
 				3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */,
