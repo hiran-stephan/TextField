@@ -15,7 +15,6 @@
 		3B4379642C80AF7C00495EF1 /* TextFieldComponentUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379632C80AF7C00495EF1 /* TextFieldComponentUITests.swift */; };
 		3B4379662C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379652C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift */; };
 		3B4379752C80BCDD00495EF1 /* TextFieldGeneral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379732C80BCDD00495EF1 /* TextFieldGeneral.swift */; };
-		3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379792C8172F300495EF1 /* FigmaCode.swift */; };
 		3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379822C82286F00495EF1 /* TextFieldGeneralTheme.swift */; };
 		3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379842C877BA000495EF1 /* TextInputPassword.swift */; };
 		3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379872C8783DC00495EF1 /* USBankingColors.swift */; };
@@ -27,8 +26,6 @@
 		3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379932C87863400495EF1 /* WhitneyFont.swift */; };
 		3B4379962C87886700495EF1 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379952C87886700495EF1 /* Theme.swift */; };
 		3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4379972C87950D00495EF1 /* ComponentImage.swift */; };
-		3B647BEA2CAC58E0007D837D /* AccountDetailsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */; };
-		3B647BEC2CACB57A007D837D /* ListCellItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647BEB2CACB57A007D837D /* ListCellItemView.swift */; };
 		3B647C592CB09A53007D837D /* ListCellTextIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C4E2CB09A53007D837D /* ListCellTextIndicatorView.swift */; };
 		3B647C5A2CB09A53007D837D /* ListCellItemText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C4F2CB09A53007D837D /* ListCellItemText.swift */; };
 		3B647C5B2CB09A53007D837D /* ListCellItemBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647C502CB09A53007D837D /* ListCellItemBase.swift */; };
@@ -48,32 +45,11 @@
 		3B647CCC2CB44312007D837D /* TabLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC42CB44312007D837D /* TabLayoutView.swift */; };
 		3B647CCD2CB44312007D837D /* TabBarFixed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC52CB44312007D837D /* TabBarFixed.swift */; };
 		3B647CCE2CB44312007D837D /* TabBarScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CC62CB44312007D837D /* TabBarScrollable.swift */; };
-		3B647CD02CB5CCA0007D837D /* QA Specialist - CIBC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */; };
-		3B647CD22CB82C2B007D837D /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CD12CB82C2B007D837D /* MockData.swift */; };
-		3B647CD42CCA7D4B007D837D /* navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B647CD32CCA7D4B007D837D /* navigation.swift */; };
-		3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9602C89F7C30058896A /* PlaceholderView.swift */; };
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
-		3B71B99D2C8F8BC20058896A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B99C2C8F8BC20058896A /* File.swift */; };
-		3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A32C9349F50058896A /* CopyContyent.swift */; };
-		3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A52C9357B80058896A /* CustomSheet.swift */; };
 		3B71B9A92C937D7A0058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */; };
 		3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */; };
-		3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */; };
-		3BCAC2462DBC07E5001CC0C9 /* AccountPreferencesViewModels_LLD.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2452DBC07E4001CC0C9 /* AccountPreferencesViewModels_LLD.md */; };
-		3BCAC2482DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */; };
-		3BCAC24A2DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */; };
-		3BCAC24C2DC146F4001CC0C9 /* ComponentChanges.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */; };
-		3BCAC24E2DC14A23001CC0C9 /* ComponentChangesExtended.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC24D2DC14A23001CC0C9 /* ComponentChangesExtended.md */; };
-		3BCAC2502DC14E1C001CC0C9 /* AnalyticsChanges.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC24F2DC14E1C001CC0C9 /* AnalyticsChanges.md */; };
-		3BCAC2522DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */; };
-		3BCAC2542DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */; };
-		3BCAC2562DC3CF82001CC0C9 /* LLD_Router_Repository.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */; };
-		3BCAC2582DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md in Resources */ = {isa = PBXBuildFile; fileRef = 3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */; };
-		3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B112C9AE3F9008208AC /* Mapper.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
-		3BDE7BD82CA75E5C008208AC /* AlertBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */; };
-		3BFADE2E2D4BEA5B00E8B532 /* header.zip in Resources */ = {isa = PBXBuildFile; fileRef = 3BFADE2D2D4BEA5B00E8B532 /* header.zip */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,7 +81,6 @@
 		3B4379632C80AF7C00495EF1 /* TextFieldComponentUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldComponentUITests.swift; sourceTree = "<group>"; };
 		3B4379652C80AF7C00495EF1 /* TextFieldComponentUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldComponentUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		3B4379732C80BCDD00495EF1 /* TextFieldGeneral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldGeneral.swift; sourceTree = "<group>"; };
-		3B4379792C8172F300495EF1 /* FigmaCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FigmaCode.swift; sourceTree = "<group>"; };
 		3B4379822C82286F00495EF1 /* TextFieldGeneralTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldGeneralTheme.swift; sourceTree = "<group>"; };
 		3B4379842C877BA000495EF1 /* TextInputPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputPassword.swift; sourceTree = "<group>"; };
 		3B4379872C8783DC00495EF1 /* USBankingColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBankingColors.swift; sourceTree = "<group>"; };
@@ -117,8 +92,6 @@
 		3B4379932C87863400495EF1 /* WhitneyFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhitneyFont.swift; sourceTree = "<group>"; };
 		3B4379952C87886700495EF1 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3B4379972C87950D00495EF1 /* ComponentImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentImage.swift; sourceTree = "<group>"; };
-		3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsCard.swift; sourceTree = "<group>"; };
-		3B647BEB2CACB57A007D837D /* ListCellItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellItemView.swift; sourceTree = "<group>"; };
 		3B647C4E2CB09A53007D837D /* ListCellTextIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellTextIndicatorView.swift; sourceTree = "<group>"; };
 		3B647C4F2CB09A53007D837D /* ListCellItemText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellItemText.swift; sourceTree = "<group>"; };
 		3B647C502CB09A53007D837D /* ListCellItemBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCellItemBase.swift; sourceTree = "<group>"; };
@@ -138,45 +111,14 @@
 		3B647CC42CB44312007D837D /* TabLayoutView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabLayoutView.swift; sourceTree = "<group>"; };
 		3B647CC52CB44312007D837D /* TabBarFixed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarFixed.swift; sourceTree = "<group>"; };
 		3B647CC62CB44312007D837D /* TabBarScrollable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarScrollable.swift; sourceTree = "<group>"; };
-		3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "QA Specialist - CIBC.pdf"; sourceTree = "<group>"; };
-		3B647CD12CB82C2B007D837D /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
-		3B647CD32CCA7D4B007D837D /* navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = navigation.swift; sourceTree = "<group>"; };
-		3B647CDE2CF8F676007D837D /* RPReplay_Final1732819761.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RPReplay_Final1732819761.MP4; sourceTree = "<group>"; };
-		3B647CDF2CF8F67D007D837D /* ScreenRecording_11-28-2024 13-57-02_1.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ScreenRecording_11-28-2024 13-57-02_1.MP4"; sourceTree = "<group>"; };
-		3B647CE02CFF7F4A007D837D /* 489.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = 489.mp4; sourceTree = "<group>"; };
-		3B71B9602C89F7C30058896A /* PlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderView.swift; sourceTree = "<group>"; };
 		3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifiedPasswordField.swift; sourceTree = "<group>"; };
-		3B71B99C2C8F8BC20058896A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		3B71B9A12C93499D0058896A /* Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPhone 14 Pro - 2024-09-12 at 11.57.36.mp4"; sourceTree = "<group>"; };
 		3B71B9A22C93499E0058896A /* Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4"; sourceTree = "<group>"; };
-		3B71B9A32C9349F50058896A /* CopyContyent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyContyent.swift; sourceTree = "<group>"; };
-		3B71B9A52C9357B80058896A /* CustomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSheet.swift; sourceTree = "<group>"; };
 		3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheet.swift; sourceTree = "<group>"; };
 		3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheetManager.swift; sourceTree = "<group>"; };
-		3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeSpaceTile.swift; sourceTree = "<group>"; };
-		3BCAC2442DBBF0ED001CC0C9 /* AccountPreferencesViewModels_LLD_With_Tables.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = AccountPreferencesViewModels_LLD_With_Tables.docx; sourceTree = "<group>"; };
-		3BCAC2452DBC07E4001CC0C9 /* AccountPreferencesViewModels_LLD.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AccountPreferencesViewModels_LLD.md; sourceTree = "<group>"; };
-		3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AccountPreferencesViewModelLLD_Confluence.md; sourceTree = "<group>"; };
-		3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AccountPreferencesViewModels_Full_LLD.md; sourceTree = "<group>"; };
-		3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = ComponentChanges.md; sourceTree = "<group>"; };
-		3BCAC24D2DC14A23001CC0C9 /* ComponentChangesExtended.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = ComponentChangesExtended.md; sourceTree = "<group>"; };
-		3BCAC24F2DC14E1C001CC0C9 /* AnalyticsChanges.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AnalyticsChanges.md; sourceTree = "<group>"; };
-		3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = RecoverUserId_SharedChanges.md; sourceTree = "<group>"; };
-		3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserIdViewModel.md; sourceTree = "<group>"; };
-		3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LLD_Router_Repository.md; sourceTree = "<group>"; };
-		3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = VerifyUserId_LLD_Constants.md; sourceTree = "<group>"; };
-		3BCAC2592E185D93001CC0C9 /* ManageAlertsRepository_LLD_Full.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRepository_LLD_Full.docx; sourceTree = "<group>"; };
-		3BCAC25A2E18623E001CC0C9 /* ManageAlerts_DI_Module_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_DI_Module_LLD.docx; sourceTree = "<group>"; };
-		3BCAC25B2E186610001CC0C9 /* ManageAlertsRepository_LLD_Updated.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRepository_LLD_Updated.docx; sourceTree = "<group>"; };
-		3BCAC25C2E1868B4001CC0C9 /* ManageAlertsBusinessLogic_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsBusinessLogic_LLD.docx; sourceTree = "<group>"; };
-		3BCAC25D2E186B97001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlertsRoutingNavigation_LLD.docx; sourceTree = "<group>"; };
-		3BCAC25E2E186BDC001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */ = {isa = PBXFileReference; lastKnownFileType = file; name = ManageAlertsRoutingNavigation_LLD.docx; path = ../../Downloads/ManageAlertsRoutingNavigation_LLD.docx; sourceTree = "<group>"; };
 		3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_DomainModels_Mappers.docx; sourceTree = "<group>"; };
-		3BDE7B112C9AE3F9008208AC /* Mapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mapper.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
-		3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertBanner.swift; sourceTree = "<group>"; };
-		3BFADE2D2D4BEA5B00E8B532 /* header.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = header.zip; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -238,41 +180,7 @@
 				3B4379722C80BCDD00495EF1 /* CustomTextField */,
 				3B43794C2C80AF7C00495EF1 /* Assets.xcassets */,
 				3B43794E2C80AF7C00495EF1 /* Preview Content */,
-				3B4379792C8172F300495EF1 /* FigmaCode.swift */,
-				3B71B9602C89F7C30058896A /* PlaceholderView.swift */,
-				3B71B99C2C8F8BC20058896A /* File.swift */,
-				3BCAC24D2DC14A23001CC0C9 /* ComponentChangesExtended.md */,
-				3BCAC24F2DC14E1C001CC0C9 /* AnalyticsChanges.md */,
-				3BCAC2512DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md */,
 				3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */,
-				3BCAC25D2E186B97001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */,
-				3BCAC2532DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md */,
-				3BCAC2572DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md */,
-				3B71B9A32C9349F50058896A /* CopyContyent.swift */,
-				3BCAC25E2E186BDC001CC0C9 /* ManageAlertsRoutingNavigation_LLD.docx */,
-				3BCAC2492DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md */,
-				3BCAC25C2E1868B4001CC0C9 /* ManageAlertsBusinessLogic_LLD.docx */,
-				3BCAC2442DBBF0ED001CC0C9 /* AccountPreferencesViewModels_LLD_With_Tables.docx */,
-				3BCAC25A2E18623E001CC0C9 /* ManageAlerts_DI_Module_LLD.docx */,
-				3B71B9A52C9357B80058896A /* CustomSheet.swift */,
-				3BCAC25B2E186610001CC0C9 /* ManageAlertsRepository_LLD_Updated.docx */,
-				3B71B9AC2C9897B50058896A /* SafeSpaceTile.swift */,
-				3BCAC2552DC3CF82001CC0C9 /* LLD_Router_Repository.md */,
-				3BCAC24B2DC146F3001CC0C9 /* ComponentChanges.md */,
-				3BCAC2592E185D93001CC0C9 /* ManageAlertsRepository_LLD_Full.docx */,
-				3BCAC2472DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md */,
-				3BDE7B112C9AE3F9008208AC /* Mapper.swift */,
-				3B647CCF2CB5CCA0007D837D /* QA Specialist - CIBC.pdf */,
-				3BDE7BD72CA75E5C008208AC /* AlertBanner.swift */,
-				3B647BE92CAC58E0007D837D /* AccountDetailsCard.swift */,
-				3BCAC2452DBC07E4001CC0C9 /* AccountPreferencesViewModels_LLD.md */,
-				3B647BEB2CACB57A007D837D /* ListCellItemView.swift */,
-				3B647CD12CB82C2B007D837D /* MockData.swift */,
-				3B647CD32CCA7D4B007D837D /* navigation.swift */,
-				3BFADE2D2D4BEA5B00E8B532 /* header.zip */,
-				3B647CE02CFF7F4A007D837D /* 489.mp4 */,
-				3B647CDE2CF8F676007D837D /* RPReplay_Final1732819761.MP4 */,
-				3B647CDF2CF8F67D007D837D /* ScreenRecording_11-28-2024 13-57-02_1.MP4 */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -494,20 +402,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B4379502C80AF7C00495EF1 /* Preview Assets.xcassets in Resources */,
-				3B647CD02CB5CCA0007D837D /* QA Specialist - CIBC.pdf in Resources */,
-				3BCAC24A2DBC1099001CC0C9 /* AccountPreferencesViewModels_Full_LLD.md in Resources */,
-				3BCAC24E2DC14A23001CC0C9 /* ComponentChangesExtended.md in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
-				3BCAC2582DC3D399001CC0C9 /* VerifyUserId_LLD_Constants.md in Resources */,
-				3BFADE2E2D4BEA5B00E8B532 /* header.zip in Resources */,
-				3BCAC2522DC3BC03001CC0C9 /* RecoverUserId_SharedChanges.md in Resources */,
 				3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */,
-				3BCAC2502DC14E1C001CC0C9 /* AnalyticsChanges.md in Resources */,
-				3BCAC2542DC3C0E4001CC0C9 /* VerifyUserIdViewModel.md in Resources */,
-				3BCAC2562DC3CF82001CC0C9 /* LLD_Router_Repository.md in Resources */,
-				3BCAC2462DBC07E5001CC0C9 /* AccountPreferencesViewModels_LLD.md in Resources */,
-				3BCAC24C2DC146F4001CC0C9 /* ComponentChanges.md in Resources */,
-				3BCAC2482DBC0E6C001CC0C9 /* AccountPreferencesViewModelLLD_Confluence.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,19 +430,14 @@
 			files = (
 				3B43794B2C80AF7A00495EF1 /* ContentView.swift in Sources */,
 				3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */,
-				3B647BEA2CAC58E0007D837D /* AccountDetailsCard.swift in Sources */,
 				3B4379902C8785BC00495EF1 /* Spacing.swift in Sources */,
 				3B647CCD2CB44312007D837D /* TabBarFixed.swift in Sources */,
 				3B4379982C87950D00495EF1 /* ComponentImage.swift in Sources */,
-				3B647CD42CCA7D4B007D837D /* navigation.swift in Sources */,
 				3B647C5C2CB09A53007D837D /* ComponentImage.swift in Sources */,
 				3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */,
-				3BDE7B122C9AE3F9008208AC /* Mapper.swift in Sources */,
 				3B647C612CB09A53007D837D /* ListCardContainer.swift in Sources */,
 				3B647CCB2CB44312007D837D /* TabBarStyle.swift in Sources */,
-				3B71B9AD2C9897B60058896A /* SafeSpaceTile.swift in Sources */,
 				3B4379832C82286F00495EF1 /* TextFieldGeneralTheme.swift in Sources */,
-				3B647CD22CB82C2B007D837D /* MockData.swift in Sources */,
 				3B4379852C877BA000495EF1 /* TextInputPassword.swift in Sources */,
 				3B43798C2C8784EB00495EF1 /* Dimens.swift in Sources */,
 				3B647CCA2CB44312007D837D /* TabView.swift in Sources */,
@@ -558,25 +449,18 @@
 				3B4379882C8783DC00495EF1 /* USBankingColors.swift in Sources */,
 				3B647C632CB09A53007D837D /* ListCellItemData.swift in Sources */,
 				3B647C5B2CB09A53007D837D /* ListCellItemBase.swift in Sources */,
-				3B71B9A62C9357B80058896A /* CustomSheet.swift in Sources */,
 				3B647CC82CB44312007D837D /* ScrollableIndicatorManager.swift in Sources */,
 				3B4379492C80AF7A00495EF1 /* TextFieldComponentApp.swift in Sources */,
 				3B647CC92CB44312007D837D /* SecondaryTabBar.swift in Sources */,
 				3B647CCE2CB44312007D837D /* TabBarScrollable.swift in Sources */,
-				3BDE7BD82CA75E5C008208AC /* AlertBanner.swift in Sources */,
 				3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */,
 				3B4379942C87863400495EF1 /* WhitneyFont.swift in Sources */,
 				3B43798E2C87858100495EF1 /* Shapes.swift in Sources */,
 				3B71B9A92C937D7A0058896A /* ListCellBottomSheet.swift in Sources */,
-				3B71B9A42C9349F50058896A /* CopyContyent.swift in Sources */,
-				3B43797A2C8172F300495EF1 /* FigmaCode.swift in Sources */,
 				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
-				3B647BEC2CACB57A007D837D /* ListCellItemView.swift in Sources */,
 				3B43798A2C8784B400495EF1 /* Colours.swift in Sources */,
 				3B647C5D2CB09A53007D837D /* ListCellButtonModifier.swift in Sources */,
-				3B71B9612C89F7C30058896A /* PlaceholderView.swift in Sources */,
 				3B647CCC2CB44312007D837D /* TabLayoutView.swift in Sources */,
-				3B71B99D2C8F8BC20058896A /* File.swift in Sources */,
 				3B647CC72CB44312007D837D /* ScrollIndicator.swift in Sources */,
 				3B647C602CB09A53007D837D /* ListCellLabelView.swift in Sources */,
 				3B4379962C87886700495EF1 /* Theme.swift in Sources */,
