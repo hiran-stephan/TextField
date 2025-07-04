@@ -1,159 +1,105 @@
-package com.cibc.managealerts.domain.usecases
+Component Overview
+Component Name: ManageAlertsRepository
 
-import com.cibc.managealerts.data.models.*
-import com.cibc.managealerts.remote.models.*
+Layer: Domain (Interface) & Data (Implementation)
 
-/**
- * Business logic interface for mapping alert configurations with API subscriptions
- * and filtering eligible accounts for alert delivery.
- */
-@OpenForMockkery
-interface ManageAlertsBusinessLogic {
+Purpose:
+Acts as the central contract for managing alert-related operations. This includes fetching, creating, updating, and deleting alerts, as well as retrieving alert configurations and user contact information.
 
-    /**
-     * Builds a map of alert configuration subscriptions grouped by categoryId.
-     *
-     * @param configMapByCategoryId The map of alert config data grouped by categoryId.
-     * @param subscriptions The list of alert subscriptions received from the API.
-     * @return A map of categoryId to a list of enriched alert config subscriptions.
-     */
-    fun buildAlertConfigByCategory(
-        configMapByCategoryId: Map<String, List<ManageAlertsConfigData>>,
-        subscriptions: List<AlertSubscriptionApiData>
-    ): Map<String, List<ManageAlertsConfigSubscription>>
+2. Responsibilities
+Retrieve all alert configurations and user subscriptions grouped by category.
 
-    /**
-     * Maps a list of alert configs to enriched subscription data.
-     *
-     * @param configList A flat list of alert configuration data.
-     * @param subscriptions The list of alert subscriptions received from the API.
-     * @return A list of enriched alert configuration subscriptions.
-     */
-    fun mapAlertConfigsToSubscriptions(
-        configList: List<ManageAlertsConfigData>,
-        subscriptions: List<AlertSubscriptionApiData>
-    ): List<ManageAlertsConfigSubscription>
+Fetch alert preferences for a specific category or subcategory.
 
-    /**
-     * Builds a single enriched alert subscription configuration object.
-     *
-     * @param config The alert configuration being enriched.
-     * @param allConfigsInCategory All config items that belong to the same category.
-     * @param apiSubscriptions The list of alert subscriptions received from the API.
-     * @return The enriched alert configuration subscription.
-     */
-    fun buildAlertSubscriptionConfig(
-        config: ManageAlertsConfigData,
-        allConfigsInCategory: List<ManageAlertsConfigData>,
-        apiSubscriptions: List<AlertSubscriptionApiData>
-    ): ManageAlertsConfigSubscription
+Create, update, and delete user alert subscriptions.
 
-    /**
-     * Filters the list of accounts based on the qualifiers defined in the alert config.
-     *
-     * @param alertConfig The enriched alert config containing qualifiers.
-     * @param accounts The list of all available accounts.
-     * @return A filtered list of accounts eligible for the given alert config.
-     */
-    fun getEligibleAccountsForAlert(
-        alertConfig: ManageAlertsConfigSubscription,
-        accounts: List<AccountSummaryApiData>
-    ): List<AccountSummaryApiData>
-}
+Download and cache alert configuration data from remote sources.
 
+Retrieve eligible accounts for alert delivery.
 
+Fetch detailed alert settings for a specific alert/account combination.
 
-package com.cibc.managealerts.domain.usecases
+Get the user’s primary email address and phone number.
 
-import com.cibc.managealerts.data.models.*
-import com.cibc.managealerts.remote.models.*
+3. Interface Design
+The ManageAlertsRepository interface exposes all methods as suspend functions returning Flow<NetworkResultState<...>>.
 
-/**
- * Implementation of ManageAlertsBusinessLogic.
- * Provides logic to combine alert config with subscriptions and account eligibility filtering.
- */
-class ManageAlertsBusinessLogicImpl : ManageAlertsBusinessLogic {
+Promotes:
 
-    /**
-     * Groups and maps alert configs by categoryId with corresponding API subscriptions.
-     */
-    override fun buildAlertConfigByCategory(
-        configMapByCategoryId: Map<String, List<ManageAlertsConfigData>>,
-        subscriptions: List<AlertSubscriptionApiData>
-    ): Map<String, List<ManageAlertsConfigSubscription>> {
-        return configMapByCategoryId.mapValues { (_, configs) ->
-            mapAlertConfigsToSubscriptions(configs, subscriptions)
-        }
-    }
+Asynchronous, reactive data handling.
 
-    /**
-     * Maps each alert config in the list to its enriched subscription representation.
-     */
-    override fun mapAlertConfigsToSubscriptions(
-        configList: List<ManageAlertsConfigData>,
-        subscriptions: List<AlertSubscriptionApiData>
-    ): List<ManageAlertsConfigSubscription> {
-        return configList.map { config ->
-            buildAlertSubscriptionConfig(config, configList, subscriptions)
-        }
-    }
+Single Responsibility Principle.
 
-    /**
-     * Builds enriched subscription details for a single alert config.
-     * Calculates matching subscriptions, total, and active counts.
-     */
-    override fun buildAlertSubscriptionConfig(
-        config: ManageAlertsConfigData,
-        allConfigsInCategory: List<ManageAlertsConfigData>,
-        apiSubscriptions: List<AlertSubscriptionApiData>
-    ): ManageAlertsConfigSubscription {
+High testability and separation of concerns.
 
-        // Match subscriptions by purposeCode
-        val matchingSubscriptions = apiSubscriptions.filter {
-            it.purposeCode == config.purposeCode
-        }
+4. Implementation Details
+Class: ManageAlertsRepositoryImpl
 
-        // Total alert configs for this category
-        val totalSubscriptions = allConfigsInCategory.count {
-            it.categoryId == config.categoryId
-        }
+Dependencies:
 
-        // Active = alwaysOn OR matching API subscription marked active
-        val activeSubscriptions = allConfigsInCategory.count { configItem ->
-            configItem.categoryId == config.categoryId &&
-                (configItem.alwaysOn || apiSubscriptions.any { sub ->
-                    sub.purposeCode == configItem.purposeCode && sub.active == true
-                })
-        }
+AlertsApiService, AccountsApiService, RemoteResourceApiService, ProfileApiService – For network communication.
 
-        return ManageAlertsConfigSubscription(
-            name = config.name,
-            alwaysOn = config.alwaysOn,
-            purposeCode = config.purposeCode,
-            categoryId = config.categoryId,
-            subCategoryId = config.subCategoryId,
-            alertType = config.alertType,
-            contactTypes = config.contactTypes,
-            inputField = config.inputField,
-            qualifiers = config.qualifiers,
-            subscriptions = matchingSubscriptions.map { it.toAlertSubscriptionData() },
-            totalSubscriptions = totalSubscriptions,
-            activeSubscriptions = activeSubscriptions
-        )
-    }
+ManageAlertsBusinessLogic – For domain-specific transformations and validations.
 
-    /**
-     * Filters accounts eligible for a given alert config based on its qualifiers.
-     */
-    override fun getEligibleAccountsForAlert(
-        alertConfig: ManageAlertsConfigSubscription,
-        accounts: List<AccountSummaryApiData>
-    ): List<AccountSummaryApiData> {
-        val qualifiers = alertConfig.qualifiers
-        return if (qualifiers == null) {
-            accounts
-        } else {
-            accounts.filter { it.category in qualifiers }
-        }
-    }
-}
+ManageAlertsRepositoryApplicationCache, ManageAlertsRepositoryAlertsCache – For local in-memory caching.
+
+Caching Strategy:
+
+Caches alert preferences and configuration resources locally to reduce redundant API calls.
+
+Error Handling:
+
+Uses LocalErrorException for invalid or missing data scenarios.
+
+All network calls wrapped using safeApiCall / safeApiCoroutineCall for consistent error propagation.
+
+Data Transformation:
+
+API responses are mapped to domain models.
+
+Data is grouped/filtered as required by business logic.
+
+5. Sequence Example – Fetch Alerts
+UI calls fetchAlerts().
+
+Repository checks cache; if data is missing, triggers API call.
+
+Combines API results with local resource configurations.
+
+Returns grouped alert preferences and caches them.
+
+6. Extensibility
+Easily supports new alert types, categories, or delivery channels by updating domain models and business logic.
+
+Minimal/no changes required in the repository interface.
+
+7. Error Handling
+All methods return NetworkResultState, encapsulating:
+
+Success
+
+Loading
+
+Error
+
+Ensures uniform and predictable error handling at the UI level.
+
+8. Security & Compliance
+Email and phone number are retrieved securely and only when required.
+
+All network calls follow secure communication protocols and input validations.
+
+9. Summary Table
+                                ### ✅ Summary Table
+
+                                | **Method**                         | **Responsibility**                                             | **Returns**                         |
+                                |-----------------------------------|----------------------------------------------------------------|-------------------------------------|
+                                | `fetchAlerts()`                   | Fetch all alert configs and user subscriptions                | `Flow<GroupedAlertConfig>`          |
+                                | `fetchCategoryAlertPreferences()` | Fetch alert preferences for a specific category               | `Flow<SubcategoryGroupedAlertConfig>` |
+                                | `createAlert()`                   | Create a new alert subscription                                | `Flow<Boolean>`                     |
+                                | `deleteAlert()`                   | Delete an existing alert subscription                          | `Flow<Boolean>`                     |
+                                | `updateAlert()`                   | Update an existing alert subscription                          | `Flow<Boolean>`                     |
+                                | `fetchResources()`                | Download & cache alert config resources                        | `Flow<ResourceConfig>`              |
+                                | `fetchAlertAccountsConfig()`      | Retrieve eligible accounts for a given alert                   | `Flow<AccountPreferenceData>`       |
+                                | `fetchAlertsSettings()`           | Fetch settings for a specific alert/account                    | `Flow<AlertSettingsConfig>`         |
+                                | `fetchCustomerContactData()`      | Get the user’s primary contact details (email/phone)           | `Flow<ContactInfo>`                 |
