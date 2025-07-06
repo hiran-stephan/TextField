@@ -121,6 +121,7 @@
 		3BCAC2612E19D2B5001CC0C9 /* ManageAlerts_CategoriesScreen_Updated.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_CategoriesScreen_Updated.docx; sourceTree = "<group>"; };
 		3BCAC2622E19EEC1001CC0C9 /* ManageAlerts_SubcategoriesScreen_Corrected.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_SubcategoriesScreen_Corrected.docx; sourceTree = "<group>"; };
 		3BCAC2632E19F247001CC0C9 /* ManageAlerts_SelectAccountScreen.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_SelectAccountScreen.docx; sourceTree = "<group>"; };
+		3BCAC2642E19F4A5001CC0C9 /* ManageAlerts_AlertSettingsScreen.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_AlertSettingsScreen.docx; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -184,6 +185,7 @@
 				3B4379722C80BCDD00495EF1 /* CustomTextField */,
 				3B43794C2C80AF7C00495EF1 /* Assets.xcassets */,
 				3BCAC2602E19D231001CC0C9 /* ManageAlerts_CategoriesScreen.docx */,
+				3BCAC2642E19F4A5001CC0C9 /* ManageAlerts_AlertSettingsScreen.docx */,
 				3BCAC2632E19F247001CC0C9 /* ManageAlerts_SelectAccountScreen.docx */,
 				3BCAC2612E19D2B5001CC0C9 /* ManageAlerts_CategoriesScreen_Updated.docx */,
 				3BCAC2622E19EEC1001CC0C9 /* ManageAlerts_SubcategoriesScreen_Corrected.docx */,
