@@ -48,6 +48,7 @@
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B9A92C937D7A0058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */; };
 		3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */; };
+		3BCAC26A2E1D83EF001CC0C9 /* copypaste.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
 /* End PBXBuildFile section */
@@ -120,6 +121,7 @@
 		3BCAC2662E19F8D8001CC0C9 /* ContentConstants_Document_Full.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ContentConstants_Document_Full.docx; sourceTree = "<group>"; };
 		3BCAC2672E19FA94001CC0C9 /* ManageAlerts_AnalyticsIntegration.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_AnalyticsIntegration.docx; sourceTree = "<group>"; };
 		3BCAC2682E1C0DD4001CC0C9 /* Manage_Alerts_iOS_UI_Components.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = Manage_Alerts_iOS_UI_Components.docx; sourceTree = "<group>"; };
+		3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = copypaste.swift; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -187,6 +189,7 @@
 				3B43794C2C80AF7C00495EF1 /* Assets.xcassets */,
 				3B43794E2C80AF7C00495EF1 /* Preview Content */,
 				3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */,
+				3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */,
 			);
 			path = TextFieldComponent;
 			sourceTree = "<group>";
@@ -466,6 +469,7 @@
 				3B4379922C8785FA00495EF1 /* Typography.swift in Sources */,
 				3B43798A2C8784B400495EF1 /* Colours.swift in Sources */,
 				3B647C5D2CB09A53007D837D /* ListCellButtonModifier.swift in Sources */,
+				3BCAC26A2E1D83EF001CC0C9 /* copypaste.swift in Sources */,
 				3B647CCC2CB44312007D837D /* TabLayoutView.swift in Sources */,
 				3B647CC72CB44312007D837D /* ScrollIndicator.swift in Sources */,
 				3B647C602CB09A53007D837D /* ListCellLabelView.swift in Sources */,
