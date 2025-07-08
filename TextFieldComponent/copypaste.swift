@@ -17,27 +17,30 @@ struct StickyFooterModifier<Footer: View>: ViewModifier {
 
             ScrollView {
                 VStack(spacing: 0) {
+                    // Content container
                     VStack(spacing: 0) {
                         content
-
-                        // Dynamically push footer if content is short
-                        if contentHeight < screenHeight {
-                            Spacer(minLength: screenHeight - contentHeight)
-                        }
                     }
-                    .frame(minHeight: screenHeight) // ✅ Key fix
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(
+                                    key: ViewHeightPreferenceKey.self,
+                                    value: proxy.size.height
+                                )
+                        }
+                    )
 
+                    // Spacer to push footer only if needed
+                    if contentHeight < screenHeight {
+                        Spacer(minLength: screenHeight - contentHeight)
+                    }
+
+                    // Footer
                     footer()
                         .padding(.top, 16)
                         .padding(.bottom, 24)
                 }
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear
-                            .preference(key: ViewHeightPreferenceKey.self,
-                                        value: proxy.size.height)
-                    }
-                )
                 .padding(.horizontal, 16)
             }
             .onPreferenceChange(ViewHeightPreferenceKey.self) { height in
