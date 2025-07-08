@@ -1,9 +1,8 @@
-
 struct ManageAlertsAlertSettingsScreen: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                VStack(spacing: 0) {
+                VStack(spacing: BankingTheme.dimens.mediumLarge) {
                     LoadingErrorLayout(
                         isLoading: isLoading,
                         hasData: hasData,
@@ -15,20 +14,23 @@ struct ManageAlertsAlertSettingsScreen: View {
                             VStack(spacing: BankingTheme.dimens.mediumLarge) {
                                 contentView()
 
-                                Spacer(minLength: 0) // Ensures we can grow if needed
+                                Spacer(minLength: 0)
 
                                 buildButtonView()
                                     .padding(.top, BankingTheme.dimens.medium)
                                     .padding(.bottom, BankingTheme.dimens.large)
                             }
-                            .frame(minHeight: geometry.size.height) // <- Key part
-                            .padding(.horizontal, BankingTheme.dimens.medium)
                         }
                     )
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, BankingTheme.dimens.medium)
+                .background(GeometryReader {
+                    Color.clear.preference(key: ViewHeightKey.self,
+                                            value: $0.size.height)
+                })
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
     }
 }
-
