@@ -14,10 +14,10 @@ struct StickyFooterModifier<Footer: View>: ViewModifier {
     func body(content: Content) -> some View {
         GeometryReader { geometry in
             let screenHeight = geometry.size.height
+            let bottomSafeArea = geometry.safeAreaInsets.bottom
 
             ScrollView {
                 VStack(spacing: 0) {
-                    // Content container
                     VStack(spacing: 0) {
                         content
                     }
@@ -31,7 +31,7 @@ struct StickyFooterModifier<Footer: View>: ViewModifier {
                         }
                     )
 
-                    // Spacer to push footer only if needed
+                    // Spacer to push footer if needed
                     if contentHeight < screenHeight {
                         Spacer(minLength: screenHeight - contentHeight)
                     }
@@ -39,7 +39,7 @@ struct StickyFooterModifier<Footer: View>: ViewModifier {
                     // Footer
                     footer()
                         .padding(.top, 16)
-                        .padding(.bottom, 24)
+                        .padding(.bottom, bottomSafeArea + 24) // ✅ Fix here
                 }
                 .padding(.horizontal, 16)
             }
@@ -50,6 +50,7 @@ struct StickyFooterModifier<Footer: View>: ViewModifier {
         }
     }
 }
+
 
 extension View {
     func stickyFooter<Footer: View>(
