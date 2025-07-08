@@ -8,38 +8,61 @@ struct ViewHeightPreferenceKey: PreferenceKey {
 
 struct StickyFooterModifier<Footer: View>: ViewModifier {
     let footer: () -> Footer
+
     @State private var contentHeight: CGFloat = 0
+    @State private var footerHeight: CGFloat = 0
 
     func body(content: Content) -> some View {
-        let bottomInset = UIApplication.shared.bottomSafeAreaInset
+        GeometryReader { geometry in
+            let screenHeight = geometry.size.height
+            let bottomSafeArea = UIApplication.shared.bottomSafeAreaInset
 
-        ScrollView {
-            VStack(spacing: 0) {
+            ScrollView {
                 VStack(spacing: 0) {
-                    content
-                }
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear
-                            .preference(key: ViewHeightPreferenceKey.self,
-                                        value: proxy.size.height)
+                    // Content + Geometry for measuring
+                    VStack(spacing: 0) {
+                        content
                     }
-                )
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(
+                                    key: ViewHeightPreferenceKey.self,
+                                    value: proxy.size.height
+                                )
+                        }
+                    )
 
-                if contentHeight < UIScreen.main.bounds.height {
-                    Spacer(minLength: UIScreen.main.bounds.height - contentHeight)
+                    // Spacer if content is short
+                    if contentHeight + footerHeight < screenHeight {
+                        Spacer(minLength: screenHeight - contentHeight - footerHeight)
+                    }
+
+                    // Footer + Geometry
+                    VStack(spacing: 0) {
+                        footer()
+                            .padding(.top, 16)
+                            .padding(.bottom, bottomSafeArea + 24)
+                    }
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear {
+                                    footerHeight = proxy.size.height
+                                }
+                                .onChange(of: proxy.size.height) {
+                                    footerHeight = $0
+                                }
+                        }
+                    )
                 }
-
-                footer()
-                    .padding(.top, 16)
-                    .padding(.bottom, bottomInset + 24) // ✅ Trustable safe area
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
+            .onPreferenceChange(ViewHeightPreferenceKey.self) { height in
+                contentHeight = height
+            }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
-        .onPreferenceChange(ViewHeightPreferenceKey.self) { height in
-            contentHeight = height
-        }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 
