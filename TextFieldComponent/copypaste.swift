@@ -4,16 +4,21 @@ private struct AmountTextFieldView: View {
     let placeholder: String?
     var tooltip: () -> ToolTipButton?
 
+    @State private var isEditing: Bool = false
+
     var body: some View {
         TextFieldView(
             style: AmountTextFieldStyle(),
             text: Binding(
                 get: {
                     if let doubleValue = Double(text) {
-                        return CurrencyFormatter.shared.string(from: NSNumber(value: doubleValue)) ?? "$0.00"
-                    } else {
-                        return "$0.00"
+                        if isEditing {
+                            return CurrencyFormatter.liveEditing.string(from: NSNumber(value: doubleValue)) ?? "$"
+                        } else {
+                            return CurrencyFormatter.finalized.string(from: NSNumber(value: doubleValue)) ?? "$0.00"
+                        }
                     }
+                    return "$"
                 },
                 set: { newValue in
                     let raw = newValue.replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
@@ -30,31 +35,39 @@ private struct AmountTextFieldView: View {
             placeholder: placeholder,
             titleView: {
                 TextFieldTitleView(model.label, tooltip: tooltip())
+            },
+            onEditingChanged: { editing in
+                isEditing = editing
+                if !editing {
+                    // Final formatting on blur
+                    if let doubleValue = Double(text) {
+                        text = String(format: "%.2f", doubleValue)
+                    }
+                }
             }
         )
         .keyboardType(.decimalPad)
     }
 }
 
-
 enum CurrencyFormatter {
-    static let shared: NumberFormatter = {
+    static let liveEditing: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        formatter.maximumFractionDigits = 0
+        formatter.currencySymbol = "$"
+        formatter.positivePrefix = "$"
+        return formatter
+    }()
+
+    static let finalized: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencySymbol = "$"
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
-        formatter.locale = Locale(identifier: "en_CA") // adjust if needed
         return formatter
     }()
 }
-
-@State private var thresholdText: String = "0.00"
-
-AmountTextFieldView(
-    model: .currency,
-    text: $thresholdText,
-    placeholder: "$",
-    tooltip: { nil }
-)
 
