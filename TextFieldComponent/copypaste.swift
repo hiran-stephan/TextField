@@ -1,32 +1,60 @@
-fun String?.toCurrencyInputFormat(locale: String = "en", currencySymbol: String = "$"): String {
-    val value = this?.toDoubleOrNull() ?: 0.0
-    return value.toCurrencyInputFormat(locale, currencySymbol)
+private struct AmountTextFieldView: View {
+    let model: TextFieldAmount.Model
+    @Binding var text: String
+    let placeholder: String?
+    var tooltip: () -> ToolTipButton?
+
+    var body: some View {
+        TextFieldView(
+            style: AmountTextFieldStyle(),
+            text: Binding(
+                get: {
+                    if let doubleValue = Double(text) {
+                        return CurrencyFormatter.shared.string(from: NSNumber(value: doubleValue)) ?? "$0.00"
+                    } else {
+                        return "$0.00"
+                    }
+                },
+                set: { newValue in
+                    let raw = newValue.replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
+
+                    if let dotIndex = raw.firstIndex(of: ".") {
+                        let intPart = raw[..<dotIndex]
+                        let decimalPart = raw[raw.index(after: dotIndex)...].prefix(2)
+                        text = "\(intPart).\(decimalPart)"
+                    } else {
+                        text = raw
+                    }
+                }
+            ),
+            placeholder: placeholder,
+            titleView: {
+                TextFieldTitleView(model.label, tooltip: tooltip())
+            }
+        )
+        .keyboardType(.decimalPad)
+    }
 }
 
-fun Double?.toCurrencyInputFormat(locale: String = "en", currencySymbol: String = "$"): String {
-    if (this == null) return "$currencySymbol0.00"
 
-    val absValue = kotlin.math.abs(this)
-    val integerPart = absValue.toLong()
-    val fractionPart = ((absValue - integerPart) * 100).roundToInt()
-
-    val formattedInteger = integerPart.toString()
-        .reversed()
-        .chunked(3)
-        .joinToString(",")
-        .reversed()
-
-    val formattedFraction = fractionPart.toString().padStart(2, '0')
-
-    val sign = if (this < 0) "-" else ""
-
-    return "$sign$currencySymbol$formattedInteger.$formattedFraction"
+enum CurrencyFormatter {
+    static let shared: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "$"
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        formatter.locale = Locale(identifier: "en_CA") // adjust if needed
+        return formatter
+    }()
 }
 
+@State private var thresholdText: String = "0.00"
 
-
-val alertInputFieldValue = alertInputFieldText?.toCurrencyInputFormat() 
-    ?: getThresholdValue(purposeCode).toCurrencyInputFormat()
-
-import com.cibc.services.utilities.toCurrencyInputFormat
+AmountTextFieldView(
+    model: .currency,
+    text: $thresholdText,
+    placeholder: "$",
+    tooltip: { nil }
+)
 
