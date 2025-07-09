@@ -71,3 +71,13 @@ enum CurrencyFormatter {
     }()
 }
 
+struct TextFieldView: View {
+    @Binding var text: String
+    var onEditingChanged: ((Bool) -> Void)? = nil
+
+    var body: some View {
+        TextField("", text: $text, onEditingChanged: { isEditing in
+            onEditingChanged?(isEditing)
+        })
+    }
+}
