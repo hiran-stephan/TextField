@@ -1,83 +1,32 @@
-struct ViewHeightPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = max(value, nextValue())
-    }
+fun String?.toCurrencyInputFormat(locale: String = "en", currencySymbol: String = "$"): String {
+    val value = this?.toDoubleOrNull() ?: 0.0
+    return value.toCurrencyInputFormat(locale, currencySymbol)
 }
 
-struct StickyFooterModifier<Footer: View>: ViewModifier {
-    let footer: () -> Footer
+fun Double?.toCurrencyInputFormat(locale: String = "en", currencySymbol: String = "$"): String {
+    if (this == null) return "$currencySymbol0.00"
 
-    @State private var contentHeight: CGFloat = 0
-    @State private var footerHeight: CGFloat = 0 // ✅ Add this
+    val absValue = kotlin.math.abs(this)
+    val integerPart = absValue.toLong()
+    val fractionPart = ((absValue - integerPart) * 100).roundToInt()
 
-    func body(content: Content) -> some View {
-        GeometryReader { geometry in
-            let screenHeight = geometry.size.height
+    val formattedInteger = integerPart.toString()
+        .reversed()
+        .chunked(3)
+        .joinToString(",")
+        .reversed()
 
-            ScrollView {
-                VStack(spacing: 0) {
-                    content
+    val formattedFraction = fractionPart.toString().padStart(2, '0')
 
-                    // ✅ Footer height measurement
-                    VStack(spacing: 0) {
-                        footer()
-                            .background(
-                                GeometryReader { proxy in
-                                    Color.clear
-                                        .onAppear {
-                                            footerHeight = proxy.size.height
-                                        }
-                                        .onChange(of: proxy.size.height) { newHeight in
-                                            footerHeight = newHeight
-                                        }
-                                }
-                            )
-                    }
+    val sign = if (this < 0) "-" else ""
 
-                    // ✅ Adjusted spacer to consider footer height
-                    if contentHeight + footerHeight < screenHeight {
-                        Spacer(minLength: screenHeight - contentHeight - footerHeight)
-                    }
-                }
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear
-                            .preference(
-                                key: ViewHeightPreferenceKey.self,
-                                value: proxy.size.height
-                            )
-                    }
-                )
-                .padding(.horizontal, 16)
-            }
-            .onPreferenceChange(ViewHeightPreferenceKey.self) { height in
-                contentHeight = height
-            }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
-        }
-    }
+    return "$sign$currencySymbol$formattedInteger.$formattedFraction"
 }
 
 
 
+val alertInputFieldValue = alertInputFieldText?.toCurrencyInputFormat() 
+    ?: getThresholdValue(purposeCode).toCurrencyInputFormat()
 
-extension View {
-    func stickyFooter<Footer: View>(
-        @ViewBuilder footer: @escaping () -> Footer
-    ) -> some View {
-        self.modifier(StickyFooterModifier(footer: footer))
-    }
-}
+import com.cibc.services.utilities.toCurrencyInputFormat
 
-
-extension UIApplication {
-    var bottomSafeAreaInset: CGFloat {
-        let window = UIApplication.shared.connectedScenes
-            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
-            .first
-
-        return window?.safeAreaInsets.bottom ?? 0
-    }
-}
