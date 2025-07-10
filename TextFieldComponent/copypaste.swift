@@ -1,29 +1,52 @@
+TextFieldAmount(
+    model: ...,
+    text: $amount
+)
+.focused($isAmountFieldFocused)
+.replaceText(
+    $amount,
+    with: { viewModel.validateAmountField(text: $0, isEditing: true) },
+    action: { viewModel.onAlertInputFieldValueChanged(amount: amount) }
+)
+.formatOnFocusChange(
+    text: $amount,
+    isFocused: $isAmountFieldFocused,
+    format: { viewModel.validateAmountField(text: $0, isEditing: false) }
+)
+
+
 import SwiftUI
 
-private struct FormatOnSubmitModifier: ViewModifier {
+private struct FormatOnFocusChangeModifier: ViewModifier {
     @Binding var text: String
+    let isFocused: FocusState<Bool>.Binding
     let format: (String) -> String
 
     func body(content: Content) -> some View {
         content
-            .onSubmit {
-                let newValue = format(text)
-                if newValue != text {
-                    text = newValue
+            .onChange(of: isFocused.wrappedValue) { focused in
+                if !focused {
+                    let newValue = format(text)
+                    if newValue != text {
+                        text = newValue
+                    }
                 }
             }
     }
 }
 
 public extension View {
-    func formatOnSubmit(
-        _ text: Binding<String>,
-        using format: @escaping (String) -> String
+    func formatOnFocusChange(
+        text: Binding<String>,
+        isFocused: FocusState<Bool>.Binding,
+        format: @escaping (String) -> String
     ) -> some View {
-        self.modifier(FormatOnSubmitModifier(text: text, format: format))
+        self.modifier(
+            FormatOnFocusChangeModifier(
+                text: text,
+                isFocused: isFocused,
+                format: format
+            )
+        )
     }
 }
-
-    .formatOnSubmit($amount) {
-        viewModel.validateAmountField(text: $0, isEditing: false)
-    }
