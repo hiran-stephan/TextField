@@ -1,23 +1,29 @@
-/**
- * Formats a string to ensure two decimal places are present.
- *
- * Used for formatting an amount value when editing ends.
- * Pads the fractional part to two digits if it's present,
- * or appends ".00" if no decimal part is found.
- *
- * @return A string with a valid two-digit decimal component.
- */
-fun String.formattedAmountFieldInput(): String {
-    val parts = this.split(".")
+import SwiftUI
 
-    val decimalPart = if (parts.size > 1) {
-        // Pad or trim the decimal portion to ensure 2 digits
-        val cents = parts[1].padEnd(length = 2, padChar = '0').take(2)
-        ".$cents"
-    } else {
-        // Append ".00" if there is no decimal part
-        ".00"
+private struct FormatOnSubmitModifier: ViewModifier {
+    @Binding var text: String
+    let format: (String) -> String
+
+    func body(content: Content) -> some View {
+        content
+            .onSubmit {
+                let newValue = format(text)
+                if newValue != text {
+                    text = newValue
+                }
+            }
     }
-
-    return parts[0] + decimalPart
 }
+
+public extension View {
+    func formatOnSubmit(
+        _ text: Binding<String>,
+        using format: @escaping (String) -> String
+    ) -> some View {
+        self.modifier(FormatOnSubmitModifier(text: text, format: format))
+    }
+}
+
+    .formatOnSubmit($amount) {
+        viewModel.validateAmountField(text: $0, isEditing: false)
+    }
