@@ -1,18 +1,12 @@
 /**
- * Formats an amount string based on editing state.
+ * Converts a formatted currency string into a plain numeric string.
  *
- * @param text The raw input string.
- * @param isEditing If true, apply validation filter (live editing mode).
- *                  If false, apply final formatting (e.g., append .00).
- * @return Formatted string, or an empty string if input is blank.
+ * This removes all non-numeric characters except the decimal point.
+ * For example: "$1,234.56" becomes "1234.56".
+ *
+ * @receiver The formatted currency string (e.g., user input or display value).
+ * @return A plain numeric string containing only digits and at most one decimal point.
  */
-fun ManageAlertsAlertSettingsViewModel.formatAmountField(
-    text: String,
-    isEditing: Boolean
-): String = text.takeIf { it.isNotBlank() }?.let {
-    if (isEditing) {
-        it.validatedAmountFieldInput()
-    } else {
-        it.formattedAmountFieldInput()
-    }
-} ?: ""
+fun String.toPlainAmount(): String {
+    return this.replace(Regex("[^\\d.]"), "").trim()
+}
