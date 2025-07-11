@@ -1,11 +1,11 @@
-fun ManageAlertsConfigSubscription.isAlertFormVisible(accountNumber: String?): Boolean {
-    val isAnySubscriptionActive = if (accountNumber != null) {
-        subscriptions
-            ?.filter { it.productData?.productNumber == accountNumber }
-            ?.any { it.active == true } == true
+private val isAlertTypeAccount = alertsConfigSubscription.aLertType?.uppercase() == ALERT_TYPE_ACCOUNT
+
+private val alertSubscriptionApiData =
+    if (isAlertTypeAccount) {
+        alertsConfigSubscription.subscriptions
+            ?.firstOrNull { it.productData != null && it.active == true }
     } else {
-        subscriptions?.any { it.active == true } == true
+        alertsConfigSubscription.subscriptions?.firstOrNull()
     }
 
-    return isAnySubscriptionActive || alwaysOn
-}
+private val isAlertActive = alertSubscriptionApiData?.active ?: false
