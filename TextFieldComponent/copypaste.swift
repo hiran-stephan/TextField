@@ -1,13 +1,52 @@
-/**
- * Constants for the Authentication Api module
- */
-object ApiConstants {
-    const val API_UBS_VERIFY_PASSWORD = "/ubs-auth/api/v1/verify-password"
-    const val API_UBS_RESET_PASSWORD = "/ubs-auth/api/v1/user/credentials/password"
-    const val API_UBS_AUTH_SESSIONS = "/ubs-auth/api/v1/authenticate/sessions"
-    const val API_UBS_SESSION_SESSIONS = "/ubs-session/api/v1/sessions"
-    const val API_UBS_AUTH_SESSIONS_LOGIN_INFO = "/ubs-auth/api/v1/sessions/login-info"
-    const val API_SEARCH_FRIENDLY_ID = "/ubs-auth/api/v1/friendlyId-retrieval-session"
-    const val API_AUTHENTICATE_USER_INFO = "/ubs-auth/api/v1/authenticate/user-info"
-    const val API_CREDENTIAL_FRIENDLY_ID = "/ubs-auth/api/v1/user/credentials/friendlyId"
+class BottomSheetHostingController<Content: View>: UIHostingController<Content> {
+    private let detents: [UISheetPresentationController.Detent]
+
+    init(rootView: Content, detents: [UISheetPresentationController.Detent]) {
+        self.detents = detents
+        super.init(rootView: rootView)
+    }
+
+    @objc required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let presentation = sheetPresentationController {
+            presentation.detents = detents
+            presentation.prefersGrabberVisible = true
+        }
+    }
 }
+
+public struct BottomSheetView<Content: View>: UIViewControllerRepresentable {
+    let content: () -> Content
+    let detents: [UISheetPresentationController.Detent]
+
+    public init(
+        detents: [UISheetPresentationController.Detent] = [.fraction(0.75), .large()],
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.content = content
+        self.detents = detents
+    }
+
+    public func makeUIViewController(context: Context) -> BottomSheetHostingController<Content> {
+        BottomSheetHostingController(rootView: content(), detents: detents)
+    }
+
+    public func updateUIViewController(
+        _ uiViewController: BottomSheetHostingController<Content>,
+        context: Context
+    ) {
+        // No updates needed
+    }
+}
+
+
+    .sheet(isPresented: shouldShowLearnMoreDialog, content: {
+        BottomSheetView(detents: [.fraction(0.75), .large()]) {
+            ChangePasswordLearnMoreScreen(viewModel: viewModel)
+        }
+    })
