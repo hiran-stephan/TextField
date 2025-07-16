@@ -1,52 +1,22 @@
-class BottomSheetHostingController<Content: View>: UIHostingController<Content> {
-    private let detents: [UISheetPresentationController.Detent]
+val desiredCategoryOrder = listOf("servicing", "payments_and_transfers", "reminders")
 
-    init(rootView: Content, detents: [UISheetPresentationController.Detent]) {
-        self.detents = detents
-        super.init(rootView: rootView)
+val manageAlertsCategoriesList: List<ManageAlertsCategoryData>
+    get() = desiredCategoryOrder.mapNotNull { categoryId ->
+        val alerts = alertsData?.get(categoryId)
+        if (alerts != null) {
+            val activeSubscriptionsCount = alerts.firstOrNull()?.activeSubscriptions ?: 0
+            val totalSubscriptionsCount = alerts.firstOrNull()?.totalSubscriptions ?: 0
+
+            ManageAlertsCategoryData(
+                categoryId = categoryId,
+                heading = displayContent("${categoryId}.heading".lowercase()),
+                subHeading = displayContent("${categoryId}.subheading".lowercase()),
+                activeSubscriptionsDetails =
+                    displayContent(
+                        key = CATEGORY_COUNT_X_OF_Y_TURNED_ON_TEXT,
+                        forAccessibility = true
+                    ).replace("{x}", activeSubscriptionsCount.toString())
+                     .replace("{y}", totalSubscriptionsCount.toString())
+            )
+        } else null
     }
-
-    @objc required dynamic init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if let presentation = sheetPresentationController {
-            presentation.detents = detents
-            presentation.prefersGrabberVisible = true
-        }
-    }
-}
-
-public struct BottomSheetView<Content: View>: UIViewControllerRepresentable {
-    let content: () -> Content
-    let detents: [UISheetPresentationController.Detent]
-
-    public init(
-        detents: [UISheetPresentationController.Detent] = [.fraction(0.75), .large()],
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.content = content
-        self.detents = detents
-    }
-
-    public func makeUIViewController(context: Context) -> BottomSheetHostingController<Content> {
-        BottomSheetHostingController(rootView: content(), detents: detents)
-    }
-
-    public func updateUIViewController(
-        _ uiViewController: BottomSheetHostingController<Content>,
-        context: Context
-    ) {
-        // No updates needed
-    }
-}
-
-
-    .sheet(isPresented: shouldShowLearnMoreDialog, content: {
-        BottomSheetView(detents: [.fraction(0.75), .large()]) {
-            ChangePasswordLearnMoreScreen(viewModel: viewModel)
-        }
-    })
