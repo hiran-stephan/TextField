@@ -7,11 +7,16 @@ private val subCategoryOrder = listOf(
     "information"
 )
 
-fun getOrderedCategoryPreferenceData(): List<Pair<String, List<ManageAlertsConfigSubscription>>> {
+fun getOrderedCategoryPreferenceData(
+    data: Map<String, List<ManageAlertsConfigSubscription>>?
+): List<Pair<String, List<ManageAlertsConfigSubscription>>> {
+    if (data == null) return emptyList()
+
     return subCategoryOrder.mapNotNull { key ->
-        categoryPreferenceData?.get(key)?.let { key to it }
+        data[key]?.let { key to it }
     }
 }
 
-let categoryPreferenceDataArr = viewModel.getOrderedCategoryPreferenceData()
+
+let orderedData = viewModel.getOrderedCategoryPreferenceData(data: uiState.categoryPreferenceData)
 
