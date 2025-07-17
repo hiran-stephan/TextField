@@ -1,31 +1,33 @@
-private val subCategoryOrder = listOf(
-    "security",
-    "processing",
-    "transfers",
-    "bill_payments",
-    "account_balance",
-    "information"
+data class AlertSubCategoryPreference(
+    val subCategoryId: String,
+    val alerts: List<ManageAlertsConfigSubscription>
 )
 
 fun getOrderedCategoryPreferenceData(
     data: Map<String, List<ManageAlertsConfigSubscription>>?
-): List<Pair<String, List<ManageAlertsConfigSubscription>>> {
-    if (data == null) return emptyList()
+): List<AlertSubCategoryPreference>? {
+    val subCategoryOrder = listOf(
+        "security",
+        "processing",
+        "transfers",
+        "bill_payments",
+        "account_balance",
+        "information"
+    )
+
+    if (data == null) return null
 
     return subCategoryOrder.mapNotNull { key ->
-        data[key]?.let { key to it }
+        data[key]?.let { AlertSubCategoryPreference(key, it) }
     }
 }
 
 
-let orderedData = viewModel.getOrderedCategoryPreferenceData(data: uiState.categoryPreferenceData)
-
-if let categoryPreferenceData = viewModel.getOrderedCategoryPreferenceData(data: model.state?.categoryPreferenceData) {
-    let categoryPreferenceDataArr = categoryPreferenceData.map { (pair: KotlinPair) in
-        (pair.first as? String ?? "", pair.second as? [ManageAlertsConfigSubscription] ?? [])
-    }
-    
-    ForEach(categoryPreferenceDataArr, id: \.0) { subCategoryId, alerts in
-        // ... your existing UI rendering logic
+if let orderedData = viewModel.getOrderedCategoryPreferenceData(data: model.state?.categoryPreferenceData) {
+    ForEach(orderedData, id: \.subCategoryId) { item in
+        let subCategoryId = item.subCategoryId
+        let alerts = item.alerts
+        // use them directly
     }
 }
+
