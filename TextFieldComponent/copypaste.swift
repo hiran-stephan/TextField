@@ -20,3 +20,12 @@ fun getOrderedCategoryPreferenceData(
 
 let orderedData = viewModel.getOrderedCategoryPreferenceData(data: uiState.categoryPreferenceData)
 
+if let categoryPreferenceData = viewModel.getOrderedCategoryPreferenceData(data: model.state?.categoryPreferenceData) {
+    let categoryPreferenceDataArr = categoryPreferenceData.map { (pair: KotlinPair) in
+        (pair.first as? String ?? "", pair.second as? [ManageAlertsConfigSubscription] ?? [])
+    }
+    
+    ForEach(categoryPreferenceDataArr, id: \.0) { subCategoryId, alerts in
+        // ... your existing UI rendering logic
+    }
+}
