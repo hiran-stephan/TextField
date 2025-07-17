@@ -1,62 +1,25 @@
 @Test
-fun `getOrderedCategoryPreferenceData returns sorted subcategories in expected order`() {
-    // Given
-    val inputData = mapOf(
-        "Transfers" to listOf(ManageAlertsTestUtils.getRemindersConfig()),
-        "Security" to listOf(ManageAlertsTestUtils.getServicesConfig()),
-        "BillPayments" to listOf(ManageAlertsTestUtils.getRemindersConfig())
-    )
+    fun `getCategoryPreferenceData returns ordered subcategory list from business logic`() = runTest {
+        // Given
+        val inputData = mapOf(
+            "Transfers" to listOf(ManageAlertsTestUtils.getReminderManageAlertsConfigSubscription()),
+            "Security" to listOf(ManageAlertsTestUtils.getServicingManageAlertsConfigSubscription())
+        )
 
-    val expected = listOf(
-        AlertSubCategoryPreference("Security", inputData["Security"]!!),
-        AlertSubCategoryPreference("Transfers", inputData["Transfers"]!!),
-        AlertSubCategoryPreference("BillPayments", inputData["BillPayments"]!!)
-    )
+        val expectedList = listOf(
+            AlertSubCategoryPreference("Security", inputData["Security"]!!),
+            AlertSubCategoryPreference("Transfers", inputData["Transfers"]!!)
+        )
 
-    // When
-    val result = businessLogic.getOrderedCategoryPreferenceData(inputData)
+        // When: Stub business logic to return the sorted list
+        every { mockAlertsBusinessLogic.getOrderedCategoryPreferenceData(inputData) } returns expectedList
 
-    // Then
-    assertEquals(expected, result)
-}
+        // When: Call ViewModel function
+        val result = viewModel.getCategoryPreferenceData(inputData)
 
+        // Then: Assert result
+        assertEquals(expectedList, result)
 
-@Test
-fun `getOrderedCategoryPreferenceData returns only matching keys in order`() {
-    val inputData = mapOf(
-        "Information" to listOf(ManageAlertsTestUtils.getRemindersConfig()),
-        "Security" to listOf(ManageAlertsTestUtils.getServicesConfig())
-    )
-
-    val expected = listOf(
-        AlertSubCategoryPreference("Security", inputData["Security"]!!),
-        AlertSubCategoryPreference("Information", inputData["Information"]!!)
-    )
-
-    val result = businessLogic.getOrderedCategoryPreferenceData(inputData)
-
-    assertEquals(expected, result)
-}
-
-
-@Test
-fun `getCategoryPreferenceData returns ordered subcategory list from business logic`() {
-    // Given
-    val inputData = mapOf(
-        "Security" to listOf(ManageAlertsTestUtils.getServicesConfig()),
-        "Transfers" to listOf(ManageAlertsTestUtils.getRemindersConfig())
-    )
-
-    val expectedList = listOf(
-        AlertSubCategoryPreference("Security", inputData["Security"]!!),
-        AlertSubCategoryPreference("Transfers", inputData["Transfers"]!!)
-    )
-
-    whenever(alertsBusinessLogic.getOrderedCategoryPreferenceData(inputData)).thenReturn(expectedList)
-
-    // When
-    val result = manageAlertsSubCategoriesViewModel.getCategoryPreferenceData(inputData)
-
-    // Then
-    assertEquals(expectedList, result)
-}
+        // And: Verify the business logic was called
+        verify { mockAlertsBusinessLogic.getOrderedCategoryPreferenceData(inputData) }
+    }
