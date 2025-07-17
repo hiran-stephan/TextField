@@ -1,25 +1,27 @@
-@Test
-    fun `getCategoryPreferenceData returns ordered subcategory list from business logic`() = runTest {
-        // Given
-        val inputData = mapOf(
-            "Transfers" to listOf(ManageAlertsTestUtils.getReminderManageAlertsConfigSubscription()),
-            "Security" to listOf(ManageAlertsTestUtils.getServicingManageAlertsConfigSubscription())
-        )
+/**
+ * Returns a list of [AlertSubCategoryPreference] sorted according to a predefined subcategory order.
+ *
+ * @param data A map of subcategory IDs to their corresponding list of [ManageAlertsConfigSubscription] items.
+ * @return A sorted list of [AlertSubCategoryPreference] based on predefined subcategory order,
+ *         or null if the input data is null.
+ */
+override fun getOrderedCategoryPreferenceData(
+    data: Map<String, List<ManageAlertsConfigSubscription>>?
+): List<AlertSubCategoryPreference>? {
+    ...
+}
 
-        val expectedList = listOf(
-            AlertSubCategoryPreference("Security", inputData["Security"]!!),
-            AlertSubCategoryPreference("Transfers", inputData["Transfers"]!!)
-        )
 
-        // When: Stub business logic to return the sorted list
-        every { mockAlertsBusinessLogic.getOrderedCategoryPreferenceData(inputData) } returns expectedList
-
-        // When: Call ViewModel function
-        val result = viewModel.getCategoryPreferenceData(inputData)
-
-        // Then: Assert result
-        assertEquals(expectedList, result)
-
-        // And: Verify the business logic was called
-        verify { mockAlertsBusinessLogic.getOrderedCategoryPreferenceData(inputData) }
-    }
+/**
+ * Retrieves a sorted list of [AlertSubCategoryPreference] from the provided subcategory configuration map.
+ *
+ * Delegates to [ManageAlertsBusinessLogic.getOrderedCategoryPreferenceData] to apply consistent sorting logic.
+ *
+ * @param data A map of subcategory IDs to their corresponding list of [ManageAlertsConfigSubscription].
+ * @return A sorted list of [AlertSubCategoryPreference], or null if input is null or empty.
+ */
+fun getCategoryPreferenceData(
+    data: Map<String, List<ManageAlertsConfigSubscription>>
+): List<AlertSubCategoryPreference>? {
+    return alertsBusinessLogic.getOrderedCategoryPreferenceData(data = data)
+}
