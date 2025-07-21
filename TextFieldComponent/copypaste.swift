@@ -1,5 +1,1 @@
-Education
-Calicut University, India
-June 2007 – December 2011
-
-Bachelor of Information Technology
+SwiftUI, Objective-C, React Native, TestFlight, UIKit, Redux, JavaScript, XCTest, XCUITest, HTML, CSS, React-Redux, MVC, MVVM architecture, GraphQL, CoreAnimation, Building and maintaining Xcode, CI/CD pipelines, JavaScript, JSON, REST, Figma, Git, RxSwift, URLSession HTTP client implementation
