@@ -1,1 +1,8 @@
-SwiftUI, Objective-C, React Native, TestFlight, UIKit, Redux, JavaScript, XCTest, XCUITest, HTML, CSS, React-Redux, MVC, MVVM architecture, GraphQL, CoreAnimation, Building and maintaining Xcode, CI/CD pipelines, JavaScript, JSON, REST, Figma, Git, RxSwift, URLSession HTTP client implementation
+
+Hi,
+
+I'm currently out of the office on sick leave and will not be checking emails. I’ll respond as soon as I’m able.
+
+If your request is urgent, please contact [Alternate Contact Name] at [email address or phone number].
+
+Thank you for your understanding.
