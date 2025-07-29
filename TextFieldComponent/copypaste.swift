@@ -14,3 +14,8 @@
         })
     )
 }
+
+
+.onReceive(model.$state.map { $0?.shouldShowInfoDialog ?? false }) { shouldShow in
+            showInfoDialog = shouldShow
+        }
