@@ -1,21 +1,16 @@
-@State private var showInfoDialog = false
+ls ~/.ssh/id_rsa.pub
 
-...
-
-.onReceive(model.$state.map(\.shouldShowInfoDialog).removeDuplicates()) { shouldShow in
-    showInfoDialog = shouldShow
-}
-.alert(isPresented: $showInfoDialog) {
-    Alert(
-        title: Text("Info"),
-        message: Text("Your message here"),
-        dismissButton: .default(Text("OK"), action: {
-            model.onInfoCloseButtonClicked()
-        })
-    )
-}
+ssh-keygen -t rsa -b 4096 -C "your.email@cibc.com"
 
 
-.onReceive(model.$state.map { $0?.shouldShowInfoDialog ?? false }) { shouldShow in
-            showInfoDialog = shouldShow
-        }
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
+pbcopy < ~/.ssh/id_rsa.pub
+
+git remote set-url origin git@cvgit10hd1.ca.cibcwm.com:Mobile-Application-Services.git
+
+
+git push
+
+
