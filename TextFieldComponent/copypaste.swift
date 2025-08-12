@@ -1,50 +1,60 @@
-/**
- * Checks if a string contains sequential letters or digits
- * ascending or descending, of at least [minLen] characters.
- */
-fun String.hasSequentialRun(minLen: Int = 3): Boolean {
-    if (length < minLen) return false
-    val t = lowercase()
-    var up = 1
-    var down = 1
-
-    fun sameClass(a: Char, b: Char) =
-        (a.isDigit() && b.isDigit()) || (a.isLetter() && b.isLetter())
-
-    for (i in 1 until t.length) {
-        val a = t[i - 1]
-        val b = t[i]
-
-        if (!sameClass(a, b)) {
-            up = 1
-            down = 1
-            continue
-        }
-
-        when {
-            b.code == a.code + 1 -> { // ascending
-                up += 1
-                down = 1
-            }
-            b.code == a.code - 1 -> { // descending
-                down += 1
-                up = 1
-            }
-            else -> {
-                up = 1
-                down = 1
-            }
-        }
-
-        if (up >= minLen || down >= minLen) return true
+@Test
+    fun lettersAscending_detects_run() {
+        assertTrue("xxabcxx".hasSequentialRun())         // abc
+        assertTrue("AbCdE".hasSequentialRun())           // case-insensitive
     }
-    return false
-}
 
+    @Test
+    fun lettersDescending_detects_run() {
+        assertTrue("zzcbaqq".hasSequentialRun())         // cba
+        assertTrue("XyZcBa".hasSequentialRun())          // case-insensitive
+    }
 
-override fun isValid(item: String): Boolean {
-    val allowed = allowedPattern.matches(item)
-    val noTriples = !RegExPatterns.REGEX_THREE_IDENTICAL.containsMatchIn(item)
-    val noSequential = !item.hasSequentialRun(3) // now using extension
-    return allowed && noTriples && noSequential
-}
+    @Test
+    fun digitsAscending_detects_run() {
+        assertTrue("id123ok".hasSequentialRun())         // 123
+        assertTrue("0a456b".hasSequentialRun())          // 456
+    }
+
+    @Test
+    fun digitsDescending_detects_run() {
+        assertTrue("pin987x".hasSequentialRun())         // 987
+        assertTrue("code321end".hasSequentialRun())      // 321
+    }
+
+    @Test
+    fun respectsMinLen_parameter() {
+        assertFalse("abc".hasSequentialRun(minLen = 4))  // only 3 long
+        assertTrue("abcd".hasSequentialRun(minLen = 4))  // 4 long
+    }
+
+    @Test
+    fun resetsAcrossClasses_andSymbols() {
+        assertFalse("ab1cd".hasSequentialRun())          // never reaches 3 contiguously
+        assertFalse("ab-cd".hasSequentialRun())          // dash breaks the run
+    }
+
+    @Test
+    fun doesNotWrapAroundDigits() {
+        // 8→9 is ascending, 9→0 is not; never hits length 3
+        assertFalse("890".hasSequentialRun())
+        assertFalse("901".hasSequentialRun())
+    }
+
+    @Test
+    fun identicalCharsAreNotSequential() {
+        assertFalse("aaab".hasSequentialRun())           // repetition is a different rule
+        assertFalse("111".hasSequentialRun())
+    }
+
+    @Test
+    fun realExample_catches_descending_cba() {
+        assertTrue("Cibcbankingworld@720".hasSequentialRun()) // contains "cba"
+    }
+
+    @Test
+    fun shortStrings_returnFalse() {
+        assertFalse("".hasSequentialRun())
+        assertFalse("a".hasSequentialRun())
+        assertFalse("ab".hasSequentialRun())
+    }
