@@ -80,3 +80,12 @@ private func popTo(where matches: (NavigationItem) -> Bool,
     }
 }
 
+
+func popTo(_ item: NavigationItem,
+           inclusive: Bool = false,
+           completion: (() -> Void)? = nil) {
+    // IMPORTANT: use .matches so SignOn will match Authentication already in stack
+    popTo(where: { stackItem in
+        stackItem.matches(navigationItem: item)   // or stackItem.matches(item) if bridged that way
+    }, inclusive: inclusive, completion: completion)
+}
