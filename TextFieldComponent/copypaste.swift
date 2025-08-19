@@ -41,3 +41,24 @@ func navigateTo(item: NavigationItem, clearStack: Bool) async {
         navigator.path.append(item)
     }
 }
+
+
+private func pathContains(_ item: NavigationItem) -> Bool {
+    navigator.path.firstIndex { stackItem in
+        stackItem.matches(navigationItem: item)
+    } != nil
+}
+
+@MainActor
+func navigateTo(item: NavigationItem, clearStack: Bool) {
+    let router = KoinApplication.findRouter(domain: item.domain())
+
+    if clearStack, pathContains(item) {
+        // Pop until bottom-nav boundary only when a matching item already exists
+        clearStackUntilBottomNavBoundary(matchingRouter: router)
+        // optional: let the pop render before push
+        // await Task.yield()   // if you made this async
+    }
+
+    navigator.path.append(item)
+}
