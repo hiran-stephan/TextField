@@ -1,64 +1,99 @@
-@MainActor
-func clearStackUntilBottomNavBoundary(
-    matchingRouter: FeatureRouter?,
-    thenPush item: NavigationItem? = nil
-) async {
-    guard !navigator.path.isEmpty else {
-        if let item { navigator.path.append(item) }
-        return
-    }
-
-    // find boundary
-    var boundaryIndex: Int? = nil
-    for i in stride(from: navigator.path.count - 1, through: 0, by: -1) {
-        let pastItem = navigator.path[i]
-        if checkIfPastItemHaveBottomNavigation(
-            matchingRouter: matchingRouter,
-            pastItem: pastItem,
-            clearStack: true
-        ) {
-            boundaryIndex = i
-            break
-        }
-    }
-
-    if let idx = boundaryIndex, idx + 1 < navigator.path.count {
-        navigator.path.removeSubrange(idx + 1 ..< navigator.path.count)
-    } // else: no boundary -> no-op
-
-    // ensure the trim is processed before we push
-    guard let item else { return }
-    await Task.yield()            // << one tick on the main actor
-    navigator.path.append(item)
+/**
+ * Determines whether this navigation item matches the given [navigationItem].
+ *
+ * This override extends the default comparison to also consider the
+ * `ROUTE_SIGN_ON` route equivalent. Useful for treating SignOn and
+ * Authentication navigation items as the same target.
+ *
+ * @param navigationItem the item to compare against
+ * @return `true` if this item is considered equivalent to [navigationItem],
+ *         `false` otherwise
+ */
+override fun matches(navigationItem: NavigationItem): Boolean {
+    return super.matches(navigationItem) ||
+           ROUTE_SIGN_ON.route() == navigationItem.route()
 }
 
-@MainActor
-func navigateTo(item: NavigationItem, clearStack: Bool) async {
-    let router = KoinApplication.findRouter(domain: item.domain())
+/// Pops the navigation stack back to the given item.
+/// - Parameters:
+///   - item: The target item to pop to.
+///   - inclusive: If `true`, the matched item is also removed.
+///   - completion: An optional closure called after the operation.
+func popToItem(_ item: NavigationItem,
+               inclusive: Bool = false,
+               completion: (() -> Void)? = nil) {
+    popTo(where: { stackItem in
+        stackItem.matches(navigationItem: item)
+    }, inclusive: inclusive, completion: completion)
+}
+
+
+/// Pops the navigation stack back to the first item that satisfies the given condition.
+/// - Parameters:
+///   - matches: A predicate used to identify the target item in the stack.
+///   - inclusive: If `true`, the matched item is also removed.
+///   - completion: An optional closure called after the operation.
+/// - Note: If no matching item is found, no changes are made.
+private func popTo(where matches: @escaping (NavigationItem) -> Bool,
+                   inclusive: Bool = false,
+                   completion: (() -> Void)? = nil) {
+    mutateOnMain { [weak self] in
+        guard let self = self else { completion?(); return }
+        let path = self.navigator.path
+        guard !path.isEmpty else { completion?(); return }
+
+        guard let firstIdx = path.firstIndex(where: matches) else {
+            completion?(); return
+        }
+
+        let endToKeep = inclusive ? firstIdx : firstIdx + 1
+        if endToKeep < self.navigator.path.count {
+            self.navigator.path.removeSubrange(endToKeep..<self.navigator.path.count)
+        }
+        completion?()
+    }
+}
+
+
+/// Navigates to the given item, with optional stack clearing before appending.
+/// - Parameters:
+///   - item: The destination navigation item.
+///   - clearStack: If `true`, clears the stack until the bottom navigation boundary
+///                 (if present) before appending the new item.
+func navigateTo(item: NavigationItem, clearStack: Bool) {
     if clearStack {
-        await clearStackUntilBottomNavBoundary(matchingRouter: router, thenPush: item)
+        let router = KoinApplication.findRouter(domain: item.domain())
+        clearStackUntilBottomNavBoundary(matchingRouter: router)
+        navigator.path.append(item)
     } else {
         navigator.path.append(item)
     }
 }
 
 
-private func pathContains(_ item: NavigationItem) -> Bool {
-    navigator.path.firstIndex { stackItem in
-        stackItem.matches(navigationItem: item)
-    } != nil
+/// Clears the navigation stack until a bottom-navigation boundary item is found.
+/// The boundary item itself is always kept.
+/// If no boundary is found, the stack remains unchanged.
+/// - Parameter matchingRouter: The router used to evaluate bottom-navigation boundaries.
+func clearStackUntilBottomNavBoundary(matchingRouter: FeatureRouter?) {
+    ...
 }
 
-@MainActor
-func navigateTo(item: NavigationItem, clearStack: Bool) {
-    let router = KoinApplication.findRouter(domain: item.domain())
 
-    if clearStack, pathContains(item) {
-        // Pop until bottom-nav boundary only when a matching item already exists
-        clearStackUntilBottomNavBoundary(matchingRouter: router)
-        // optional: let the pop render before push
-        // await Task.yield()   // if you made this async
-    }
-
-    navigator.path.append(item)
+/// Checks if the given past navigation item belongs to a bottom-navigation domain.
+/// Used to decide whether the stack should be cleared up to this item.
+/// - Parameters:
+///   - matchingRouter: The router associated with the current domain.
+///   - pastItem: The navigation item being evaluated.
+///   - clearStack: Indicates if the check is being performed as part of a clear-stack operation.
+/// - Returns: `true` if the item is part of bottom navigation and should act as a boundary, otherwise `false`.
+private func checkIfPastItemHaveBottomNavigation(
+    matchingRouter: FeatureRouter?,
+    pastItem: NavigationItem,
+    clearStack: Bool
+) -> Bool {
+    ...
 }
+
+
+
