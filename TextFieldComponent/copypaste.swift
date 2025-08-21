@@ -12,3 +12,15 @@ func pushUnique(_ item: NavigationItem) {
         }
     }
 }
+
+private func trimToBottomNavBoundary() {
+    guard let idx = navigator.path.lastIndex(where: { past in
+        KoinApplication.findRouter(domain: past.domain()).hasBottomNavigation
+    }) else { return }
+
+    guard idx + 1 < navigator.path.count else { return }
+
+    let trimmed = Array(navigator.path.prefix(idx + 1))
+    guard trimmed != navigator.path else { return }
+    navigator.path = trimmed
+}
