@@ -1,16 +1,16 @@
-@MainActor
-func popTo_iOS18(_ item: NavigationItem, inclusive: Bool = false, completion: (() -> Void)? = nil) {
-    guard let idx = navigator.path.lastIndex(where: { $0.matches(navigationItem: item) }) else {
-        completion?(); return
-    }
-    let keep = inclusive ? idx : idx + 1
-    func step() {
-        if navigator.path.count > keep {
-            navigator.path.removeLast()
-            DispatchQueue.main.async { step() }   // let UI flush
-        } else {
-            completion?()
+NavigationStackBackport.NavigationStack(path: $navigator.path) {
+    SplashScene()
+        .backport.navigationDestination(for: NavigationItem.self) { value in
+            destinationView(for: value)
         }
+}
+
+@ViewBuilder
+private func destinationView(for value: NavigationItem) -> some View {
+    if KoinApplication.findRouter(domain: value.domain()).hasBottomNavigation {
+        BottomNavView(model: viewModel)
+    } else {
+        makeScreen(selectedPath: value)
+            .dismissKeyboardOnTap()
     }
-    DispatchQueue.main.async { step() }
 }
