@@ -1,35 +1,47 @@
-@MainActor
-func popTo_iOS18(_ item: NavigationItem, inclusive: Bool = false, completion: (() -> Void)? = nil) {
-    guard let idx = navigator.path.lastIndex(where: { $0.matches(navigationItem: item) }) else {
-        completion?(); return
-    }
-    let keep = inclusive ? idx : idx + 1
+private func popTo(
+    where matches: @escaping (NavigationItem) -> Bool,
+    inclusive: Bool = false,
+    completion: (() -> Void)? = nil
+) {
+    mutateOnMain { [weak self] in
+        guard let self else { completion?(); return }
+        let path = self.navigator.path
+        guard !path.isEmpty else { completion?(); return }
 
-    func step() {
-        if navigator.path.count > keep {
-            navigator.path.removeLast()
-            DispatchQueue.main.async { step() }   // let UI flush between pops
+        // iOS 18 prefers the most recent match; legacy kept the first.
+        let matchIndex: Int?
+        if #available(iOS 18.0, *) {
+            matchIndex = path.lastIndex(where: matches)
         } else {
+            matchIndex = path.firstIndex(where: matches)
+        }
+        guard let idx = matchIndex else { completion?(); return }
+
+        let endToKeep = inclusive ? idx : (idx + 1)
+        guard endToKeep < self.navigator.path.count else { completion?(); return }
+
+        if #available(iOS 18.0, *) {
+            // Pop one-by-one across runloop turns so intermediate screens actually unmount.
+            func step() {
+                if self.navigator.path.count > endToKeep {
+                    UIView.performWithoutAnimation {    // keep it snappy, no animation
+                        _ = self.navigator.path.removeLast()
+                    }
+                    DispatchQueue.main.async { step() }
+                } else {
+                    // bump epoch once at the end (matches your current pattern)
+                    self.navigator.id = UUID()
+                    completion?()
+                }
+            }
+            DispatchQueue.main.async { step() }
+        } else {
+            // Legacy: single trim works fine
+            UIView.performWithoutAnimation {
+                self.navigator.path.removeSubrange(endToKeep..<self.navigator.path.count)
+            }
+            self.navigator.id = UUID()
             completion?()
         }
-    }
-    DispatchQueue.main.async { step() }
-}
-
-@MainActor
-func resetForSignOff(to login: NavigationItem) {
-    // dismiss overlays tied to old screens
-    viewModel.alert = nil
-    viewModel.isSheetPresented = false
-
-    // Pop down to root without making the path empty
-    if !navigator.path.isEmpty {
-        // pop to the first element (root) inclusively to clear all
-        let root = navigator.path.first!
-        popTo_iOS18(root, inclusive: true) {
-            navigator.path.append(login)  // push login
-        }
-    } else {
-        navigator.path = [login]
     }
 }
