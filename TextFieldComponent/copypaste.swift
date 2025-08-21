@@ -1,36 +1,16 @@
 @MainActor
-private func popTo(item: NavigationItem, inclusive: Bool = false) {
-    guard let idx = navigator.path.lastIndex(where: { $0.matches(navigationItem: item) }) else { return }
+func replaceWithTop(_ item: NavigationItem) {
+    var p = navigator.path
 
-    let itemsToRemove = inclusive ? (navigator.path.count - idx) : (navigator.path.count - idx - 1)
-    guard itemsToRemove > 0 else { return }
-
-    navigator.path = Array(navigator.path.dropLast(itemsToRemove))
-}
-
-@MainActor
-private func popTo(item: NavigationItem, inclusive: Bool = false) {
-    while let last = navigator.path.last, !last.matches(navigationItem: item) {
-        navigator.path.removeLast()
+    if let idx = p.lastIndex(where: { $0.matches(navigationItem: item) }) {
+        // remove INCLUDING the found item and everything above it
+        p = Array(p.prefix(idx))
     }
+    // (optional) ensure uniqueness in case there are older duplicates below
+    p.removeAll { $0.matches(navigationItem: item) }
 
-    if inclusive, !navigator.path.isEmpty {
-        navigator.path.removeLast()
-    }
+    p.append(item)
+
+    guard p != navigator.path else { return }
+    navigator.path = p
 }
-
-@MainActor
-private func popWhile(_ condition: (NavigationItem) -> Bool) {
-    while let last = navigator.path.last, condition(last) {
-        navigator.path.removeLast()
-    }
-}
-
-@MainActor
-func popTo(item: NavigationItem, inclusive: Bool = false) {
-    popWhile { !$0.matches(navigationItem: item) }
-    if inclusive, !navigator.path.isEmpty {
-        navigator.path.removeLast()
-    }
-}
-
