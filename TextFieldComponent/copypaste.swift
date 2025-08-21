@@ -1,21 +1,14 @@
-@MainActor
-private func trimAtBoundary(_ idx: Int) {
-    // keep everything up to and including idx
-    let newPath = Array(navigator.path.prefix(idx + 1))
+func pushUnique(_ item: NavigationItem) {
+    DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        var p = self.navigator.path.filter { !$0.matches(navigationItem: item) }
+        p.append(item)
 
-    // Avoid no-op assigns; iOS 18 sometimes ignores them
-    guard newPath != navigator.path else { return }
-
-    // Do it in a transaction so iOS 18 reliably pops
-    withTransaction(Transaction(animation: .default)) {
-        navigator.path = newPath
+        guard p != self.navigator.path else { return }
+        var t = Transaction()
+        t.disablesAnimations = true
+        withTransaction(t) {
+            self.navigator.path = p
+        }
     }
-}
-
-if idx + 1 < self.navigator.path.count {
-    // old:
-    // self.navigator.path.removeSubrange(idx + 1..<self.navigator.path.count)
-
-    // new:
-    trimAtBoundary(idx)
 }
