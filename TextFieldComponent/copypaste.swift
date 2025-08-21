@@ -1,55 +1,35 @@
-@inline(__always)
-private func withoutAnimation(_ body: () -> Void) {
-    // SwiftUI side
-    var t = Transaction()
-    t.animation = nil
-    t.disablesAnimations = true
-    withTransaction(t) {
-        // UIKit side (covers the backport’s UINavigationController ops)
-        UIView.performWithoutAnimation {
-            body()
-            // If you use an epoch/id bump, do it inside here too
+@MainActor
+func popTo_iOS18(_ item: NavigationItem, inclusive: Bool = false, completion: (() -> Void)? = nil) {
+    guard let idx = navigator.path.lastIndex(where: { $0.matches(navigationItem: item) }) else {
+        completion?(); return
+    }
+    let keep = inclusive ? idx : idx + 1
+
+    func step() {
+        if navigator.path.count > keep {
+            navigator.path.removeLast()
+            DispatchQueue.main.async { step() }   // let UI flush between pops
+        } else {
+            completion?()
         }
     }
+    DispatchQueue.main.async { step() }
 }
 
-private func popTo(where matches: @escaping (NavigationItem) -> Bool,
-                   inclusive: Bool = false,
-                   completion: (() -> Void)? = nil) {
-    mutateOnMain { [weak self] in
-        guard let self else { completion?(); return }
-        let path = self.navigator.path
-        guard !path.isEmpty else { completion?(); return }
-        guard let firstIdx = path.firstIndex(where: matches) else { completion?(); return }
+@MainActor
+func resetForSignOff(to login: NavigationItem) {
+    // dismiss overlays tied to old screens
+    viewModel.alert = nil
+    viewModel.isSheetPresented = false
 
-        let endToKeep = inclusive ? firstIdx : firstIdx + 1
-        guard endToKeep < self.navigator.path.count else { completion?(); return }
-
-        withoutAnimation {
-            self.navigator.path.removeSubrange(endToKeep..<self.navigator.path.count)
-            self.navigator.id = UUID() // your epoch/ID bump
+    // Pop down to root without making the path empty
+    if !navigator.path.isEmpty {
+        // pop to the first element (root) inclusively to clear all
+        let root = navigator.path.first!
+        popTo_iOS18(root, inclusive: true) {
+            navigator.path.append(login)  // push login
         }
-        completion?()
+    } else {
+        navigator.path = [login]
     }
 }
-
-
-func clearStackToBottomNavigation(matchingRouter: FeatureRouter?) {
-    mutateOnMain { [weak self] in
-        guard let self else { return }
-        let path = self.navigator.path
-        guard !path.isEmpty else { return }
-
-        guard let idx = path.lastIndex(where: {
-            KoinApplication.findRouter(domain: $0.domain()).hasBottomNavigation
-        }) else { return }
-
-        guard idx + 1 < self.navigator.path.count else { return }
-
-        withoutAnimation {
-            self.navigator.path.removeSubrange((idx + 1)..<self.navigator.path.count)
-            self.navigator.id = UUID()
-        }
-    }
-}
-
