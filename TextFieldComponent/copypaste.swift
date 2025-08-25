@@ -16,6 +16,7 @@ final class TestFeatureRouter: FeatureRouter {
     // If Kotlin adds more defaults, you can hardcode them or fatalError for now.
 }
 
+private var savedFind: ((String) -> FeatureRouter?)!
 
 
 override func setUp() {
