@@ -13,19 +13,48 @@ final class TestNavigator: Navigator {
 }
 
 
-// iosAppTests/Mocks/TestItem.swift
+import Foundation
 @testable import iosApp
 
-struct TestItem: NavigationItem, Equatable {
-    let key: String
-    let domainValue: String
+/// Mirrors the KMP NavigationItem contract for tests.
+final class TestItem: NavigationItem, Equatable {
 
-    func domain() -> String { domainValue }
-    func matches(navigationItemItem other: NavigationItem) -> Bool {
-        guard let o = other as? TestItem else { return false }
-        return key == o.key && domainValue == o.domainValue
+    let key: String        // just to make test assertions easy
+    private let _domain: String
+    private let _path: String
+
+    init(key: String, domain: String, path: String = "") {
+        self.key = key
+        self._domain = domain
+        self._path = path
+        super.init()
+    }
+
+    // === NavigationItem overrides ===
+    override func scheme() -> String { "cibcus" }
+
+    override func domain() -> String { _domain }
+
+    override func path() -> String { _path }
+
+    /// Build the route the same way as Kotlin:
+    /// scheme://domain  (+ "/path" only if path is non-empty)
+    override func route() -> String {
+        let base = "\(scheme())://\(_domain)"
+        return _path.isEmpty ? base : "\(base)/\(_path)"
+    }
+
+    /// matches compares route strings, same as Kotlin `open fun matches(...) = route() == other.route()`
+    override func matches(navigationItemItem other: NavigationItem) -> Bool {
+        return self.route() == other.route()
+    }
+
+    // For XCTAssertEqual in tests
+    static func == (lhs: TestItem, rhs: TestItem) -> Bool {
+        lhs.key == rhs.key && lhs._domain == rhs._domain && lhs._path == rhs._path
     }
 }
+
 
 
 // iosAppTests/Mocks/SpyAppStateViewModel.swift
