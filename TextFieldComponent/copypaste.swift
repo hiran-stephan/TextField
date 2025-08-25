@@ -145,3 +145,8 @@ func XCTAssertRoutesEqual(
 
 /// Trimming via inclusive popTo bumps `id` (UI poke).
 @MainActor func test_idChangesAfterTrim_onPopToInclusive() { ... }
+
+
+/// Binding between SwiftUI `TabView` selection and shared KMP state.
+/// - Reads current tab domain from `sharedState`, defaults to Home.
+/// - Updates only when value changes, then notifies `viewModel` to sync nav.
