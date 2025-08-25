@@ -15,3 +15,24 @@ final class TestFeatureRouter: FeatureRouter {
 
     // If Kotlin adds more defaults, you can hardcode them or fatalError for now.
 }
+
+
+
+override func setUp() {
+    super.setUp()
+    savedFind = RouterLookup.find
+    RouterLookup.find = { domain in
+        switch domain {
+        case "auth":     return TestFeatureRouter(domain: "auth", hasBottomNavigation: true)
+        case "accounts": return TestFeatureRouter(domain: "accounts", hasBottomNavigation: true)
+        case "flow":     return TestFeatureRouter(domain: "flow", hasBottomNavigation: false)
+        case "payments": return TestFeatureRouter(domain: "payments", hasBottomNavigation: false)
+        default:         return nil
+        }
+    }
+}
+
+override func tearDown() {
+    RouterLookup.find = savedFind
+    super.tearDown()
+}
