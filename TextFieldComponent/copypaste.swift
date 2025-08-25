@@ -206,3 +206,8 @@ extension ApplicationNavigatorImpl {
     }
 }
 #endif
+
+
+xcodebuild test \
+  -scheme iosApp \
+  -only-testing:ApplicationNavigatorImplTests
