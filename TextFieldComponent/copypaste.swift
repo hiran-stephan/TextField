@@ -1,35 +1,28 @@
-let authDomain      = NavigationItems.shared.authentication.DOMAIN
-    let authSignOn      = NavigationItems.shared.authentication.DOMAIN_SIGNON
+.backport.navigationDestination(for: NavigationItem.self) { value in
+    if RouterLookup.find(value.domain())?.hasBottomNavigation == true {
+        // seed BottomNavBarView with the boundary item’s domain
+        BottomNavBarView(viewModel: viewModel, initialSelectedDomain: value.domain())
+    } else {
+        makeScreen(selectedPath: value)
+    }
+}
 
-    RouterLookup.find = { domain in
-        switch domain {
-        // mark BOTH auth domains as bottom-nav boundaries
-        case authDomain, authSignOn:
-            return TestFeatureRouter(domain: domain, hasBottomNavigation: true)
+struct BottomNavBarView: View {
+    var viewModel: SharedStateViewModel
 
-        // accounts is also a boundary in your flows
-        case "accounts":
-            return TestFeatureRouter(domain: domain, hasBottomNavigation: true)
+    // ⬇️ receive initial value from parent
+    private let initialSelectedDomain: String
 
-        // everything else is non-boundary
-        default:
-            return TestFeatureRouter(domain: domain, hasBottomNavigation: false)
-        }
+    // ⬇️ initialize @State from the injected value
+    @State private var tabSelected: String
+
+    init(viewModel: SharedStateViewModel, initialSelectedDomain: String) {
+        self.viewModel = viewModel
+        self.initialSelectedDomain = initialSelectedDomain
+        _tabSelected = State(initialValue: initialSelectedDomain)
+        self.sharedState = ObservableState(statePublisher: viewModel.sharedStateWrapped)
     }
 
-@MainActor
-func test_navigateTo_clearStack_trimsToLastBoundary_thenAppends() {
-    let auth      = TestItem(domain: NavigationItems.shared.authentication.DOMAIN)
-    let flow1     = TestItem(domain: "flow")
-    let accounts  = TestItem(domain: "accounts")
-    let details   = TestItem(domain: "accounts", path: ":id")
-    let dest      = TestItem(domain: "payments", path: ":1")
-
-    let (sut, nav, _) = makeSUT(startPath: [auth, flow1, accounts, details])
-
-    sut.navigateTo(item: dest, clearStack: true)
-
-    // Keeps up to LAST boundary ("accounts"), then appends dest
-    XCTAssertRoutesEqual(nav.path, [auth, flow1, accounts, dest])
+    // ... TabView(selection: $tabSelected) ...
 }
 
