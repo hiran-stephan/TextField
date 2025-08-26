@@ -1,30 +1,21 @@
 @MainActor
-func navigateTo(item: NavigationItem, clearStack: Bool) {
-    if clearStack {
-        let router = RouterLookup.find(item.domain())
-        if !clearStackToBottomNavigation(matchingRouter: router) {
-            // Android-like fallback: keep Auth root if present
-            popTo(AuthenticationNavigationItems.Main.shared, inclusive: false)
-        }
-    }
-    navigator.path.append(item)
-}
-
-// Return true if a boundary was found & trimmed
-@discardableResult
-private func clearStackToBottomNavigation(matchingRouter: FeatureRouter?) -> Bool {
-    var boundaryIndex: Int? = nil
+func clearStackToFirstBoundary(matchingRouter: FeatureRouter?) {
     let path = navigator.path
-    for i in stride(from: path.count - 1, through: 0, by: -1) {
-        if checkIfPastItemHaveBottomNavigation(matchingRouter: matchingRouter,
-                                               pastItem: path[i],
-                                               clearStack: true) {
-            boundaryIndex = i
-            break
-        }
+    guard !path.isEmpty else { return }
+
+    // first match from the *front*
+    let boundaryIndex = path.firstIndex { past in
+        self.checkIfPastItemHaveBottomNavigation(
+            matchingRouter: matchingRouter,
+            pastItem: past,
+            clearStack: true
+        )
     }
-    guard let idx = boundaryIndex, idx + 1 < navigator.path.count else { return false }
-    navigator.path.removeSubrange(idx + 1 ..< navigator.path.count) // keep boundary
-    navigator.id = UUID()
-    return true
+    guard let idx = boundaryIndex else { return }
+
+    // OPTION A: keep up to (and including) the boundary, drop everything after
+    navigator.path = Array(path.prefix(idx + 1))
+
+    // OPTION B: drop everything before the boundary, keep boundary and after
+    // navigator.path = Array(path.suffix(from: idx))
 }
