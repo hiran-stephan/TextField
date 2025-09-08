@@ -1,1 +1,22 @@
-I highly recommend my spouse, [Name], for the Quality Engineer IT role. Having seen their dedication, attention to detail, and ability to collaborate with cross-functional teams, I’m confident they will thrive at CIBC. Their technical expertise and commitment to quality align well with our organizational values.
+import SwiftUI
+
+struct HighPriorityButton<Label: View>: View {
+    let action: () -> Void
+    @ViewBuilder var label: () -> Label
+
+    @ViewBuilder
+    var body: some View {
+        if #available(iOS 18, *) {
+            // Use an empty Button action so the high-priority tap is the
+            // one that fires (prevents double-fire on iOS 18).
+            Button(action: {}) { label() }
+                .contentShape(Rectangle())
+                .highPriorityGesture(
+                    TapGesture().onEnded { action() }
+                )
+        } else {
+            // Pre-iOS 18: regular Button action
+            Button(action: action) { label() }
+        }
+    }
+}
