@@ -1,30 +1,15 @@
-import SwiftUI
-
-public struct HighPriorityButton<Label: View>: View {
-    public let action: (() -> Void)?   // ✅ optional action
-    @ViewBuilder public var label: () -> Label
-
-    public init(action: (() -> Void)? = nil,
-                @ViewBuilder label: @escaping () -> Label) {
-        self.action = action
-        self.label = label
-    }
-
-    public var body: some View {
-        if #available(iOS 18, *) {
-            Button(action: {}) {
-                label()
-            }
-            .contentShape(Rectangle())
-            .highPriorityTapGesture { action?() }   // call only if non-nil
-        } else {
-            if let action {
-                Button(action: action) {
-                    label()
-                }
-            } else {
-                Button(action: {}) { label() }      // fallback if no action
-            }
-        }
-    }
-}
+/// A custom SwiftUI button that ensures consistent tap handling across iOS versions.
+///
+/// - On **iOS 18+**, uses an empty `Button` action with
+///   `.highPriorityTapGesture` to avoid double-fire issues.
+/// - On **earlier iOS**, falls back to a normal `Button`.
+///
+/// ### Usage
+/// ```swift
+/// HighPriorityButton(action: {
+///     print("Tapped")
+/// }) {
+///     Text("Continue")
+/// }
+/// ```
+public struct HighPriorityButton<Label: View>: View { ... }
