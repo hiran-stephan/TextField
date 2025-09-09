@@ -1,21 +1,29 @@
 import SwiftUI
 
-struct HighPriorityButton<Label: View>: View {
-    let action: () -> Void
-    @ViewBuilder var label: () -> Label
+public struct HighPriorityButton<Label: View>: View {
+    public let action: (() -> Void)?   // ✅ optional action
+    @ViewBuilder public var label: () -> Label
 
-    var body: some View {
+    public init(action: (() -> Void)? = nil,
+                @ViewBuilder label: @escaping () -> Label) {
+        self.action = action
+        self.label = label
+    }
+
+    public var body: some View {
         if #available(iOS 18, *) {
-            // Empty Button for accessibility/visuals, gesture handled via modifier
             Button(action: {}) {
                 label()
             }
             .contentShape(Rectangle())
-            .highPriorityTapGesture(action: action) // ✅ use your modifier here
+            .highPriorityTapGesture { action?() }   // call only if non-nil
         } else {
-            // Pre–iOS 18: fallback to normal button
-            Button(action: action) {
-                label()
+            if let action {
+                Button(action: action) {
+                    label()
+                }
+            } else {
+                Button(action: {}) { label() }      // fallback if no action
             }
         }
     }
