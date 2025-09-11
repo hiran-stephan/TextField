@@ -48,3 +48,16 @@ Button(action: {}) {
 .onHighPriorityThrottledTap(0.5) {
     // your action
 }
+
+extension Button where Label == AnyView {
+    init(@ViewBuilder label: @escaping () -> Label) {
+        self.init(action: {}, label: label)
+    }
+}
+
+Button {
+    ListCellBaseView()
+}
+.onHighPriorityThrottledTap {
+    // action here
+}
