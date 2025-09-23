@@ -1,6 +1,31 @@
-www.linkedin.com/in/dueladavis
+@State private var globalErrorCode: String = ""
+/// Tracks the last error code shown in order to avoid showing the same alert repeatedly.
 
 
-I would like to refer my spouse, [Spouse’s Full Name], for the Quality Engineer – IT role at CIBC. They have strong experience in software quality assurance, test automation, and defect management, and I believe they would be an excellent fit for the team.
+    .task {
+        checkFriendlyId()
+        // Only show dialog if code is non-empty AND different from the last shown code
+        if shouldShowGlobalErrorDialog(for: navigationItem.code) {
+            showGlobalErrorDialog(for: navigationItem.code)
+        }
+    }
 
-Attached is their resume for your review.
+func showGlobalErrorDialog(for code: String) {
+    /// Presents a global error dialog for the given code.
+    /// - Parameter code: The error code to display (must be non-empty).
+    if !code.isEmpty {
+        viewModel.showGlobalErrorDialog(
+            errorList: [ProblemData(code: navigationItem.code)]
+        )
+    }
+}
+
+private func shouldShowGlobalErrorDialog(for code: String) -> Bool {
+    /// Checks whether a global error dialog should be shown.
+    /// Returns `true` only if:
+    ///   1. The code is non-empty, AND
+    ///   2. The code is different from the last shown (`globalErrorCode`).
+    guard !code.isEmpty, code != globalErrorCode else { return false }
+    globalErrorCode = code
+    return true
+}
