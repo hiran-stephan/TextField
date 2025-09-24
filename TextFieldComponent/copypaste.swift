@@ -1,8 +1,6 @@
-fun getSubmitConsentFooterText(consentTypes: List<String>): String {
-    val hasEdca = consentTypes.any { it == EDCA_TYPE }
-    val hasDbsa = consentTypes.any { it == DBSA_TYPE }
-    val hasEdad = consentTypes.any { it == EDAD_TYPE }
-    return if (!hasEdca && (hasDbsa || hasEdad)) {
-        displayContent(ContentConstants.CONSENTS_SUBMIT_CONSENT_FOOTER) // key must exist in JSON
-    } else StringUtils.EMPTY
+let sorted = groupedConsents.sorted { (l, r) in (Int(l.key) ?? 0) < (Int(r.key) ?? 0) }
+ForEach(sorted, id: \.0) { key, values in
+    let presenter = viewModel.createConsentSectionPresenter(sectionIndex: key, documentList: values)
+    let section = presenter.toSectionData()
+    // render…
 }
