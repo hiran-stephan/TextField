@@ -1,47 +1,20 @@
-private const val PRIMARY_BUCKET = "1"
-private const val OTHERS_BUCKET  = "2"
+private fun singleAgreementKey(consentType: String): String =
+    "consents_${consentType}_agreement_title"
 
-fun List<ConsentData>.groupBySection(
-    contentFile: ContentFile?,
-    locale: Locale
-): Map<String, List<ConsentData>> {
-    if (isEmpty()) return emptyMap()
+private fun combinedAgreementKey(consentTypes: Collection<String>): String {
+    val joined = consentTypes.filter { it.isNotBlank() }.sorted().joinToString("_")
+    return "consents_${joined}_agreement_title"
+}
 
-    // 1) Read ordering from content (CSV string like "13,14,19")
-    val order: List<String> = contentFile?.findStringList("consents_order", locale) ?: emptyList()
-
-    // 2) Sort by order index; unknown types go to the end (stable)
-    val sorted = if (order.isNotEmpty()) {
-        this.sortedWith(
-            compareBy<ConsentData> { c ->
-                val idx = order.indexOf(c.consentType)
-                if (idx >= 0) idx else Int.MAX_VALUE
-            }.thenBy { it.consentType } // stable tie-breaker
-        )
-    } else {
-        this // fallback: API order
+private fun getConsentText(consentType: String): String {
+    // 1) If there are multiple types on the page, try a combined key
+    if (allTypesOnPage.isNotEmpty()) {
+        val combinedKey = combinedAgreementKey(allTypesOnPage)
+        val combined = displayContent(combinedKey)
+        if (combined.isNotBlank()) return combined
     }
 
-    // 3) Same 2-bucket shape your UI expects
-    val primary = sorted.first()
-    val (primaryList, others) = sorted.partition { it == primary }
-
-    return if (others.isNotEmpty())
-        mapOf(PRIMARY_BUCKET to primaryList, OTHERS_BUCKET to others)
-    else
-        mapOf(PRIMARY_BUCKET to primaryList)
+    // 2) Fallback to the single-type key for this section
+    return displayContent(singleAgreementKey(consentType))
 }
 
-
-onStateResult(result) { consentsData ->
-    val content = consentResourceState.value.contentFile
-    val orderedAndBucketed = consentsData
-        .map { it.updateIfAccepted(consentActionState.value.acceptedConsents) }
-        .groupBySection(contentFile = content, locale = locale)
-
-    copy(data = ConsentsData(orderedAndBucketed))
-}
-
-{
-  "consents_order": "13,14,19"
-}
