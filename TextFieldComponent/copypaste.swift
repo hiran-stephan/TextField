@@ -41,3 +41,7 @@ onStateResult(result) { consentsData ->
 
     copy(data = ConsentsData(orderedAndBucketed))
 }
+
+{
+  "consents_order": "13,14,19"
+}
