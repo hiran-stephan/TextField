@@ -1,65 +1,137 @@
-Key Changes
+private lateinit var contentFile: ContentFile
+private val locale = Locale(appRegion = "US")
+private lateinit var messageCatalogue: MessageCatalogue
+private lateinit var consents: List<ConsentData>
 
-Dynamic Agreement Titles
+@BeforeTest
+fun setup() {
+    contentFile = contentFileData()            // your existing fixture (see bottom of file)
+    messageCatalogue = getMessageCatalogueData() // your existing fixture (see bottom of file)
+    consents = getConsents()                   // your existing fixture producing 13/14/etc.
+}
 
-Removed hardcoded when(consentType) logic.
+/** Build a presenter for a specific section. */
+private fun presenterFor(
+    sectionTypes: Set<String>,
+    allTypesOnPage: Set<String>,
+    sectionIndex: Int = 0,
+    isCheckboxChecked: Boolean = false,
+    isValidationFailed: Boolean = true
+): ConsentSectionPresenter {
+    // Subset of ConsentData for this section (keep your own logic if different)
+    val sectionConsents = consents.filter { it.consentType in sectionTypes }
+    return ConsentSectionPresenter(
+        contentFile = contentFile,
+        locale = locale,
+        messageCatalogue = messageCatalogue,
+        consentData = sectionConsents,
+        isCheckboxChecked = isCheckboxChecked,
+        isConsentValidationFailed = isValidationFailed,
+        sectionIndex = sectionIndex,
+        sectionTypes = sectionTypes,
+        allTypesOnPage = allTypesOnPage
+    )
+}
 
-Added support for combined agreement titles (e.g., consents_13_14_agreement_title) when a section has multiple consent types.
 
-Falls back to individual titles if a combined key isn’t defined in content.
+@Test
+fun `step indicator shows 1 for first section`() {
+    val p = presenterFor(sectionTypes = setOf("14"), allTypesOnPage = setOf("13","14"), sectionIndex = 0)
+    assertEquals("1", p.stepIndicatorText)
+    assertEquals("Step 1.", p.stepIndicatorAccessibilityText)
+}
 
-Checkbox Rules (Configurable via Content)
+@Test
+fun `step indicator shows 2 for second section`() {
+    val p = presenterFor(sectionTypes = setOf("13"), allTypesOnPage = setOf("13","14"), sectionIndex = 1)
+    assertEquals("2", p.stepIndicatorText)
+    assertEquals("Step 2.", p.stepIndicatorAccessibilityText)
+}
 
-Checkbox requirement now driven by content JSON instead of hardcoding.
 
-New rules:
 
-EDCA (13) → checkbox always required.
 
-DBSA (14) → checkbox required only when it is the only consent on the page.
+@Test
+fun `DBSA section on page with EDCA uses single 14 agreement text (not combined)`() {
+    // Section shows only DBSA, but page contains EDCA as well
+    val p = presenterFor(sectionTypes = setOf("14"), allTypesOnPage = setOf("13","14"))
+    assertEquals(
+        contentFile.findContentValue("consents_14_agreement_title", locale.lang).orEmpty(),
+        p.consentText
+    )
+}
 
-Fully controlled through content keys:
+@Test
+fun `multi-type section 14_19 uses combined agreement text`() {
+    val p = presenterFor(sectionTypes = setOf("14","19"), allTypesOnPage = setOf("14","19"))
+    assertEquals(
+        contentFile.findContentValue("consents_14_19_agreement_title", locale.lang).orEmpty(),
+        p.consentText
+    )
+}
 
-consents_checkbox_always_required_document_types
 
-consents_checkbox_required_when_solo_document_types
 
-Content-Driven Document Ordering
+@Test
+fun `EDCA requires checkbox regardless of page composition`() {
+    val p = presenterFor(sectionTypes = setOf("13"), allTypesOnPage = setOf("13","14"))
+    assertTrue(p.isConsentRequired) // 13 (EDCA) is always required by config
+}
 
-Removed EDCA hardcoding as “primary.”
+@Test
+fun `DBSA requires checkbox when presented alone`() {
+    val p = presenterFor(sectionTypes = setOf("14"), allTypesOnPage = setOf("14"))
+    assertTrue(p.isConsentRequired) // 14 in solo-required list
+}
 
-Added support for comma-separated order from JSON (consents_documents_order).
+@Test
+fun `DBSA does not require checkbox when EDCA also on page`() {
+    val p = presenterFor(sectionTypes = setOf("14"), allTypesOnPage = setOf("13","14"))
+    assertFalse(p.isConsentRequired)
+}
 
-Ensures consistent order across mobile and web without code changes.
 
-Section Grouping
 
-EDCA (13) always appears in its own section.
+@Test
+fun `document titles and a11y titles are read from content file`() {
+    val p = presenterFor(sectionTypes = setOf("13","14"), allTypesOnPage = setOf("13","14"))
 
-DBSA (14) + EDAD (19) are grouped into a single section.
+    val dbsa = p.consentDocuments.first { it.documentType == "14" }
+    val edca = p.consentDocuments.first { it.documentType == "13" }
 
-Keeps related documents together and reduces redundant checkboxes.
+    // Visible titles
+    assertEquals(
+        contentFile.findContentValue("consents_14_document_title", locale.lang).orEmpty(),
+        dbsa.documentTitle
+    )
+    assertEquals(
+        contentFile.findContentValue("consents_13_document_title", locale.lang).orEmpty(),
+        edca.documentTitle
+    )
 
-Presenter Updates
+    // Accessibility titles
+    assertEquals(
+        contentFile.findContentValue("consents_14_document_title", locale.lang, forAccessibility = true).orEmpty(),
+        dbsa.documentAccessibilityTitle
+    )
+    assertEquals(
+        contentFile.findContentValue("consents_13_document_title", locale.lang, forAccessibility = true).orEmpty(),
+        edca.documentAccessibilityTitle
+    )
+}
 
-ConsentSectionPresenter now receives:
 
-sectionTypes → consent types within that section.
 
-allTypesOnPage → all consent types for the page.
+@Test
+fun `checkbox error message appears only when required and unchecked after validation`() {
+    val p = presenterFor(
+        sectionTypes = setOf("13"),               // EDCA → required
+        allTypesOnPage = setOf("13"),
+        isCheckboxChecked = false,
+        isValidationFailed = true
+    )
+    assertTrue(p.consentErrorMessage.isNotBlank())
+    assertTrue(p.consentErrorCode.isNotBlank())
+}
 
-Enables correct agreement title resolution and checkbox logic per section/page.
 
-Content & JSON Updates
-
-Added entries for single and combined consent agreement titles (e.g., consents_13_14_agreement_title).
-
-Added document name and title entries for accessibility.
-
-Example:
-
-consents_13_agreement_title
-
-consents_14_agreement_title
-
-consents_13_14_agreement_title
