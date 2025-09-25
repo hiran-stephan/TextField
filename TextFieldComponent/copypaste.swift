@@ -1,21 +1,45 @@
-private fun getConsentText(consentType: String): String {
+private fun consentRequired(consentType: String): Boolean {
+    // What docs are in this section?
+    val types = consentData.map { it.consentType }.toSet()
+
     return when {
-        // EDCA (13) – always its own section, checkbox path
-        consentType == EDCA_TYPE ->
-            displayContent(ContentConstants.CONSENTS_13_AGREEMENT_TITLE)
+        // EDCA present → checkbox required (existing rule)
+        types.contains(EDCA_TYPE) -> true
 
-        // DBSA (14) or EDAD (19) – when BOTH are shown in the same section
-        (consentType == DBSA_TYPE || consentType == EDAD_TYPE) && consentCount > 1 ->
-            displayContent(ContentConstants.CONSENTS_14_19_AGREEMENT_TITLE)
+        // DBSA-only section (no EDCA, no EDAD) → checkbox required
+        types.size == 1 && types.contains(DBSA_TYPE) -> true
 
-        // Single DBSA (14)
-        consentType == DBSA_TYPE ->
-            displayContent(ContentConstants.CONSENTS_14_AGREEMENT_TITLE)
-
-        // Single EDAD (19)
-        consentType == EDAD_TYPE ->
-            displayContent(ContentConstants.CONSENTS_19_AGREEMENT_TITLE)
-
-        else -> StringUtils.EMPTY
+        else -> false
     }
 }
+
+private fun ConsentsViewModel.isCheckboxRequiredForFlow(): Boolean {
+    val groups = consentUiState.value.data?.groupedConsents?.values ?: return false
+    val types = groups.flatten().map { it.consentType }
+
+    val hasEdca = types.contains(EDCA_TYPE)
+    val dbsaOnly = types.size == 1 && types.firstOrNull() == DBSA_TYPE
+
+    return hasEdca || dbsaOnly
+}
+
+fun ConsentsViewModel.getConsentValidationErrorCount(): Int {
+    if (!consentActionState.value.isConsentValidationFailed) return 0
+
+    var errorCount = 0
+
+    // documents not reviewed
+    val unreviewedCount = consentUiState.value.data
+        ?.groupedConsents?.values
+        ?.flatten()
+        ?.count { !it.isReviewed } ?: 0
+    errorCount += unreviewedCount
+
+    // checkbox (EDCA or DBSA-only)
+    val isRequired = isCheckboxRequiredForFlow()
+    val isChecked = consentActionState.value.isCheckboxChecked
+    if (isRequired && !isChecked) errorCount += 1
+
+    return errorCount
+}
+
