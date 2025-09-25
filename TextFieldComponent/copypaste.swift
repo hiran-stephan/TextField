@@ -1,69 +1,40 @@
-ForEach(Array(sortedGroupedConsents.enumerated()), id: \.element.0) { index, pair in
-    let (key, values) = pair
-    let presenter = viewModel.createConsentSectionPresenter(
-        documentList: values,
-        consentCount: Int32(values.count),
-        sectionIndex: Int32(index)          // ✅ new
-    )
-    let section = presenter.toSectionData()
-    ConsentCaptureSectionView(
-        data: section,
-        onChangeConsent: { viewModel.onConsentCheckboxChanged() },
-        onChangeDocumentReviewStatus: { type in
-            viewModel.onConsentDocumentReviewed(consentType: type)
-        }
-    )
+private fun getConsentText(consentType: String): String {
+    // Types present in THIS section
+    val types = consentData.map { it.consentType }.toSet()
+
+    return when {
+        // If EDCA present in this section (it’s its own section anyway) -> always 13 text
+        types.contains(EDCA_TYPE) ->
+            displayContent(CONSENTS_13_AGREEMENT_TITLE)
+
+        // DBSA + EDAD together (no EDCA) -> combined 14+19 text
+        types.contains(DBSA_TYPE) && types.contains(EDAD_TYPE) ->
+            displayContent(CONSENTS_14_19_AGREEMENT_TITLE)
+
+        // DBSA only
+        types.size == 1 && types.contains(DBSA_TYPE) ->
+            displayContent(CONSENTS_14_AGREEMENT_TITLE)
+
+        // EDAD only
+        types.size == 1 && types.contains(EDAD_TYPE) ->
+            displayContent(CONSENTS_19_AGREEMENT_TITLE)
+
+        else -> StringUtils.EMPTY
+    }
 }
 
-fun ConsentsViewModel.createConsentSectionPresenter(
-    documentList: List<ConsentData>,
-    consentCount: Int,
-    sectionIndex: Int            // ✅ new
-): ConsentSectionPresenter =
-    ConsentSectionPresenter(
-        isCheckboxChecked = consentActionState.value.isCheckboxChecked,
-        isConsentValidationFailed = consentActionState.value.isConsentValidationFailed,
-        consentData = documentList,
-        contentFile = consentResourceState.value.contentFile,
-        locale = locale,
-        messageCatalogue = messageCatalogue,
-        consentCount = consentCount,
-        sectionIndex = sectionIndex        // ✅ new
-    )
 
-class ConsentSectionPresenter(
-    private val contentFile: ContentFile?,
-    private val locale: Locale,
-    private val messageCatalogue: MessageCatalogue,
-    private val consentData: List<ConsentData> = emptyList(),
-    private val isCheckboxChecked: Boolean = false,
-    private val isConsentValidationFailed: Boolean = false,
-    private val consentCount: Int,
-    private val sectionIndex: Int          // ✅ new
-) {
-    
-    private val stepNumber: Int by lazy { sectionIndex + 1 }   // ✅ 1, 2, 3...
+private fun consentRequired(consentType: String): Boolean {
+    val types = consentData.map { it.consentType }.toSet()
+    return when {
+        // EDCA anywhere in this section -> checkbox required
+        types.contains(EDCA_TYPE) -> true
 
-    val stepIndicatorText: String by lazy {
-        when (stepNumber) {
-            1 -> displayContent(ContentConstants.CONSENTS_STEP_1_NUMBER)
-            2 -> displayContent(ContentConstants.CONSENTS_STEP_2_NUMBER)
-            else -> stepNumber.toString()
-        }
+        // DBSA only (no EDCA, no EDAD) -> checkbox required
+        types.size == 1 && types.contains(DBSA_TYPE) -> true
+
+        // EDCA + DBSA -> DBSA section has NO checkbox (EDCA section covers it)
+        // DBSA + EDAD (no EDCA) -> NO checkbox
+        else -> false
     }
-
-    val stepIndicatorAccessibilityText: String by lazy {
-        when (stepNumber) {
-            1 -> displayContent(ContentConstants.CONSENTS_STEP_1_NUMBER, forAccessibility = true)
-            2 -> displayContent(ContentConstants.CONSENTS_STEP_2_NUMBER, forAccessibility = true)
-            else -> stepNumber.toString()
-        }
-    }
-
-    val title: String by lazy {
-        if (stepNumber == 1)
-            displayContent(ContentConstants.CONSENTS_STEP_1_TITLE)
-        else
-            displayContent(ContentConstants.CONSENTS_STEP_2_TITLE)
-    }
-
+}
