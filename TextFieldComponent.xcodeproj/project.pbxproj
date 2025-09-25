@@ -126,6 +126,7 @@
 		3B76B6842E4E194C00249CE1 /* 2025-08-14-09-13-39-451.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "2025-08-14-09-13-39-451.jpg"; sourceTree = "<group>"; };
 		3B76B6862E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "IMM5739_2-1EE7J7A6 (1).pdf"; sourceTree = "<group>"; };
 		3B76B6892E8300A300249CE1 /* Resume_Duela_Davis (1).docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resume_Duela_Davis (1).docx"; sourceTree = "<group>"; };
+		3B76B68A2E85F07500249CE1 /* consent_flow_pr_summary.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = consent_flow_pr_summary.docx; sourceTree = "<group>"; };
 		3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_DomainModels_Mappers.docx; sourceTree = "<group>"; };
 		3BCAC2662E19F8D8001CC0C9 /* ContentConstants_Document_Full.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ContentConstants_Document_Full.docx; sourceTree = "<group>"; };
 		3BCAC2672E19FA94001CC0C9 /* ManageAlerts_AnalyticsIntegration.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_AnalyticsIntegration.docx; sourceTree = "<group>"; };
@@ -198,6 +199,7 @@
 				3B76B6822E37B0E300249CE1 /* Hiran Work Permit.pdf */,
 				3BCAC2672E19FA94001CC0C9 /* ManageAlerts_AnalyticsIntegration.docx */,
 				3BCAC26B2E1DB72C001CC0C9 /* ManageMyAlerts_Challenge.docx */,
+				3B76B68A2E85F07500249CE1 /* consent_flow_pr_summary.docx */,
 				3B76B6892E8300A300249CE1 /* Resume_Duela_Davis (1).docx */,
 				3B43794A2C80AF7A00495EF1 /* ContentView.swift */,
 				3B4379722C80BCDD00495EF1 /* CustomTextField */,
