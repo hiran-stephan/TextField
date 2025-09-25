@@ -1,61 +1,32 @@
 @Test
-fun `getSectionStepIndicatorText returns "1" for first section and "2" for second`() {
-    // first section (index 0) -> "1"
-    val presenter1 = ConsentSectionPresenter(
-        contentFile = contentFile,
-        locale = locale,
-        messageCatalogue = messageCatalogue,
-        consentData = consentData,
-        isCheckboxChecked = isCheckboxChecked,
-        isConsentValidationFailed = isConsentValidationFailed,
-        sectionIndex = 0,
-        sectionTypes = emptySet(),
-        allTypesOnPage = consentData.map { it.consentType }.toSet()
-    )
-    assertEquals("1", presenter1.stepIndicatorText)
+fun getSectionStepIndicatorText_returns_index_numbers() {
+    val allTypes = consentData.map { it.consentType }.toSet()
 
-    // second section (index 1) -> "2"
-    val presenter2 = ConsentSectionPresenter(
-        contentFile = contentFile,
-        locale = locale,
-        messageCatalogue = messageCatalogue,
-        consentData = consentData,
-        isCheckboxChecked = isCheckboxChecked,
-        isConsentValidationFailed = isConsentValidationFailed,
-        sectionIndex = 1,
-        sectionTypes = emptySet(),
-        allTypesOnPage = consentData.map { it.consentType }.toSet()
-    )
-    assertEquals("2", presenter2.stepIndicatorText)
+    val p1 = presenterFor(sectionTypes = emptySet(), allTypesOnPage = allTypes, sectionIndex = 0)
+    assertEquals("1", p1.stepIndicatorText)
+
+    val p2 = presenterFor(sectionTypes = emptySet(), allTypesOnPage = allTypes, sectionIndex = 1)
+    assertEquals("2", p2.stepIndicatorText)
+
+    // edge case: 3rd (and higher) section falls back to raw number
+    val p3 = presenterFor(sectionTypes = emptySet(), allTypesOnPage = allTypes, sectionIndex = 2)
+    assertEquals("3", p3.stepIndicatorText)
 }
+
 
 @Test
-fun `getSectionStepIndicatorAccessibilityText returns 'Step 1 ' for first and 'Step 2 ' for second`() {
-    // first section (index 0) -> "Step 1."
-    val presenter1 = ConsentSectionPresenter(
-        contentFile = contentFile,
-        locale = locale,
-        messageCatalogue = messageCatalogue,
-        consentData = consentData,
-        isCheckboxChecked = isCheckboxChecked,
-        isConsentValidationFailed = isConsentValidationFailed,
-        sectionIndex = 0,
-        sectionTypes = emptySet(),
-        allTypesOnPage = consentData.map { it.consentType }.toSet()
-    )
-    assertEquals("Step 1.", presenter1.stepIndicatorAccessibilityText)
+fun getSectionStepIndicatorAccessibilityText_returns_localized_when_available_else_number() {
+    val allTypes = consentData.map { it.consentType }.toSet()
 
-    // second section (index 1) -> "Step 2."
-    val presenter2 = ConsentSectionPresenter(
-        contentFile = contentFile,
-        locale = locale,
-        messageCatalogue = messageCatalogue,
-        consentData = consentData,
-        isCheckboxChecked = isCheckboxChecked,
-        isConsentValidationFailed = isConsentValidationFailed,
-        sectionIndex = 1,
-        sectionTypes = emptySet(),
-        allTypesOnPage = consentData.map { it.consentType }.toSet()
-    )
-    assertEquals("Step 2.", presenter2.stepIndicatorAccessibilityText)
+    val p1 = presenterFor(sectionTypes = emptySet(), allTypesOnPage = allTypes, sectionIndex = 0)
+    assertEquals("Step 1.", p1.stepIndicatorAccessibilityText)
+
+    val p2 = presenterFor(sectionTypes = emptySet(), allTypesOnPage = allTypes, sectionIndex = 1)
+    assertEquals("Step 2.", p2.stepIndicatorAccessibilityText)
+
+    // edge case: no localized key for 3+, expect raw number
+    val p3 = presenterFor(sectionTypes = emptySet(), allTypesOnPage = allTypes, sectionIndex = 2)
+    assertEquals("3", p3.stepIndicatorAccessibilityText)
 }
+
+
