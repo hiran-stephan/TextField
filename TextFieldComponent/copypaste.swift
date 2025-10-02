@@ -1,6 +1,9 @@
-.onChange(of: navigator.path) { newPath in
-    print("PATH ->", newPath.map { "\($0)" }) // see the actual items coming from KMP
-}
+// 👇 Add this ON THE NavigationStack (or right after it in the chain)
+        .onChange(of: navigator.path) { newPath in
+            let dump = newPath.map { "\($0)" }.joined(separator: " -> ")
+            print("PATH -> [\(dump)]")
+        }
 
-// Inside your destination:
+
+
 print("DEST ->", String(describing: type(of: item)), item)
