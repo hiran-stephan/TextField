@@ -1,9 +1,13 @@
-// 👇 Add this ON THE NavigationStack (or right after it in the chain)
-        .onChange(of: navigator.path) { newPath in
-            let dump = newPath.map { "\($0)" }.joined(separator: " -> ")
-            print("PATH -> [\(dump)]")
+.navigationDestination(for: NavigationItem.self) { item in
+    destination(item)
+        .onAppear {
+            // Print the count and the identity (pointer) of each element
+            let ids = navigator.path.map { elem in
+                (String(describing: type(of: elem)),
+                 ObjectIdentifier(elem as AnyObject))
+            }
+            print("PATH IDENTITIES ->", ids)
+            print("DEST APPEARED ->", String(describing: type(of: item)),
+                  ObjectIdentifier(item as AnyObject), item)
         }
-
-
-
-print("DEST ->", String(describing: type(of: item)), item)
+}
