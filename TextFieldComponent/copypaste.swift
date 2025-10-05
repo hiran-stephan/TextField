@@ -1,3 +1,6 @@
+private val splashScope = MainScope() // or viewModelScope if you're in a VM
+private var pendingDeepLinkJob: Job? = null
+
 private fun navigateToPendingDeepLink() {
     deepLinkHandler.notifySplashScreenCompletion(completion = true)
 
@@ -17,4 +20,9 @@ private fun navigateToPendingDeepLink() {
         // non-iOS → original behavior
         deepLinkHandler.consumePendingNavigationItem()?.let(::navigateTo)
     }
+}
+
+// Call when leaving Splash to avoid a late navigation firing:
+private fun cancelPendingDeepLinkNavigation() {
+    pendingDeepLinkJob?.cancel()
 }
