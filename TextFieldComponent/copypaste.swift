@@ -1,11 +1,20 @@
-@MainActor private func pruneAuthHistoryIfNeeded(for item: NavigationItem) {
-    // Only run for AuthenticationNavigationItems
-    guard item is AuthenticationNavigationItems else { return }
-    guard !navigator.path.isEmpty else { return }
+private fun navigateToPendingDeepLink() {
+    deepLinkHandler.notifySplashScreenCompletion(completion = true)
 
-    // Remove matching AuthenticationNavigationItems directly from path
-    navigator.path.removeAll { past in
-        (past is AuthenticationNavigationItems) &&
-        past.matches(navigationItem: item)
+    if (AppInfo.isIOS()) {
+        // 1) Push the boundary first
+        navigateTo(AuthenticationNavigationItems.Main())
+
+        // 2) After a short delay, consume and navigate to the pending deep link (if any)
+        pendingDeepLinkJob?.cancel()
+        pendingDeepLinkJob = splashScope.launch {
+            delay(150) // try 100–200ms; keep it small
+            deepLinkHandler.consumePendingNavigationItem()?.let { item ->
+                navigateTo(item)
+            }
+        }
+    } else {
+        // non-iOS → original behavior
+        deepLinkHandler.consumePendingNavigationItem()?.let(::navigateTo)
     }
 }
