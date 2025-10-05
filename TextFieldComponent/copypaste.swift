@@ -1,28 +1,21 @@
-private val splashScope = MainScope() // or viewModelScope if you're in a VM
-private var pendingDeepLinkJob: Job? = null
+@MainActor private func pruneAuthHistoryIfNeeded(for item: NavigationItem) {
+    // Only run for AuthenticationNavigationItems
+    guard item is AuthenticationNavigationItems else { return }
+    guard !navigator.path.isEmpty else { return }
 
-private fun navigateToPendingDeepLink() {
-    deepLinkHandler.notifySplashScreenCompletion(completion = true)
-
-    if (AppInfo.isIOS()) {
-        // 1) Push the boundary first
-        navigateTo(AuthenticationNavigationItems.Main())
-
-        // 2) After a short delay, consume and navigate to the pending deep link (if any)
-        pendingDeepLinkJob?.cancel()
-        pendingDeepLinkJob = splashScope.launch {
-            delay(150) // try 100–200ms; keep it small
-            deepLinkHandler.consumePendingNavigationItem()?.let { item ->
-                navigateTo(item)
-            }
-        }
-    } else {
-        // non-iOS → original behavior
-        deepLinkHandler.consumePendingNavigationItem()?.let(::navigateTo)
+    // Remove matching AuthenticationNavigationItems directly from path
+    navigator.path.removeAll { past in
+        (past is AuthenticationNavigationItems) &&
+        past.matches(navigationItem: item)
     }
 }
 
-// Call when leaving Splash to avoid a late navigation firing:
-private fun cancelPendingDeepLinkNavigation() {
-    pendingDeepLinkJob?.cancel()
+@MainActor func navigateTo(item: NavigationItem, clearStack: Bool) {
+    if clearStack {
+        let router = RouterLookup.find(item.domain())
+        clearStackToBottomNavigation(matchingRouter: router)
+    }
+
+    pruneAuthHistoryIfNeeded(for: item)
+    navigator.path.append(item)
 }
