@@ -1,57 +1,41 @@
-extension NavigationItem {
+/// Otherwise returns an inert placeholder (no layout, no work).
+struct DestinationGate<Content: View>: View {
+    @EnvironmentObject private var navigator: Navigator
+    let item: NavigationItem
+    let content: () -> Content
 
-    // MARK: Stable key for SwiftUI identity
-    var navKey: String {
-        let domain = domain()
-        let path = path()
-
-        // Convert KMP maps (NSDictionary bridge)
-        let pathParams = convertMapToDict(anyMap: pathParams())
-        let queryParams = convertMapToDict(anyMap: queryParams())
-
-        // Sort for deterministic key
-        let serializedPathParams = pathParams
-            .sorted { $0.key < $1.key }
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: "&")
-
-        let serializedQueryParams = queryParams
-            .sorted { $0.key < $1.key }
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: "&")
-
-        return "\(domain)|\(path)|\(serializedPathParams)|\(serializedQueryParams)"
+    init(item: NavigationItem, @ViewBuilder content: @escaping () -> Content) {
+        self.item = item
+        self.content = content
     }
 
-    /// Converts KMP Map<*, *> (bridged as NSDictionary) to Swift [String:String]
-    private func convertMapToDict(anyMap: Any?) -> [String: String] {
-        guard let dict = anyMap as? NSDictionary else { return [:] }
-        var result: [String: String] = [:]
-        for (key, value) in dict {
-            if let k = key as? String {
-                result[k] = "\(value)"
+    var body: some View {
+        if navigator.path.last?.navKey == item.navKey {
+            content()                // ✅ heavy view is built ONLY for top item
+        } else {
+            Color.clear
+                .frame(width: 0, height: 0)
+                .accessibilityHidden(true)
+                .allowsHitTesting(false)
+        }
+    }
+}
+
+
+NavigationStack(path: $navigator.path) {
+    splashScene()
+        .navigationDestination(for: NavigationItem.self) { item in
+            DestinationGate(item: item) {
+                makeScreen(selectedPath: item)
+                    .id(item.navKey)     // keep this for stable identity
             }
         }
-        return result
-    }
+}
 
-    // MARK: NSObject overrides for equality & hash
-
-    public override var hash: Int {
-        navKey.hashValue
-    }
-
+extension NavigationItem {
+    public override var hash: Int { navKey.hashValue }
     public override func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? NavigationItem else { return false }
-        return self.navKey == other.navKey
-    }
-
-    // MARK: Optional Swift convenience (not override)
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(navKey)
-    }
-
-    public static func == (lhs: NavigationItem, rhs: NavigationItem) -> Bool {
-        lhs.navKey == rhs.navKey
+        return navKey == other.navKey
     }
 }
