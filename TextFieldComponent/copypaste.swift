@@ -1,39 +1,68 @@
-// In SplashViewModel.kt
+import Shared // your KMP shared module
 
-private fun navigateToPendingDeepLink() {
-    deepLinkHandler.notifySplashScreenCompletion(completion = true)
+extension NavigationItem {
 
-    // Atomically read+clear, if you can. If you don't have this helper yet,
-    // do getPreSignOnNavigationItem()?.also { clearNavigationItem() }.
-    val pending: NavigationItem? =
-        deepLinkHandler.consumePreSignOnNavigationItem()
+    /// Stable unique key for navigation identity in SwiftUI
+    var navKey: String {
+        let domain = domain()
+        let path = path()
 
-    if (AppInfo.isIOS()) {
-        val main = AuthenticationNavigationItems.Main()
+        // Convert KMP maps to Swift dictionaries safely
+        let pathParams = convertMapToDict(kmpMap: pathParams())
+        let queryParams = convertMapToDict(kmpMap: queryParams())
 
-        val target: NavigationItem = when {
-            // If there's no pre-sign-on item -> go to Main
-            pending == null -> main
+        // Serialize params in sorted order for stability
+        let serializedPathParams = pathParams
+            .sorted(by: { $0.key < $1.key })
+            .map { "\($0.key)=\($0.value)" }
+            .joined(separator: "&")
 
-            // If pending is an auth item and is "route-equivalent" to Main,
-            // (i.e., SignOn), PREFER the pending item (it carries code/redirectTo/friendlyId)
-            pending is AuthenticationNavigationItems && main.matches(pending) -> pending
+        let serializedQueryParams = queryParams
+            .sorted(by: { $0.key < $1.key })
+            .map { "\($0.key)=\($0.value)" }
+            .joined(separator: "&")
 
-            // Otherwise (non-auth or unrelated deep link), navigate to it directly
-            else -> pending
-        }
-
-        navigateTo(target)
-        return
+        return "\(domain)|\(path)|\(serializedPathParams)|\(serializedQueryParams)"
     }
 
-    // Non-iOS: keep your existing behavior (or adjust similarly if desired)
-    pending?.let(::navigateTo)
+    private func convertMapToDict(kmpMap: KotlinMap<AnyObject, AnyObject>?) -> [String: String] {
+        var dict: [String: String] = [:]
+        kmpMap?.forEach { key, value in
+            if let k = key as? String {
+                dict[k] = "\(value)"
+            }
+        }
+        return dict
+    }
 }
 
-// DeepLinkHandler
-fun consumePreSignOnNavigationItem(): NavigationItem? {
-    val item = getPreSignOnNavigationItem()
-    if (item != null) clearNavigationItem()
-    return item
+
+extension NavigationItem: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(navKey)
+    }
+
+    public static func == (lhs: NavigationItem, rhs: NavigationItem) -> Bool {
+        lhs.navKey == rhs.navKey
+    }
 }
+
+
+@ViewBuilder
+private func destination(_ item: NavigationItem) -> some View {
+    makeScreen(selectedPath: item)
+        .id(item.navKey)
+        .onAppear {
+            guard item == navigator.path.last else { return }
+            // Only run side-effects for top item
+        }
+}
+
+
+    .onChange(of: navigator.path) { path in
+        print("NAV PATH:", path.map { $0.navKey })
+    }
+    .navigationDestination(for: NavigationItem.self) { item in
+        print("DESTINATION BUILD:", item.navKey)
+        destination(item)
+    }
