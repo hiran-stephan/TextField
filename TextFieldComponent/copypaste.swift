@@ -8,8 +8,8 @@ extension NavigationItem {
         let path = path()
 
         // Convert KMP maps to Swift dictionaries safely
-        let pathParams = convertMapToDict(kmpMap: pathParams())
-        let queryParams = convertMapToDict(kmpMap: queryParams())
+        let pathParams = convertMapToDict(anyMap: pathParams())
+        let queryParams = convertMapToDict(anyMap: queryParams())
 
         // Serialize params in sorted order for stability
         let serializedPathParams = pathParams
@@ -25,18 +25,20 @@ extension NavigationItem {
         return "\(domain)|\(path)|\(serializedPathParams)|\(serializedQueryParams)"
     }
 
-    private func convertMapToDict(kmpMap: KotlinMap<AnyObject, AnyObject>?) -> [String: String] {
-        var dict: [String: String] = [:]
-        kmpMap?.forEach { key, value in
+    /// Converts a KMP Map<*, *> (bridged to NSDictionary) to [String: String]
+    private func convertMapToDict(anyMap: Any?) -> [String: String] {
+        guard let dict = anyMap as? NSDictionary else { return [:] }
+        var result: [String: String] = [:]
+        for (key, value) in dict {
             if let k = key as? String {
-                dict[k] = "\(value)"
+                result[k] = "\(value)"
             }
         }
-        return dict
+        return result
     }
 }
 
-
+// MARK: - Hashable Support
 extension NavigationItem: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(navKey)
@@ -46,23 +48,3 @@ extension NavigationItem: Hashable {
         lhs.navKey == rhs.navKey
     }
 }
-
-
-@ViewBuilder
-private func destination(_ item: NavigationItem) -> some View {
-    makeScreen(selectedPath: item)
-        .id(item.navKey)
-        .onAppear {
-            guard item == navigator.path.last else { return }
-            // Only run side-effects for top item
-        }
-}
-
-
-    .onChange(of: navigator.path) { path in
-        print("NAV PATH:", path.map { $0.navKey })
-    }
-    .navigationDestination(for: NavigationItem.self) { item in
-        print("DESTINATION BUILD:", item.navKey)
-        destination(item)
-    }
