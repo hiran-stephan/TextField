@@ -1,41 +1,17 @@
-/// Otherwise returns an inert placeholder (no layout, no work).
-struct DestinationGate<Content: View>: View {
-    @EnvironmentObject private var navigator: Navigator
-    let item: NavigationItem
-    let content: () -> Content
+// Add window.open handler here:
+extension PlatformWebViewInterface: WKUIDelegate {
+    func webView(_ webView: WKWebView,
+                 createWebViewWith configuration: WKWebViewConfiguration,
+                 for navigationAction: WKNavigationAction,
+                 windowFeatures: WKWindowFeatures) -> WKWebView? {
 
-    init(item: NavigationItem, @ViewBuilder content: @escaping () -> Content) {
-        self.item = item
-        self.content = content
-    }
-
-    var body: some View {
-        if navigator.path.last?.navKey == item.navKey {
-            content()                // ✅ heavy view is built ONLY for top item
-        } else {
-            Color.clear
-                .frame(width: 0, height: 0)
-                .accessibilityHidden(true)
-                .allowsHitTesting(false)
-        }
-    }
-}
-
-
-NavigationStack(path: $navigator.path) {
-    splashScene()
-        .navigationDestination(for: NavigationItem.self) { item in
-            DestinationGate(item: item) {
-                makeScreen(selectedPath: item)
-                    .id(item.navKey)     // keep this for stable identity
+        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
+            if viewModel.loadAppPageWebView(url: url.absoluteString) == false {
+                UIApplication.shared.open(url)
+            } else {
+                webView.load(URLRequest(url: url))
             }
         }
-}
-
-extension NavigationItem {
-    public override var hash: Int { navKey.hashValue }
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? NavigationItem else { return false }
-        return navKey == other.navKey
+        return nil
     }
 }
