@@ -39,3 +39,5 @@ private var tabSelected: Binding<String> {
                    viewModel.navigationToRDCForiOS(navigationItem: navigationItem)
                }
            }
+
+   .transaction { $0.disablesAnimations = true } // optional: eliminate micro flicker
