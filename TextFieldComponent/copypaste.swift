@@ -1,17 +1,25 @@
-// Add window.open handler here:
-extension PlatformWebViewInterface: WKUIDelegate {
-    func webView(_ webView: WKWebView,
-                 createWebViewWith configuration: WKWebViewConfiguration,
-                 for navigationAction: WKNavigationAction,
-                 windowFeatures: WKWindowFeatures) -> WKWebView? {
+private var tabSelectionBinding: Binding<String> {
+    Binding<String>(
+        get: {
+            // current selection from KMP state
+            sharedState.state?.bottomNavSelectedDomain
+            ?? HomeNavigationItems.Main.shared.domain()
+        },
+        set: { newValue in
+            guard let navItem = getNavigationItemFromDomain(domain: newValue) else { return }
 
-        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
-            if viewModel.loadAppPageWebView(url: url.absoluteString) == false {
-                UIApplication.shared.open(url)
+            // If user changed tab -> notify click
+            if newValue != sharedState.state?.bottomNavSelectedDomain {
+                viewModel.onBottomNavigationItemClick(selectedItem: navItem)
             } else {
-                webView.load(URLRequest(url: url))
+                // Same tab tapped again -> your reselect behavior
+                viewModel.navigationToRDCForiOS(navigationItem: navItem)
             }
+
+            // Persist new selection into KMP shared state
+            viewModel.onBottomNavigationItemChanged(selectedItem: navItem)
+            // or: viewModel.updateBottomNavigationItem(selectedItem: navItem)
         }
-        return nil
-    }
+    )
 }
+
