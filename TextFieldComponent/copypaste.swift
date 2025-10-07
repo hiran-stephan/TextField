@@ -1,25 +1,41 @@
-private var tabSelectionBinding: Binding<String> {
-    Binding<String>(
-        get: {
-            // current selection from KMP state
-            sharedState.state?.bottomNavSelectedDomain
-            ?? HomeNavigationItems.Main.shared.domain()
-        },
-        set: { newValue in
-            guard let navItem = getNavigationItemFromDomain(domain: newValue) else { return }
+private var tabSelected: Binding<String> {
+       Binding(
+           get: {
+               // KMP current tab
+               sharedState.state?.bottomNavSelectedDomain
+               ?? HomeNavigationItems.Main.shared.domain()
+           },
+           set: { newDomain in
+               guard let item = getNavigationItemFromDomain(domain: newDomain) else { return }
+               // Mirrors your old write to @State, but to KMP
+               viewModel.onBottomNavigationItemChanged(selectedItem: item)
+           }
+       )
+   }
 
-            // If user changed tab -> notify click
-            if newValue != sharedState.state?.bottomNavSelectedDomain {
-                viewModel.onBottomNavigationItemClick(selectedItem: navItem)
-            } else {
-                // Same tab tapped again -> your reselect behavior
-                viewModel.navigationToRDCForiOS(navigationItem: navItem)
-            }
+   private var previousTabSelected: Binding<String> {
+       Binding(
+           get: {
+               // KMP previous tab
+               sharedState.state?.previousBottomNavSelectedDomain
+               ?? HomeNavigationItems.Main.shared.domain()
+           },
+           set: { newDomain in
+               guard let item = getNavigationItemFromDomain(domain: newDomain) else { return }
+               // New KMP method you’ll add
+               viewModel.onPreviousBottomNavigationItemChanged(selectedItem: item)
+           }
+       )
+   }
 
-            // Persist new selection into KMP shared state
-            viewModel.onBottomNavigationItemChanged(selectedItem: navItem)
-            // or: viewModel.updateBottomNavigationItem(selectedItem: navItem)
-        }
-    )
-}
+   .onChange(of: tabSelected.wrappedValue) { newValue in
+               // == your existing logic, just reading/writing through the bindings ==
+               guard let navigationItem = getNavigationItemFromDomain(domain: newValue) else { return }
 
+               if tabSelected.wrappedValue != previousTabSelected.wrappedValue {
+                   viewModel.onBottomNavigationItemClick(selectedItem: navigationItem)
+                   previousTabSelected.wrappedValue = newValue
+               } else {
+                   viewModel.navigationToRDCForiOS(navigationItem: navigationItem)
+               }
+           }
