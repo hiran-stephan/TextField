@@ -1,25 +1,16 @@
 /**
- * Defines the main authentication route with support for parameterized navigation.
- *
- * ### Change summary:
- * - Updated `ROUTE_MAIN` to accept an additional `code` parameter.
- * - Added `code` property in `Main` and overridden `queryParams()` to include:
- *   ```
- *   mapOf(
- *       KEY_PARAM_FRIENDLYID to friendlyId,
- *       KEY_PARAM_CODE to code
- *   )
- *   ```
- *
- * ### Reason:
- * - Previously, during sign-off the app navigated to `ROUTE_SIGNON`, which incorrectly
- *   became the **root** of the navigation stack.
- * - Navigation should instead go to `ROUTE_MAIN`, but `ROUTE_MAIN` did not support
- *   passing `code`.
- * - This update allows `ROUTE_MAIN` to carry the `code` parameter and act as the
- *   correct root for post-sign-off navigation.
- *
- * ### Result:
- * - Maintains proper navigator hierarchy after sign-off.
- * - Enables dynamic route creation and deep link handling with `code` support.
+ Builds the destination view for the current navigation item.
+
+ Adds a safeguard to prevent unnecessary re-rendering when the navigation path
+ updates. SwiftUI may treat all items in `navigator.path` as changed when only
+ the last item actually differs, causing redundant destination rebuilds.
+
+ ### Behavior:
+ - Compares the `route()` of the last item in `navigator.path` with the current `item`.
+ - If they match, skips view creation to avoid redundant rendering.
+ - Otherwise, proceeds with normal destination building logic (bottom-nav or standard screen).
+
+ ### Result:
+ Prevents unnecessary SwiftUI re-renders when `navigator.path` updates,
+ improving navigation performance and visual stability.
  */
