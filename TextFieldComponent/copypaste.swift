@@ -1,42 +1,19 @@
-// AFTER — use a real two-way Binding
+// AFTER — real Binding + explicit reset on dismiss
 .presentAlert(
     isPresented: Binding(
-        get: { model.state?.isCancelClicked ?? false },
-        set: { isShowing in
-            // when alert dismisses (swipe/tap outside), make sure VM is reset
-            if !isShowing { viewModel.onCancelDialogDismissed() }
+        get: { model.state?.shouldShowCancelDialog ?? false },
+        set: { showing in
+            if !showing { viewModel.updateShouldShowCancelDialogState(shouldShowCancelDialog = false) }
         }
     ),
-    title: dialogPresenter.title,
-    message: dialogPresenter.message,
+    title: cancelDialogPresenter.title,
+    message: cancelDialogPresenter.message,
     actions: [
-        AlertAction(title: dialogPresenter.cancelButtonText, style: .cancel) {
-            viewModel.onCancelDialogNoButtonClicked()   // will also hide
+        AlertAction(title: cancelDialogPresenter.cancelButtonText, style: .cancel) {
+            viewModel.onCancelDialogNoButtonClicked()      // also hides
         },
-        AlertAction(title: dialogPresenter.confirmButtonText, style: .default) {
-            viewModel.onCancelDialogYesButtonClicked()  // will also hide
+        AlertAction(title: cancelDialogPresenter.confirmButtonText, style: .default) {
+            viewModel.onCancelDialogYesButtonClicked()     // also hides + goBack()
         }
     ]
 )
-
-fun onCancelButtonClicked() {
-    setCancelDialog(visible = true)
-}
-
-fun onCancelDialogYesButtonClicked() {
-    setCancelDialog(visible = false)
-    analyticsHelper.trackChangeUserIdCancelConfirmationAction()
-    goBack()
-}
-
-fun onCancelDialogNoButtonClicked() {
-    setCancelDialog(visible = false)
-}
-
-fun onCancelDialogDismissed() {
-    setCancelDialog(visible = false)
-}
-
-private fun setCancelDialog(visible: Boolean) {
-    _changeUserIdUiState.update { it.copy(isCancelClicked = visible) }
-}
