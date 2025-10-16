@@ -1,19 +1,20 @@
-// AFTER — real Binding + explicit reset on dismiss
-.presentAlert(
-    isPresented: Binding(
-        get: { model.state?.shouldShowCancelDialog ?? false },
-        set: { showing in
-            if !showing { viewModel.updateShouldShowCancelDialogState(shouldShowCancelDialog = false) }
-        }
-    ),
-    title: cancelDialogPresenter.title,
-    message: cancelDialogPresenter.message,
-    actions: [
-        AlertAction(title: cancelDialogPresenter.cancelButtonText, style: .cancel) {
-            viewModel.onCancelDialogNoButtonClicked()      // also hides
-        },
-        AlertAction(title: cancelDialogPresenter.confirmButtonText, style: .default) {
-            viewModel.onCancelDialogYesButtonClicked()     // also hides + goBack()
-        }
-    ]
-)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+brew --version
+
+
+brew install ruby
+
+
+echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+ruby -v
+
+gem update --system
+gem install bundler
+
