@@ -18,3 +18,12 @@ ruby -v
 gem update --system
 gem install bundler
 
+gem install --user-install cocoapods
+echo 'export PATH="$HOME/.gem/ruby/$(ruby -e "print RUBY_VERSION")/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+sudo gem install -n /usr/local/bin cocoapods
+
+bundle install
+bundle exec pod install
+
