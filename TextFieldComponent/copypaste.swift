@@ -21,6 +21,9 @@ private func openPhoneURL(_ url: URL) {
         return
     }
 
+
+    
+
     // Final fallback: show a friendly message (or copy number)
     viewModel.checkNetworkAndDisplayError(message: "This device can't place calls. Number: +\(digits)")
 }
@@ -131,6 +134,48 @@ func webView(_ webView: WKWebView,
     <li>On iPad Wi-Fi: <code>tel:</code> may not be handled → test your FaceTime Audio fallback.</li>
   </ul>
 </p>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phone Link Test</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial;
+         padding: 24px; background: #fafafa; color: #222; }
+  a.btn {
+    display: block;
+    width: fit-content;
+    margin: 12px 0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #c00;
+    color: #fff;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<h2>Phone Link Test</h2>
+<p>Number: +1 (877) 448-6500 (CIBC USA Help Center)</p>
+
+<!-- 1️⃣ Normal tel link -->
+<a class="btn" href="tel:+18774486500">Call (plain)</a>
+
+<!-- 2️⃣ target=_self -->
+<a class="btn" href="tel:+18774486500" target="_self">Call (target=_self)</a>
+
+<!-- 3️⃣ target=_blank -->
+<a class="btn" href="tel:+18774486500" target="_blank">Call (target=_blank)</a>
+
+<!-- 4️⃣ FaceTime Audio fallback (for iPad) -->
+<a class="btn" href="facetime-audio://+18774486500">FaceTime Audio (fallback)</a>
 
 </body>
 </html>
