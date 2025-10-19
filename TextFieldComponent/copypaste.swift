@@ -1,29 +1,74 @@
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+// MARK: - Helpers
 
+private func openPhoneURL(_ url: URL) {
+    let app = UIApplication.shared
 
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+    // Try native phone first (works on iPhone; some iPads with Continuity may still handle it)
+    if app.canOpenURL(url) {
+        app.open(url)
+        return
+    }
 
-brew --version
+    // iPad fallback: try FaceTime Audio
+    // Add "facetime-audio" to LSApplicationQueriesSchemes in Info.plist for canOpenURL to work:
+    // <key>LSApplicationQueriesSchemes</key>
+    // <array>
+    //   <string>facetime-audio</string>
+    // </array>
+    let digits = url.absoluteString.filter(\.isNumber)
+    if let ft = URL(string: "facetime-audio://\(digits)"), app.canOpenURL(ft) {
+        app.open(ft)
+        return
+    }
 
+    // Final fallback: show a friendly message (or copy number)
+    viewModel.checkNetworkAndDisplayError(message: "This device can't place calls. Number: +\(digits)")
+}
 
-brew install ruby
+private func handleExternalURL(_ url: URL) {
+    let scheme = (url.scheme ?? "").lowercased()
+    switch scheme {
+    case "tel", "telprompt":
+        openPhoneURL(url)
+    case "sms", "mailto":
+        UIApplication.shared.open(url)
+    default:
+        UIApplication.shared.open(url) // generic external link
+    }
+}
 
+// MARK: - WKNavigationDelegate
 
-echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+func webView(_ webView: WKWebView,
+             decidePolicyFor navigationAction: WKNavigationAction,
+             decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
 
-ruby -v
+    guard let url = navigationAction.request.url else {
+        decisionHandler(.allow)
+        return
+    }
 
-gem update --system
-gem install bundler
+    let scheme = (url.scheme ?? "").lowercased()
 
-gem install --user-install cocoapods
-echo 'export PATH="$HOME/.gem/ruby/$(ruby -e "print RUBY_VERSION")/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+    // 1) Special schemes
+    if ["tel", "telprompt", "sms", "mailto"].contains(scheme) {
+        decisionHandler(.cancel)
+        handleExternalURL(url)
+        return
+    }
 
-sudo gem install -n /usr/local/bin cocoapods
+    // 2) Handle target="_blank" (no target frame => WKWebView won’t navigate)
+    if navigationAction.targetFrame == nil {
+        decisionHandler(.cancel)
+        handleExternalURL(url)
+        return
+    }
 
-bundle install
-bundle exec pod install
+    // your existing allow/deny logic (domain checks etc.)
+    if viewModel.loadOnPageWebViewUrl(url: url.absoluteString) {
+        decisionHandler(.cancel)
+        return
+    }
 
+    decisionHandler(.allow)
+}
