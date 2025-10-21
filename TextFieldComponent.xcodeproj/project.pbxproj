@@ -48,11 +48,7 @@
 		3B71B9632C8A1CC00058896A /* ModifiedPasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9622C8A1CBF0058896A /* ModifiedPasswordField.swift */; };
 		3B71B9A92C937D7A0058896A /* ListCellBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */; };
 		3B71B9AB2C937D8C0058896A /* ListCellBottomSheetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */; };
-		3B76B6812E2E941200249CE1 /* Hiran - Lead iOS Developer (5).pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B76B6802E2E941200249CE1 /* Hiran - Lead iOS Developer (5).pdf */; };
-		3B76B6832E37B0E300249CE1 /* Hiran Work Permit.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B76B6822E37B0E300249CE1 /* Hiran Work Permit.pdf */; };
-		3B76B6852E4E194C00249CE1 /* 2025-08-14-09-13-39-451.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3B76B6842E4E194C00249CE1 /* 2025-08-14-09-13-39-451.jpg */; };
 		3B76B6872E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B76B6862E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf */; };
-		3B76B68C2E8B028800249CE1 /* selfeval.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 3B76B68B2E8B028800249CE1 /* selfeval.rtf */; };
 		3BCAC26A2E1D83EF001CC0C9 /* copypaste.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
@@ -122,23 +118,14 @@
 		3B71B9A22C93499E0058896A /* Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Simulator Screen Recording - iPad (10th generation) - 2024-09-12 at 11.58.51.mp4"; sourceTree = "<group>"; };
 		3B71B9A82C937D7A0058896A /* ListCellBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheet.swift; sourceTree = "<group>"; };
 		3B71B9AA2C937D8C0058896A /* ListCellBottomSheetManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCellBottomSheetManager.swift; sourceTree = "<group>"; };
-		3B76B6802E2E941200249CE1 /* Hiran - Lead iOS Developer (5).pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Hiran - Lead iOS Developer (5).pdf"; sourceTree = "<group>"; };
-		3B76B6822E37B0E300249CE1 /* Hiran Work Permit.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Hiran Work Permit.pdf"; sourceTree = "<group>"; };
-		3B76B6842E4E194C00249CE1 /* 2025-08-14-09-13-39-451.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "2025-08-14-09-13-39-451.jpg"; sourceTree = "<group>"; };
 		3B76B6862E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "IMM5739_2-1EE7J7A6 (1).pdf"; sourceTree = "<group>"; };
-		3B76B6892E8300A300249CE1 /* Resume_Duela_Davis (1).docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resume_Duela_Davis (1).docx"; sourceTree = "<group>"; };
-		3B76B68A2E85F07500249CE1 /* consent_flow_pr_summary.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = consent_flow_pr_summary.docx; sourceTree = "<group>"; };
-		3B76B68B2E8B028800249CE1 /* selfeval.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = selfeval.rtf; sourceTree = "<group>"; };
-		3B76B68D2EA1506E00249CE1 /* Customer Service Rep.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Customer Service Rep.docx"; sourceTree = "<group>"; };
-		3B76B68E2EA1507F00249CE1 /* QA_Duela_Davis.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = QA_Duela_Davis.docx; sourceTree = "<group>"; };
 		3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_DomainModels_Mappers.docx; sourceTree = "<group>"; };
-		3BCAC2662E19F8D8001CC0C9 /* ContentConstants_Document_Full.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ContentConstants_Document_Full.docx; sourceTree = "<group>"; };
-		3BCAC2672E19FA94001CC0C9 /* ManageAlerts_AnalyticsIntegration.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageAlerts_AnalyticsIntegration.docx; sourceTree = "<group>"; };
-		3BCAC2682E1C0DD4001CC0C9 /* Manage_Alerts_iOS_UI_Components.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = Manage_Alerts_iOS_UI_Components.docx; sourceTree = "<group>"; };
 		3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = copypaste.swift; sourceTree = "<group>"; };
-		3BCAC26B2E1DB72C001CC0C9 /* ManageMyAlerts_Challenge.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = ManageMyAlerts_Challenge.docx; sourceTree = "<group>"; };
 		3BDE7B562CA4FAB1008208AC /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Hiran - photo.jpg"; sourceTree = "<group>"; };
+		3BF745F72EA7E94B008DE35F /* Customer_Service_Rep_CIBC.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = Customer_Service_Rep_CIBC.docx; sourceTree = "<group>"; };
+		3BF745F82EA7E94B008DE35F /* Mobile Financial Sales Specialist.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mobile Financial Sales Specialist.docx"; sourceTree = "<group>"; };
+		3BF745F92EA7E94B008DE35F /* Sanctions and Transactions Monitoring Analyst.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sanctions and Transactions Monitoring Analyst.docx"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,23 +183,14 @@
 				3B71B9A02C9349900058896A /* Resources */,
 				3B4379862C8783AE00495EF1 /* Theme */,
 				3B4379482C80AF7A00495EF1 /* TextFieldComponentApp.swift */,
-				3B76B6842E4E194C00249CE1 /* 2025-08-14-09-13-39-451.jpg */,
-				3BCAC2682E1C0DD4001CC0C9 /* Manage_Alerts_iOS_UI_Components.docx */,
-				3B76B68B2E8B028800249CE1 /* selfeval.rtf */,
-				3B76B6802E2E941200249CE1 /* Hiran - Lead iOS Developer (5).pdf */,
-				3BCAC2662E19F8D8001CC0C9 /* ContentConstants_Document_Full.docx */,
-				3B76B68D2EA1506E00249CE1 /* Customer Service Rep.docx */,
-				3B76B68E2EA1507F00249CE1 /* QA_Duela_Davis.docx */,
-				3B76B6822E37B0E300249CE1 /* Hiran Work Permit.pdf */,
-				3BCAC2672E19FA94001CC0C9 /* ManageAlerts_AnalyticsIntegration.docx */,
-				3BCAC26B2E1DB72C001CC0C9 /* ManageMyAlerts_Challenge.docx */,
-				3B76B68A2E85F07500249CE1 /* consent_flow_pr_summary.docx */,
-				3B76B6892E8300A300249CE1 /* Resume_Duela_Davis (1).docx */,
 				3B43794A2C80AF7A00495EF1 /* ContentView.swift */,
 				3B4379722C80BCDD00495EF1 /* CustomTextField */,
 				3B43794C2C80AF7C00495EF1 /* Assets.xcassets */,
 				3B43794E2C80AF7C00495EF1 /* Preview Content */,
 				3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */,
+				3BF745F72EA7E94B008DE35F /* Customer_Service_Rep_CIBC.docx */,
+				3BF745F82EA7E94B008DE35F /* Mobile Financial Sales Specialist.docx */,
+				3BF745F92EA7E94B008DE35F /* Sanctions and Transactions Monitoring Analyst.docx */,
 				3B76B6862E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf */,
 				3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */,
 			);
@@ -435,13 +413,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B76B68C2E8B028800249CE1 /* selfeval.rtf in Resources */,
 				3B4379502C80AF7C00495EF1 /* Preview Assets.xcassets in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
 				3B76B6872E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf in Resources */,
-				3B76B6812E2E941200249CE1 /* Hiran - Lead iOS Developer (5).pdf in Resources */,
-				3B76B6852E4E194C00249CE1 /* 2025-08-14-09-13-39-451.jpg in Resources */,
-				3B76B6832E37B0E300249CE1 /* Hiran Work Permit.pdf in Resources */,
 				3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
