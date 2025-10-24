@@ -1,2 +1,13 @@
-No problem at all — happy to help! I’ve been part of Light Year since Phase 1 and have contributed through Phase 3 and Phase 5 as well. I’m always ready to step in and ensure the go-live runs smoothly. I see it as part of my responsibility to make sure everything goes live without any issues.
+xcode-select -p
+
+/Applications/Xcode.app/Contents/Developer
+
+sudo xcode-select --install
+
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+
+xcrun simctl list
+
+xcrun simctl push booted com.cibc.enterprise.CIBC /Users/Stephan/Documents/Payload.apns
+
 
