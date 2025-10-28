@@ -52,6 +52,8 @@
 		3BCAC26A2E1D83EF001CC0C9 /* copypaste.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */; };
 		3BDE7B572CA4FAB1008208AC /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDE7B562CA4FAB1008208AC /* AlertView.swift */; };
 		3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3BDE7B8E2CA737EE008208AC /* Hiran - photo.jpg */; };
+		3BF745FC2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3BF745FA2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf */; };
+		3BF745FD2EB14085008DE35F /* receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3BF745FB2EB14085008DE35F /* receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +128,8 @@
 		3BF745F72EA7E94B008DE35F /* Customer_Service_Rep_CIBC.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = Customer_Service_Rep_CIBC.docx; sourceTree = "<group>"; };
 		3BF745F82EA7E94B008DE35F /* Mobile Financial Sales Specialist.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mobile Financial Sales Specialist.docx"; sourceTree = "<group>"; };
 		3BF745F92EA7E94B008DE35F /* Sanctions and Transactions Monitoring Analyst.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sanctions and Transactions Monitoring Analyst.docx"; sourceTree = "<group>"; };
+		3BF745FA2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf"; sourceTree = "<group>"; };
+		3BF745FB2EB14085008DE35F /* receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +193,8 @@
 				3B43794E2C80AF7C00495EF1 /* Preview Content */,
 				3BCAC25F2E186E02001CC0C9 /* ManageAlerts_DomainModels_Mappers.docx */,
 				3BF745F72EA7E94B008DE35F /* Customer_Service_Rep_CIBC.docx */,
+				3BF745FB2EB14085008DE35F /* receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf */,
+				3BF745FA2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf */,
 				3BF745F82EA7E94B008DE35F /* Mobile Financial Sales Specialist.docx */,
 				3BF745F92EA7E94B008DE35F /* Sanctions and Transactions Monitoring Analyst.docx */,
 				3B76B6862E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf */,
@@ -414,6 +420,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B4379502C80AF7C00495EF1 /* Preview Assets.xcassets in Resources */,
+				3BF745FD2EB14085008DE35F /* receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf in Resources */,
+				3BF745FC2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf in Resources */,
 				3B43794D2C80AF7C00495EF1 /* Assets.xcassets in Resources */,
 				3B76B6872E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf in Resources */,
 				3BDE7B8F2CA737EE008208AC /* Hiran - photo.jpg in Resources */,
