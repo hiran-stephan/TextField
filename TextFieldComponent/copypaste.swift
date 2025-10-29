@@ -1,50 +1,52 @@
-// --- Feature flag test toggles (adjust to your project’s helper) ---
-private func enableFraudFlagsForTests() {
-    // Try the most common hooks; if your project exposes different ones,
-    // replace these with your actual helpers.
-    FeatureHelper.setFraudReviewEnabledForTests?(true)
-    FeatureHelper.setFraudOptimizationEnabledForTests?(true)
+// MARK: - Center assertions (unchanged)
+private func centerIsFRM() -> Bool {
+    guard let panelVC = RoutingHelper.getPanelFrame(),
+          let center = panelVC.center else { return false }
 
-    // Fallbacks that many codebases have:
-    BKContainer.featureHelper?.enable?(.fraudReview)
-    BKContainer.featureHelper?.enable?(.fraudOptimization)
-
-    // If none of the above exist in your codebase, add one of these
-    // test-only extension shims in your test target:
-    //   extension FeatureHelper { static var _fraudReviewOverride = true ... }
+    if let nav = center as? UINavigationController {
+        return nav.topViewController is FRMWebViewWrapperController
+    }
+    if let nav = center.children.first(where: { $0 is UINavigationController }) as? UINavigationController {
+        return nav.topViewController is FRMWebViewWrapperController
+    }
+    if center is FRMWebViewWrapperController { return true }
+    return false
 }
 
-// --- Mobile-only stubs: make the device check pass synchronously ---
-class FakeOTCKeyService: OTCKeyService {
-    override func getPushOTVCRegisteredDeviceTag() -> String? { "TEST_TAG" }
+private func expectCenterToBeFRM(timeout: DispatchTimeInterval = .seconds(4)) {
+    expect({ () -> Bool in centerIsFRM() }).toEventually(beTrue(), timeout: timeout)
 }
 
-class FakeOTCService: OTCService {
-    override func getRegisteredPushOTVCDevice(_ tag: String,
-                                              completion: @escaping (RegisteredDeviceResponse) -> Void) {
-        // Immediately say "push enabled" so routing proceeds to FRM
-        completion(RegisteredDeviceResponse(status: .devicePushEnabled))
+// MARK: - OTC fakes to satisfy the mobile-only gate
+final class FakeOTCKeyService: OTCKeyService {
+    override func getPushOTVCRegisteredDeviceTag() -> String? {
+        return "UNIT_TEST_DEVICE_TAG"
     }
 }
 
-// Wire the fakes into whatever your app uses as a service locator.
-// Adjust these two assignment lines to match your container:
-private func installOTCFakes() {
+// Convenience to install the fakes in the app container used by the router.
+// If your project exposes these differently, adjust the two assignment lines.
+private func installOTCMocksForTests() {
+    // Your repo already has MockOTVCService (see screenshot)
+    let mock = MockOTVCService()
+    mock.getRegisteredDeviceSuccess = true
+    // build the response that equals "device push enabled"
+    var dto = RegisteredDeviceResponseDto()
+    dto.status = .devicePushEnabled
+    mock.mockRegisteredDeviceResponseDto = dto
+
     BKContainer.services.otcKeyService = FakeOTCKeyService()
-    BKContainer.services.otcService    = FakeOTCService()
+    BKContainer.services.otcService    = mock
 }
 
 it("routeToFRMFraudReview") {
-    // GIVEN
-    enableFraudFlagsForTests()
-    BKAppState.didActionFraudAlertNotification = true    // satisfies the first gate, if used
+    // GIVEN: FRM required (not mobile-only), and app flagged as coming from Fraud Alert
+    BKAppState.didActionFraudAlertNotification = true
 
-    let actionItems = ActionItemRequiredFlagResponseDto(
-        response: [
-            "cdccRequired": false,
-            "ccFraudReviewRequired": true
-        ]
-    )!
+    let actionItems = ActionItemRequiredFlagResponseDto(response: [
+        "cdccRequired": false,
+        "ccFraudReviewRequired": true
+    ])!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
     guard TabbarUtils.getTabbarViewController() != nil else {
@@ -54,24 +56,21 @@ it("routeToFRMFraudReview") {
     // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
-    // THEN
-    expectCenterToBeFRM(timeout: .seconds(3))
+    // THEN: FRM should be set as the center/root (not modally presented)
+    expectCenterToBeFRM()
 }
 
 
 it("routeToFRMFraudReviewMobileOnly") {
-    // GIVEN
-    enableFraudFlagsForTests()
-    installOTCFakes()                                   // <- critical for mobile-only path
-    BKAppState.didActionFraudAlertNotification = true   // satisfies the first gate, if used
+    // GIVEN: Mobile-only FRM required + OTC device gates satisfied
+    BKAppState.didActionFraudAlertNotification = true
+    installOTCMocksForTests()          // <- CRITICAL for this path
 
-    let actionItems = ActionItemRequiredFlagResponseDto(
-        response: [
-            "cdccRequired": false,
-            "ccFraudReviewRequired": false,
-            "fraudCaseReviewMobileOnlyRequired": true
-        ]
-    )!
+    let actionItems = ActionItemRequiredFlagResponseDto(response: [
+        "cdccRequired": false,
+        "ccFraudReviewRequired": false,
+        "fraudCaseReviewMobileOnlyRequired": true
+    ])!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
     guard TabbarUtils.getTabbarViewController() != nil else {
@@ -82,5 +81,6 @@ it("routeToFRMFraudReviewMobileOnly") {
     BKContainer.routing.actionItem.routeToActionItem()
 
     // THEN
-    expectCenterToBeFRM(timeout: .seconds(5))           // allow time for async callback
+    expectCenterToBeFRM(timeout: .seconds(5)) // allow async OTC callback
 }
+
