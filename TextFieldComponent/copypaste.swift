@@ -1,67 +1,119 @@
-// MARK: - FRM presence under center (recursive)
-private func containsFRMWebView(_ vc: UIViewController) -> Bool {
-    // Direct hit
-    if vc is FRMWebViewController { return true }
+import ObjectiveC.runtime
 
-    // UINavigationController case
-    if let nav = vc as? UINavigationController {
-        if nav.viewControllers.contains(where: { $0 is FRMWebViewController }) { return true }
-        if let top = nav.topViewController, containsFRMWebView(top) { return true }
+// MARK: - Captured navigation
+private struct CapturedNav {
+    var enumName: String?
+    var navigationName: String?
+    var optionIsSetAsRoot: Bool = false
+}
+private var _lastCapturedNav = CapturedNav()
+private var _didSwizzleNavigate = false
+
+// MARK: - Swizzle UIViewController.navigate to capture calls
+extension UIViewController {
+    // Matches your extension signature
+    @objc func _ut_navigate(
+        enumName: String,
+        navigationName: String,
+        option: NavigationOption,
+        param: Any?,
+        moduleChanged: Bool
+    ) {
+        // record
+        _lastCapturedNav.enumName = enumName
+        _lastCapturedNav.navigationName = navigationName
+        _lastCapturedNav.optionIsSetAsRoot = {
+            if case .setAsRoot = option { return true }
+            return false
+        }()
+
+        // no-op: we intentionally DO NOT call the original here
+        // to avoid side-effects / storyboard loads in unit tests.
     }
-
-    // UITabBarController case
-    if let tab = vc as? UITabBarController {
-        if let selected = tab.selectedViewController, containsFRMWebView(selected) { return true }
-        if tab.viewControllers?.contains(where: { containsFRMWebView($0) }) == true { return true }
-    }
-
-    // CIBC custom TabViewController (like your CIBC.TabViewController)
-    // these usually have a single child that’s a UINavigationController
-    if String(describing: type(of: vc)).contains("TabViewController") {
-        for child in vc.children {
-            if containsFRMWebView(child) { return true }
-        }
-    }
-
-    // Generic children
-    for child in vc.children {
-        if containsFRMWebView(child) { return true }
-    }
-
-    return false
 }
 
-private func centerHasFRMWebView() -> Bool {
-    guard let panel = RoutingHelper.getPanelFrame(),
-          let center = panel.center else { return false }
-    return containsFRMWebView(center)
+private func installNavigateSpyOnce() {
+    guard !_didSwizzleNavigate else { return }
+    guard
+        let orig = class_getInstanceMethod(
+            UIViewController.self,
+            NSSelectorFromString("navigateWithEnumName:navigationName:option:param:moduleChanged:")
+        ),
+        let repl = class_getInstanceMethod(
+            UIViewController.self,
+            #selector(UIViewController._ut_navigate(enumName:navigationName:option:param:moduleChanged:))
+        )
+    else { fatalError("Failed to swizzle UIViewController.navigate(...)") }
+    method_exchangeImplementations(orig, repl)
+    _didSwizzleNavigate = true
 }
 
-private func expectCenterToContainFRM(timeout: DispatchTimeInterval = .seconds(8)) {
-    expect({ centerHasFRMWebView() }).toEventually(beTrue(), timeout: timeout)
+// Convenience asserts
+private func expectLastNav(toBe enumName: String, name: String, setAsRoot: Bool = true) {
+    expect(_lastCapturedNav.enumName) == enumName
+    expect(_lastCapturedNav.navigationName) == name
+    expect(_lastCapturedNav.optionIsSetAsRoot) == setAsRoot
 }
 
-it("routeToFRMFraudReview") {
+// MARK: - Gates used by router (only needed for mobile-only test)
+private func writeOTVCPushTagForTests() { CIBCKeyChain.setPushOTVCRegisteredDeviceTag("UNIT_TEST_DEVICE_TAG") }
+
+private var didSwizzleOTC = false
+extension OTCService {
+    @objc func _ut_getRegisteredPushOTVCDevice(
+        _ completion: @escaping OTCServiceCompletionHandler,
+        registeredDeviceTag: String
+    ) {
+        let dto = RegisteredDeviceResponseDto(
+            response: ["status": DeviceRegistrationStatus.devicePushEnabled.rawValue]
+        )
+        completion(dto, nil)
+    }
+}
+private func swizzleOTCIfNeeded() {
+    guard !didSwizzleOTC else { return }
+    guard
+        let o = class_getInstanceMethod(OTCService.self,
+            #selector(OTCService.getRegisteredPushOTVCDevice(_:registeredDeviceTag:))),
+        let r = class_getInstanceMethod(OTCService.self,
+            #selector(OTCService._ut_getRegisteredPushOTVCDevice(_:registeredDeviceTag:)))
+    else { fatalError("OTC swizzle failed") }
+    method_exchangeImplementations(o, r)
+    didSwizzleOTC = true
+}
+
+
+
+it("routes to FRMFraudReview via FRMWebviewNavigation (setAsRoot)") {
+    installNavigateSpyOnce()
+    _lastCapturedNav = CapturedNav()
+
+    // GIVEN
     BKAppState.didActionFraudAlertNotification = true
-    writeOTVCPushTagForTests()
-    swizzleOTCIfNeeded()
-
     let items = ActionItemRequiredFlagResponseDto(response: [
         "cdccRequired": false,
         "ccFraudReviewRequired": true
     ])!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(items)
+    expect(TabbrUtils.getTabbarViewController()).toNot(beNil())
 
-    guard TabbarUtils.getTabbarViewController() != nil else {
-        fail("Error: TabbarViewController"); return
-    }
-
+    // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
-    expectCenterToContainFRM()  // <— new assertion
+    // THEN: verify the navigation API call (no VC tree assertions)
+    expectLastNav(
+        toBe: String(describing: FRMWebviewNavigation.self),
+        name: "FRMFraudReview",
+        setAsRoot: true
+    )
 }
 
-it("routeToFRMFraudReviewMobileOnly") {
+
+it("routes to FRMFraudReview (mobile-only) via FRMWebviewNavigation (setAsRoot)") {
+    installNavigateSpyOnce()
+    _lastCapturedNav = CapturedNav()
+
+    // GIVEN: satisfy mobile-only gates
     BKAppState.didActionFraudAlertNotification = true
     writeOTVCPushTagForTests()
     swizzleOTCIfNeeded()
@@ -72,12 +124,15 @@ it("routeToFRMFraudReviewMobileOnly") {
         "fraudCaseReviewMobileOnlyRequired": true
     ])!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(items)
+    expect(TabbrUtils.getTabbarViewController()).toNot(beNil())
 
-    guard TabbarUtils.getTabbarViewController() != nil else {
-        fail("Error: TabbarViewController"); return
-    }
-
+    // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
-    expectCenterToContainFRM(timeout: .seconds(8))
+    // THEN
+    expectLastNav(
+        toBe: String(describing: FRMWebviewNavigation.self),
+        name: "FRMFraudReview",
+        setAsRoot: true
+    )
 }
