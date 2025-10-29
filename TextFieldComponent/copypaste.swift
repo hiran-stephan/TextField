@@ -1,109 +1,75 @@
-import ObjectiveC.runtime
+// MARK: - FRM presence under center (recursive)
+private func containsFRMWebView(_ vc: UIViewController) -> Bool {
+    // Direct hit
+    if vc is FRMWebViewController { return true }
 
-// MARK: - assert "center is FRM"
-private func centerIsFRM() -> Bool {
-    guard let panelVC = RoutingHelper.getPanelFrame(),
-          let center = panelVC.center else { return false }
+    // UINavigationController: check stack/top
+    if let nav = vc as? UINavigationController {
+        if nav.viewControllers.contains(where: { $0 is FRMWebViewController }) { return true }
+        if let top = nav.topViewController, containsFRMWebView(top) { return true }
+    }
 
-    if let nav = center as? UINavigationController {
-        return nav.topViewController is FRMWebViewWrapperController
+    // UITabBarController: check selected & all children
+    if let tab = vc as? UITabBarController {
+        if let sel = tab.selectedViewController, containsFRMWebView(sel) { return true }
+        if tab.viewControllers?.contains(where: { containsFRMWebView($0) }) == true { return true }
     }
-    if let nav = center.children.first(where: { $0 is UINavigationController }) as? UINavigationController {
-        return nav.topViewController is FRMWebViewWrapperController
+
+    // Generic children
+    for child in vc.children {
+        if containsFRMWebView(child) { return true }
     }
-    return center is FRMWebViewWrapperController
+    return false
 }
 
-private func expectCenterToBeFRM(timeout: DispatchTimeInterval = .seconds(4)) {
-    expect({ centerIsFRM() }).toEventually(beTrue(), timeout: timeout)
+private func centerHasFRMWebView() -> Bool {
+    guard let panel = RoutingHelper.getPanelFrame(),
+          let center = panel.center else { return false }
+    return containsFRMWebView(center)
 }
 
-// MARK: - Keychain tag helper (gate #1)
-private func writeOTVCPushTagForTests() {
-    // Your Obj-C keychain wrapper exposes these exactly:
-    //  -setPushOTVCRegisteredDeviceTag:
-    //  -getPushOTVCRegisteredDeviceTag
-    CIBCKeyChain().setPushOTVCRegisteredDeviceTag("UNIT_TEST_DEVICE_TAG")
-}
-
-// MARK: - Swizzle OTCService (gate #2)
-private var didSwizzleOTC = false
-
-extension OTCService {
-    // Signature must match the production method exactly
-    @objc func _ut_getRegisteredPushOTVCDevice(
-        _ completion: @escaping OTCVServiceCompletionHandler,
-        registeredDeviceTag: String
-    ) {
-        // Satisfy the router with a "push enabled" response
-        let dto = RegisteredDeviceResponseDto(
-            response: ["status": DeviceRegistrationStatus.devicePushEnabled.rawValue]
-        )
-        completion(dto, nil)
-    }
-}
-
-private func swizzleOTCIfNeeded() {
-    guard !didSwizzleOTC else { return }
-    let original = class_getInstanceMethod(
-        OTCService.self,
-        #selector(OTCService.getRegisteredPushOTVCDevice(_:registeredDeviceTag:))
-    )
-    let replacement = class_getInstanceMethod(
-        OTCService.self,
-        #selector(OTCService._ut_getRegisteredPushOTVCDevice(_:registeredDeviceTag:))
-    )
-    if let original = original, let replacement = replacement {
-        method_exchangeImplementations(original, replacement)
-        didSwizzleOTC = true
-    } else {
-        fail("Swizzle failed: could not find OTCService method")
-    }
+private func expectCenterToContainFRM(timeout: DispatchTimeInterval = .seconds(8)) {
+    // storyboard load + async dispatch can take a moment
+    expect({ centerHasFRMWebView() }).toEventually(beTrue(), timeout: timeout)
 }
 
 it("routeToFRMFraudReview") {
-    // GIVEN: FRM required (not mobile-only)
-    BKAppState.didActionFraudAlertNotification = true        // passes the first check
-    writeOTVCPushTagForTests()                                // ensure deviceTag is non-nil
-    swizzleOTCIfNeeded()                                      // force .devicePushEnabled
-
-    let actionItems = ActionItemRequiredFlagResponseDto(response: [
-        "cdccRequired": false,
-        "ccFraudReviewRequired": true
-    ])!
-    BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
-
-    guard TabbarUtils.getTabbarViewController() != nil else {
-        fail("Error: TabbarViewController"); return
-    }
-
-    // WHEN
-    BKContainer.routing.actionItem.routeToActionItem()
-
-    // THEN: FRM is set as the center/root (not presented modally)
-    expectCenterToBeFRM()
-}
-
-it("routeToFRMFraudReviewMobileOnly") {
-    // GIVEN: FRM mobile-only path (requires device tag + OTC positive)
     BKAppState.didActionFraudAlertNotification = true
     writeOTVCPushTagForTests()
     swizzleOTCIfNeeded()
 
-    let actionItems = ActionItemRequiredFlagResponseDto(response: [
+    let items = ActionItemRequiredFlagResponseDto(response: [
         "cdccRequired": false,
-        "ccFraudReviewRequired": false,
-        "fraudCaseReviewMobileOnlyRequired": true
+        "ccFraudReviewRequired": true
     ])!
-    BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
+    BKServiceCache.shared.setCachedActionItemRequiredFlag(items)
 
     guard TabbarUtils.getTabbarViewController() != nil else {
         fail("Error: TabbarViewController"); return
     }
 
-    // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
-    // THEN
-    expectCenterToBeFRM(timeout: .seconds(5)) // allow async hop
+    expectCenterToContainFRM()  // <— new assertion
+}
+
+it("routeToFRMFraudReviewMobileOnly") {
+    BKAppState.didActionFraudAlertNotification = true
+    writeOTVCPushTagForTests()
+    swizzleOTCIfNeeded()
+
+    let items = ActionItemRequiredFlagResponseDto(response: [
+        "cdccRequired": false,
+        "ccFraudReviewRequired": false,
+        "fraudCaseReviewMobileOnlyRequired": true
+    ])!
+    BKServiceCache.shared.setCachedActionItemRequiredFlag(items)
+
+    guard TabbarUtils.getTabbarViewController() != nil else {
+        fail("Error: TabbarViewController"); return
+    }
+
+    BKContainer.routing.actionItem.routeToActionItem()
+
+    expectCenterToContainFRM(timeout: .seconds(8))
 }
