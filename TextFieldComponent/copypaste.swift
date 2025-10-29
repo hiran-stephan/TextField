@@ -1,4 +1,6 @@
-// MARK: - Center assertions (unchanged)
+import ObjectiveC.runtime
+
+// MARK: - assert "center is FRM"
 private func centerIsFRM() -> Bool {
     guard let panelVC = RoutingHelper.getPanelFrame(),
           let center = panelVC.center else { return false }
@@ -9,39 +11,62 @@ private func centerIsFRM() -> Bool {
     if let nav = center.children.first(where: { $0 is UINavigationController }) as? UINavigationController {
         return nav.topViewController is FRMWebViewWrapperController
     }
-    if center is FRMWebViewWrapperController { return true }
-    return false
+    return center is FRMWebViewWrapperController
 }
 
 private func expectCenterToBeFRM(timeout: DispatchTimeInterval = .seconds(4)) {
-    expect({ () -> Bool in centerIsFRM() }).toEventually(beTrue(), timeout: timeout)
+    expect({ centerIsFRM() }).toEventually(beTrue(), timeout: timeout)
 }
 
-// MARK: - OTC fakes to satisfy the mobile-only gate
-final class FakeOTCKeyService: OTCKeyService {
-    override func getPushOTVCRegisteredDeviceTag() -> String? {
-        return "UNIT_TEST_DEVICE_TAG"
+// MARK: - Keychain tag helper (gate #1)
+private func writeOTVCPushTagForTests() {
+    // Your Obj-C keychain wrapper exposes these exactly:
+    //  -setPushOTVCRegisteredDeviceTag:
+    //  -getPushOTVCRegisteredDeviceTag
+    CIBCKeyChain().setPushOTVCRegisteredDeviceTag("UNIT_TEST_DEVICE_TAG")
+}
+
+// MARK: - Swizzle OTCService (gate #2)
+private var didSwizzleOTC = false
+
+extension OTCService {
+    // Signature must match the production method exactly
+    @objc func _ut_getRegisteredPushOTVCDevice(
+        _ completion: @escaping OTCVServiceCompletionHandler,
+        registeredDeviceTag: String
+    ) {
+        // Satisfy the router with a "push enabled" response
+        let dto = RegisteredDeviceResponseDto(
+            response: ["status": DeviceRegistrationStatus.devicePushEnabled.rawValue]
+        )
+        completion(dto, nil)
     }
 }
 
-// Convenience to install the fakes in the app container used by the router.
-// If your project exposes these differently, adjust the two assignment lines.
-private func installOTCMocksForTests() {
-    // Your repo already has MockOTVCService (see screenshot)
-    let mock = MockOTVCService()
-    mock.getRegisteredDeviceSuccess = true
-    // build the response that equals "device push enabled"
-    var dto = RegisteredDeviceResponseDto()
-    dto.status = .devicePushEnabled
-    mock.mockRegisteredDeviceResponseDto = dto
-
-    BKContainer.services.otcKeyService = FakeOTCKeyService()
-    BKContainer.services.otcService    = mock
+private func swizzleOTCIfNeeded() {
+    guard !didSwizzleOTC else { return }
+    let original = class_getInstanceMethod(
+        OTCService.self,
+        #selector(OTCService.getRegisteredPushOTVCDevice(_:registeredDeviceTag:))
+    )
+    let replacement = class_getInstanceMethod(
+        OTCService.self,
+        #selector(OTCService._ut_getRegisteredPushOTVCDevice(_:registeredDeviceTag:))
+    )
+    if let original = original, let replacement = replacement {
+        method_exchangeImplementations(original, replacement)
+        didSwizzleOTC = true
+    } else {
+        fail("Swizzle failed: could not find OTCService method")
+    }
 }
 
+
 it("routeToFRMFraudReview") {
-    // GIVEN: FRM required (not mobile-only), and app flagged as coming from Fraud Alert
-    BKAppState.didActionFraudAlertNotification = true
+    // GIVEN: FRM required (not mobile-only)
+    BKAppState.didActionFraudAlertNotification = true        // passes the first check
+    writeOTVCPushTagForTests()                                // ensure deviceTag is non-nil
+    swizzleOTCIfNeeded()                                      // force .devicePushEnabled
 
     let actionItems = ActionItemRequiredFlagResponseDto(response: [
         "cdccRequired": false,
@@ -56,15 +81,15 @@ it("routeToFRMFraudReview") {
     // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
-    // THEN: FRM should be set as the center/root (not modally presented)
+    // THEN: FRM is set as the center/root (not presented modally)
     expectCenterToBeFRM()
 }
 
-
 it("routeToFRMFraudReviewMobileOnly") {
-    // GIVEN: Mobile-only FRM required + OTC device gates satisfied
+    // GIVEN: FRM mobile-only path (requires device tag + OTC positive)
     BKAppState.didActionFraudAlertNotification = true
-    installOTCMocksForTests()          // <- CRITICAL for this path
+    writeOTVCPushTagForTests()
+    swizzleOTCIfNeeded()
 
     let actionItems = ActionItemRequiredFlagResponseDto(response: [
         "cdccRequired": false,
@@ -81,6 +106,9 @@ it("routeToFRMFraudReviewMobileOnly") {
     BKContainer.routing.actionItem.routeToActionItem()
 
     // THEN
-    expectCenterToBeFRM(timeout: .seconds(5)) // allow async OTC callback
+    expectCenterToBeFRM(timeout: .seconds(5)) // allow async hop
 }
+
+
+
 
