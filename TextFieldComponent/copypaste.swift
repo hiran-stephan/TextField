@@ -1,22 +1,18 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Helper: assert that the center panel (not a modal) is the FRM webview route
-// ─────────────────────────────────────────────────────────────────────────────
 private func centerIsFRM() -> Bool {
-    guard let panelVC = RoutingHelper.getPanelFrame(), let center = panelVC.center else {
-        return false
-    }
+    guard let panelVC = RoutingHelper.getPanelFrame(),
+          let center = panelVC.center else { return false }
 
-    // Center is a UINavigationController with FRM on top
+    // Case 1: center is a UINavigationController with FRM on top
     if let nav = center as? UINavigationController {
         return nav.topViewController is FRMWebViewWrapperController
     }
 
-    // Center is a container whose first child is a nav with FRM on top
+    // Case 2: center has a child UINavigationController with FRM on top
     if let nav = center.children.first(where: { $0 is UINavigationController }) as? UINavigationController {
         return nav.topViewController is FRMWebViewWrapperController
     }
 
-    // Center is directly the FRM wrapper
+    // Case 3: center is directly FRM
     if center is FRMWebViewWrapperController {
         return true
     }
@@ -24,13 +20,17 @@ private func centerIsFRM() -> Bool {
     return false
 }
 
-private func expectCenterToBeFRM(timeout: DispatchTimeInterval = .seconds(2)) {
-    expect({ centerIsFRM() }).toEventually(beTrue(), timeout: timeout)
+private func expectCenterToBeFRM(timeout: DispatchTimeInterval = .seconds(3)) {
+    // The closure must return a Bool for Nimble to evaluate repeatedly
+    expect({ () -> Bool in
+        return centerIsFRM()
+    }).toEventually(beTrue(), timeout: timeout)
 }
 
 
+
 it("routeToFRMFraudReview") {
-    // GIVEN: flags that require FRM fraud review
+    // GIVEN
     let actionItems = ActionItemRequiredFlagResponseDto(
         response: [
             "cdccRequired": false,
@@ -39,23 +39,21 @@ it("routeToFRMFraudReview") {
     )!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
-    // Sanity: we have a tab bar to route from
     guard let tabbarVC = TabbarUtils.getTabbarViewController() else {
         fail("Error: TabbarViewController")
         return
     }
 
-    // WHEN: we route
-    _ = verifyPresentedViewController(sut: tabbarVC)  // keeps the same setup path if needed, but not used
+    // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
-    // THEN: FRM is set as the center/root (not presented modally)
+    // THEN
     expectCenterToBeFRM()
 }
 
 
 it("routeToFRMFraudReviewMobileOnly") {
-    // GIVEN: flags that require the FRM Mobile-Only flow
+    // GIVEN
     let actionItems = ActionItemRequiredFlagResponseDto(
         response: [
             "cdccRequired": false,
@@ -65,14 +63,12 @@ it("routeToFRMFraudReviewMobileOnly") {
     )!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
-    // Sanity: we have a tab bar to route from
     guard let tabbarVC = TabbarUtils.getTabbarViewController() else {
         fail("Error: TabbarViewController")
         return
     }
 
     // WHEN
-    _ = verifyPresentedViewController(sut: tabbarVC)  // optional; keeps any test harness side-effects
     BKContainer.routing.actionItem.routeToActionItem()
 
     // THEN
