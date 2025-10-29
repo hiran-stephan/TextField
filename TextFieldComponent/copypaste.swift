@@ -3,22 +3,31 @@ private func containsFRMWebView(_ vc: UIViewController) -> Bool {
     // Direct hit
     if vc is FRMWebViewController { return true }
 
-    // UINavigationController: check stack/top
+    // UINavigationController case
     if let nav = vc as? UINavigationController {
         if nav.viewControllers.contains(where: { $0 is FRMWebViewController }) { return true }
         if let top = nav.topViewController, containsFRMWebView(top) { return true }
     }
 
-    // UITabBarController: check selected & all children
+    // UITabBarController case
     if let tab = vc as? UITabBarController {
-        if let sel = tab.selectedViewController, containsFRMWebView(sel) { return true }
+        if let selected = tab.selectedViewController, containsFRMWebView(selected) { return true }
         if tab.viewControllers?.contains(where: { containsFRMWebView($0) }) == true { return true }
+    }
+
+    // CIBC custom TabViewController (like your CIBC.TabViewController)
+    // these usually have a single child that’s a UINavigationController
+    if String(describing: type(of: vc)).contains("TabViewController") {
+        for child in vc.children {
+            if containsFRMWebView(child) { return true }
+        }
     }
 
     // Generic children
     for child in vc.children {
         if containsFRMWebView(child) { return true }
     }
+
     return false
 }
 
@@ -29,7 +38,6 @@ private func centerHasFRMWebView() -> Bool {
 }
 
 private func expectCenterToContainFRM(timeout: DispatchTimeInterval = .seconds(8)) {
-    // storyboard load + async dispatch can take a moment
     expect({ centerHasFRMWebView() }).toEventually(beTrue(), timeout: timeout)
 }
 
