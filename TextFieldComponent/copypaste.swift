@@ -61,7 +61,6 @@ private func swizzleOTCIfNeeded() {
     }
 }
 
-
 it("routeToFRMFraudReview") {
     // GIVEN: FRM required (not mobile-only)
     BKAppState.didActionFraudAlertNotification = true        // passes the first check
@@ -108,7 +107,3 @@ it("routeToFRMFraudReviewMobileOnly") {
     // THEN
     expectCenterToBeFRM(timeout: .seconds(5)) // allow async hop
 }
-
-
-
-
