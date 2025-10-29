@@ -1,75 +1,44 @@
-// Put near top of the spec file (test-only)
-final class FeatureHelperStub: FeatureHelperProtocol {
-    var fraudReviewEnabled = true
-    var fraudOptimizedEnabled = true
+// --- Feature flag test toggles (adjust to your project’s helper) ---
+private func enableFraudFlagsForTests() {
+    // Try the most common hooks; if your project exposes different ones,
+    // replace these with your actual helpers.
+    FeatureHelper.setFraudReviewEnabledForTests?(true)
+    FeatureHelper.setFraudOptimizationEnabledForTests?(true)
 
-    func hasFraudReviewEnabled() -> Bool { fraudReviewEnabled }
-    func hasFraudOptimizedEnabled() -> Bool { fraudOptimizedEnabled }
+    // Fallbacks that many codebases have:
+    BKContainer.featureHelper?.enable?(.fraudReview)
+    BKContainer.featureHelper?.enable?(.fraudOptimization)
 
-    // If your FeatureHelper has other methods, either no-op or default them:
-    func hasFeatureEnabled(feature: FeatureFlag) -> Bool { true }
+    // If none of the above exist in your codebase, add one of these
+    // test-only extension shims in your test target:
+    //   extension FeatureHelper { static var _fraudReviewOverride = true ... }
 }
 
-// Helper to install the stub into your DI singletons
-private func installFeatureHelperStub(
-    fraudReview: Bool = true,
-    fraudOptimized: Bool = true
-) -> FeatureHelperStub {
-    let stub = FeatureHelperStub()
-    stub.fraudReviewEnabled = fraudReview
-    stub.fraudOptimizedEnabled = fraudOptimized
-    BKContainer.featureHelper = stub   // ⬅️ replace with your actual DI assignment
-    return stub
+// --- Mobile-only stubs: make the device check pass synchronously ---
+class FakeOTCKeyService: OTCKeyService {
+    override func getPushOTVCRegisteredDeviceTag() -> String? { "TEST_TAG" }
 }
 
-
-// Protocols are inferred; rename to your actual ones if needed.
-final class OTVCSKeyChainStub: OTVCSKeyChain {
-    var tag: String? = "TEST_TAG"
-    override func getPushOTVCRegisteredDeviceTag() -> String? {
-        return tag
+class FakeOTCService: OTCService {
+    override func getRegisteredPushOTVCDevice(_ tag: String,
+                                              completion: @escaping (RegisteredDeviceResponse) -> Void) {
+        // Immediately say "push enabled" so routing proceeds to FRM
+        completion(RegisteredDeviceResponse(status: .devicePushEnabled))
     }
 }
 
-final class OTVCServiceStub: OTVCServiceProtocol {
-    func getRegisteredPushOTVCDevice(
-        _ tag: String,
-        completion: @escaping (OTVCRegisteredDeviceResponse) -> Void
-    ) {
-        // Return an enabled status immediately
-        completion(OTVCRegisteredDeviceResponse(status: .devicePushEnabled))
-    }
+// Wire the fakes into whatever your app uses as a service locator.
+// Adjust these two assignment lines to match your container:
+private func installOTCFakes() {
+    BKContainer.services.otcKeyService = FakeOTCKeyService()
+    BKContainer.services.otcService    = FakeOTCService()
 }
-
-// Helper to install both into your DI
-private func installOTVCStubs() {
-    BKContainer.routing.frm.otvcService = OTVCServiceStub()   // ⬅️ your DI path
-    BKContainer.routing.frm.otvcKeychain = OTVCSKeyChainStub()// ⬅️ if accessed via DI
-}
-
-
-private func centerIsFRM() -> Bool {
-    guard let panelVC = RoutingHelper.getPanelFrame(),
-          let center = panelVC.center else { return false }
-
-    if let nav = center as? UINavigationController {
-        return nav.topViewController is FRMWebViewWrapperController
-    }
-    if let nav = center.children.first(where: { $0 is UINavigationController }) as? UINavigationController {
-        return nav.topViewController is FRMWebViewWrapperController
-    }
-    return center is FRMWebViewWrapperController
-}
-
-private func expectCenterToBeFRM(timeout: DispatchTimeInterval = .seconds(3)) {
-    expect({ () -> Bool in centerIsFRM() }).toEventually(beTrue(), timeout: timeout)
-}
-
-
 
 it("routeToFRMFraudReview") {
     // GIVEN
-    installFeatureHelperStub(fraudReview: true, fraudOptimized: true)
+    enableFraudFlagsForTests()
+    BKAppState.didActionFraudAlertNotification = true    // satisfies the first gate, if used
+
     let actionItems = ActionItemRequiredFlagResponseDto(
         response: [
             "cdccRequired": false,
@@ -78,27 +47,23 @@ it("routeToFRMFraudReview") {
     )!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
-    // Ensure we’re in a normal segment (not excluded)
-    let signOnDataResponse = SignOnResponseDto(response: ["segment": "personalBanking"])!
-    BKServiceCache.shared.setCachedSignOnData(signOnDataResponse)
-
     guard TabbarUtils.getTabbarViewController() != nil else {
-        fail("Error: TabbarViewController")
-        return
+        fail("Error: TabbarViewController"); return
     }
 
     // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
     // THEN
-    expectCenterToBeFRM()
+    expectCenterToBeFRM(timeout: .seconds(3))
 }
 
 
 it("routeToFRMFraudReviewMobileOnly") {
     // GIVEN
-    installFeatureHelperStub(fraudReview: true, fraudOptimized: true)
-    installOTVCStubs() // <- makes the device check pass
+    enableFraudFlagsForTests()
+    installOTCFakes()                                   // <- critical for mobile-only path
+    BKAppState.didActionFraudAlertNotification = true   // satisfies the first gate, if used
 
     let actionItems = ActionItemRequiredFlagResponseDto(
         response: [
@@ -109,19 +74,13 @@ it("routeToFRMFraudReviewMobileOnly") {
     )!
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
-    let signOnDataResponse = SignOnResponseDto(response: ["segment": "personalBanking"])!
-    BKServiceCache.shared.setCachedSignOnData(signOnDataResponse)
-
     guard TabbarUtils.getTabbarViewController() != nil else {
-        fail("Error: TabbarViewController")
-        return
+        fail("Error: TabbarViewController"); return
     }
 
     // WHEN
     BKContainer.routing.actionItem.routeToActionItem()
 
     // THEN
-    expectCenterToBeFRM()
+    expectCenterToBeFRM(timeout: .seconds(5))           // allow time for async callback
 }
-
-
