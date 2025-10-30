@@ -1,17 +1,25 @@
-Subject: Referral for Test Analyst – Commercial Banking and Payments (2524428)
+group.enter() // API #1
+actionItemService.getCdcPromptRequiredAndSkipValue { response in
+    defer { group.leave() } // guarantees leave for API #1
 
-Hi [Hiring Manager’s Name] / [Recruiter’s Name],
+    let needsSecondCall =
+        BKServiceCache.shared.getCachedActionItemRequiredFlag()?.fraudCaseReviewMobileOnlyRequired == true &&
+        BKAppState.didActionFraudAlertNotification == true &&
+        FeatureHelper.hasFraudReviewEnabled()
 
-I hope you’re doing well.
-I’d like to refer my spouse, [Spouse’s Full Name], for the Test Analyst – Commercial Banking and Payments (Job ID: 2524428) position at CIBC.
+    guard needsSecondCall, let deviceTag = CITKeyChain.getPushOTVCRegisteredDeviceTag() else {
+        actionResponse = .success(true)
+        return
+    }
 
-[He/She/They] is an experienced QA professional with strong skills in manual and API testing, test documentation, and defect management, and has worked extensively in Agile environments. I believe [he/she/they] would be a great fit for the role and a valuable addition to the team.
-
-Please find [his/her/their] resume attached for your review.
-Thank you for considering this referral.
-
-Best regards,
-Hiran Stephan
-Commercial Banking and Payments – CIBC
-[Your Email Address]
-[Your CIBC ID or Extension if applicable]
+    group.enter() // API #2
+    otvcService.getRegisteredPushOTVCDevice(registeredDeviceTag: deviceTag) { responseObj, _, _ in
+        defer { group.leave() } // guarantees leave for API #2
+        if let dto = responseObj as? RegisteredDeviceResponseDto,
+           dto.status == .devicePushEnabled {
+            actionResponse = .success(true)
+        } else {
+            // decide what you want on "not enabled" (keep as-is or set failure)
+        }
+    }
+}
