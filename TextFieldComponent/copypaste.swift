@@ -1,76 +1,69 @@
-private func setFraudCaseReviewRequiredFlag(_ value: Bool) {
-    MockBKServiceCache.flag = ActionItemRequiredFlagResponseDto(response: [
-        "ccFraudReviewRequired": false,
-        "fraudCaseReviewRequired": value,
-        "fraudCaseReviewMobileOnlyRequired": false,
-        "investmentKycReviewDue": false
-    ])
+public var webViewUrlDigitalFRM: String?
+public var webViewUrlDigitalFRMFraudReview: String?
+
+func testRetrieveAppConfigData() {
+    // ... existing arrange code ...
+
+    let retrievedAppConfigData = AppConfigResponseDto(response: mockAppConfigData1)
+
+    XCTAssertEqual(retrievedAppConfigData.webViewUrlDigitalFRM,
+                   webViewUrlDigitalFRM)
+    XCTAssertEqual(retrievedAppConfigData.webViewUrlDigitalFRMFraudReview,
+                   webViewUrlDigitalFRMFraudReview)
 }
 
-private func setFraudCaseReviewMobileOnlyRequiredFlag(_ value: Bool) {
-    MockBKServiceCache.flag = ActionItemRequiredFlagResponseDto(response: [
-        "ccFraudReviewRequired": false,
-        "fraudCaseReviewRequired": false,
-        "fraudCaseReviewMobileOnlyRequired": value,
-        "investmentKycReviewDue": false
-    ])
+func test_FRMWebViewNavigation_valueForDescription_FraudReview() {
+    let nav = FRMWebViewNavigation.valueFor(description: "FRMFraudReview",
+                                            option: nil)
+
+    guard case .FRMFraudReview = nav! else {
+        XCTFail("Expected FRMFraudReview navigation")
+        return
+    }
+}
+
+class FRMWebViewRoutingServiceMock: FRMWebViewRoutingService {
+    var didRouteToMain = false
+    var didRouteToFraudReview = false
+
+    func routeToFRMWebView() { didRouteToMain = true }
+    func routeToFRMFraudReviewWebView() { didRouteToFraudReview = true }
 }
 
 
-func test_actionResponse_success_whenFraudCaseReviewRequired_andFraudOptimizationEnabled() {
-    MockFeatureHelper.fraudOptimizationEnabled = true
-    setFraudCaseReviewRequiredFlag(true)
+var mockAppConfigData2: AppConfigResponseDto?
 
-    var actionResponse: Result<Bool, ServiceExceptionTest> = .failure(ServiceExceptionTest())
+func initialize() {
+    cache = BKServiceCache.shared
+    var mockAppConfigData2 = AppConfigResponseDto(response: [String: Any]())
+    mockAppConfigData2.webViewUrlDigitalFRM =
+        "/ebm-resources/public/fraud-notifications/client/index.html#/protect-account" + FRMConstants.urlParams
+    cache?.setCachedAppConfig(mockAppConfigData2)
 
-    if let actionItemFlag = MockBKServiceCache.getCachedActionItemRequiredFlag() {
-        if (actionItemFlag.fraudCaseReviewRequired == true) &&
-            MockFeatureHelper.hasFraudOptimizationEnabled() {
-            actionResponse = .success(true)
-        }
+    subject = storyboard.instantiateViewController(withIdentifier: "FRMWebViewController") as? FRMWebViewController
+}
+
+mockAppConfigData2.webViewUrlDigitalFRMFraudReview =
+    "/ebm-resources/public/fraud-notifications/client/index.html#/push-alerts/transition" + FRMConstants.urlParams
+
+
+context("When user is redirected to FRM Fraud Review flow") {
+    beforeEach {
+        initialize()
+        subject.state = .FRMFraudReview  // <- new state
+        subject.loadViewIfNeeded()
+        subject.beginAppearanceTransition(true, animated: true)
+        subject.endAppearanceTransition()
     }
 
-    XCTAssertEqual(actionResponse.value, true)
-}
+    it("should have FRM Fraud Review URL loaded on WebView") {
+        guard enableFlakyTests else { return }
 
-func test_actionResponse_success_whenFraudCaseReviewMobileOnlyRequired_andFraudOptimizationEnabled() {
-    MockFeatureHelper.fraudOptimizationEnabled = true
-    setFraudCaseReviewMobileOnlyRequiredFlag(true)
-
-    var actionResponse: Result<Bool, ServiceExceptionTest> = .failure(ServiceExceptionTest())
-
-    if let actionItemFlag = MockBKServiceCache.getCachedActionItemRequiredFlag() {
-        if (actionItemFlag.fraudCaseReviewMobileOnlyRequired == true) &&
-            MockFeatureHelper.hasFraudOptimizationEnabled() {
-            actionResponse = .success(true)
-        }
+        let expectedPath = "/fraud-notifications/client/index.html#/push-alerts/transition"
+        expect(subject.webView.currentURL()?.absoluteString.contains(expectedPath))
+            .toEventually(beTrue(), timeout: .seconds(5))
     }
-
-    XCTAssertEqual(actionResponse.value, true)
 }
 
-
-func test_actionResponse_failure_whenNoFraudFlags_andFraudOptimizationEnabled() {
-    MockFeatureHelper.fraudOptimizationEnabled = true
-    MockBKServiceCache.flag = ActionItemRequiredFlagResponseDto(response: [
-        "ccFraudReviewRequired": false,
-        "fraudCaseReviewRequired": false,
-        "fraudCaseReviewMobileOnlyRequired": false,
-        "investmentKycReviewDue": false
-    ])
-
-    var actionResponse: Result<Bool, ServiceExceptionTest> = .failure(ServiceExceptionTest())
-
-    if let actionItemFlag = MockBKServiceCache.getCachedActionItemRequiredFlag() {
-        if (actionItemFlag.ccFraudReviewRequired == true ||
-            actionItemFlag.fraudCaseReviewRequired == true ||
-            actionItemFlag.fraudCaseReviewMobileOnlyRequired == true) &&
-            MockFeatureHelper.hasFraudOptimizationEnabled() {
-            actionResponse = .success(true)
-        }
-    }
-
-    XCTAssertFalse(actionResponse.isSuccess)  // or XCTAssertNil(actionResponse.value) depending on your helper
-}
 
 
