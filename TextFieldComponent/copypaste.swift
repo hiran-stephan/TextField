@@ -1,67 +1,89 @@
-it("routeToFRMFraudReview clears fraud flags in cache") {
-    // Given: only fraudCaseReviewRequired is true
-    let actionItems = ActionItemRequiredFlagResponseDto(response: [
-        "cdcRequired": false,
-        "ccFraudReviewRequired": false,
-        "fraudCaseReviewRequired": true,
-        "fraudCaseReviewMobileOnlyRequired": false,
-        "investmentKycReviewDue": false
-    ])
-    BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
+UnitTests/Modules/PushNotifications/PushNotificationUtilsSpec.swift
 
-    // When
-    if let tabbarVC = TabbarUtils.getTabbarViewController() {
-        let presentedViewController = verifyPresentedViewController(sut: tabbarVC)
-        BKContainer.routing.actionItem.routeToActionItem()
 
-        // Then – FRM fraud review flow still presented as before
-        if let wrapperVC = presentedViewController as? FRMWebViewWrapperViewController {
-            wrapperVC.loadViewIfNeeded()
-            let navVC = wrapperVC.children.filter({ $0 is UINavigationController }).first as? UINavigationController
-            expect(navVC?.viewControllers.count).to(equal(1))
-        } else {
-            fail("Error: FRMWebViewWrapperController")
+import Foundation
+import Quick
+import Nimble
+
+@testable import CIBC
+
+class PushNotificationUtilsSpec: QuickSpec {
+
+    override func spec() {
+
+        describe("channelId(from:)") {
+
+            it("returns the ChannelId string when present") {
+                let userInfo: [AnyHashable: Any] = [
+                    "ChannelId": "FRAUDALERT"
+                ]
+
+                let id = PushNotificationUtil.channelId(from: userInfo)
+
+                expect(id) == "FRAUDALERT"
+            }
+
+            it("returns nil when ChannelId is missing") {
+                let userInfo: [AnyHashable: Any] = [:]
+
+                let id = PushNotificationUtil.channelId(from: userInfo)
+
+                expect(id).to(beNil())
+            }
+
+            it("returns nil when ChannelId is not a String") {
+                let userInfo: [AnyHashable: Any] = [
+                    "ChannelId": 12345
+                ]
+
+                let id = PushNotificationUtil.channelId(from: userInfo)
+
+                expect(id).to(beNil())
+            }
         }
-    } else {
-        fail("Error: TabbarViewController")
-    }
 
-    // And: fraud flags in cache are cleared
-    let cached = BKServiceCache.shared.getCachedActionItemRequiredFlag()
-    expect(cached?.fraudCaseReviewRequired).to(beFalse())
-    expect(cached?.fraudCaseReviewMobileOnlyRequired).to(beFalse())
+        describe("isFraudReviewNotification(_:)") {
+
+            it("returns true when ChannelId is FRAUDALERT (uppercase)") {
+                let userInfo: [AnyHashable: Any] = [
+                    "ChannelId": "FRAUDALERT"
+                ]
+
+                let result = PushNotificationUtil.isFraudReviewNotification(userInfo)
+
+                expect(result).to(beTrue())
+            }
+
+            it("returns true when ChannelId is fraudalert (different case)") {
+                let userInfo: [AnyHashable: Any] = [
+                    "ChannelId": "fraudalert"
+                ]
+
+                let result = PushNotificationUtil.isFraudReviewNotification(userInfo)
+
+                expect(result).to(beTrue())
+            }
+
+            it("returns false for other channels") {
+                let userInfo: [AnyHashable: Any] = [
+                    "ChannelId": "FRAUD"   // existing 3DS channel
+                ]
+
+                let result = PushNotificationUtil.isFraudReviewNotification(userInfo)
+
+                expect(result).to(beFalse())
+            }
+
+            it("returns false when ChannelId is missing") {
+                let userInfo: [AnyHashable: Any] = [:]
+
+                let result = PushNotificationUtil.isFraudReviewNotification(userInfo)
+
+                expect(result).to(beFalse())
+            }
+        }
+    }
 }
 
-it("routeToFRMFraudReviewMobileOnly clears fraud flags in cache") {
-    // Given: only fraudCaseReviewMobileOnlyRequired is true
-    let actionItems = ActionItemRequiredFlagResponseDto(response: [
-        "cdcRequired": false,
-        "ccFraudReviewRequired": false,
-        "fraudCaseReviewRequired": false,
-        "fraudCaseReviewMobileOnlyRequired": true,
-        "investmentKycReviewDue": false
-    ])
-    BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItems)
 
-    // When
-    if let tabbarVC = TabbarUtils.getTabbarViewController() {
-        let presentedViewController = verifyPresentedViewController(sut: tabbarVC)
-        BKContainer.routing.actionItem.routeToActionItem()
 
-        // Then – FRM fraud review flow still presented as before
-        if let wrapperVC = presentedViewController as? FRMWebViewWrapperViewController {
-            wrapperVC.loadViewIfNeeded()
-            let navVC = wrapperVC.children.filter({ $0 is UINavigationController }).first as? UINavigationController
-            expect(navVC?.viewControllers.count).to(equal(1))
-        } else {
-            fail("Error: FRMWebViewWrapperController")
-        }
-    } else {
-        fail("Error: TabbarViewController")
-    }
-
-    // And: fraud flags in cache are cleared
-    let cached = BKServiceCache.shared.getCachedActionItemRequiredFlag()
-    expect(cached?.fraudCaseReviewRequired).to(beFalse())
-    expect(cached?.fraudCaseReviewMobileOnlyRequired).to(beFalse())
-}
