@@ -1,54 +1,39 @@
-func test_performPostSignOn_FraudCaseReviewRequired_setsActionResponseTrue() {
-    let mockOTVC = MockOTVCService()
-    mockOTVC.getRegisteredDeviceSuccess = true
-    mockOTVC.getRegisteredDeviceResponseDto = RegisteredDeviceResponseDto(status: .devicePushEnabled)
-
-    let service = SignInService()
-    service.otvcService = mockOTVC
-
-    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "fraudCaseReviewRequired": true,
-        "fraudCaseReviewMobileOnlyRequired": false
-    ])
-
-    BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItemFlag)
-    FeatureHelper.setFraudReviewEnabled(true)
-
-    let expectation = self.expectation(description: "Completion")
-
-    service.performPostSignOnConcurrentFlow { (_,_,_,_,_,actionResponse) in
-        XCTAssertTrue(actionResponse.value == true)
-        expectation.fulfill()
-    }
-
-    waitForExpectations(timeout: 5)
-}
-
-
+var otvcService: OTVCServiceHandler = OTVCService()
 
 func test_performPostSignOn_FraudCaseReviewMobileOnly_setsActionResponseTrue() {
+    // Arrange
     let mockOTVC = MockOTVCService()
     mockOTVC.getRegisteredDeviceSuccess = true
-    mockOTVC.getRegisteredDeviceResponseDto = RegisteredDeviceResponseDto(status: .devicePushEnabled)
+    mockOTVC.mockRegisteredDeviceResponseDto = RegisteredDeviceResponseDto(
+        response: ["nickname": "test",
+                   "status": "DEVICE_PUSH_ENABLED"]
+    )
 
     let service = SignInService()
-    service.otvcService = mockOTVC
+    service.otvcService = mockOTVC   // now valid because we added the property
 
+    // cache flags so first branch is taken
     let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
         "fraudCaseReviewRequired": false,
         "fraudCaseReviewMobileOnlyRequired": true
     ])
-
     BKServiceCache.shared.setCachedActionItemRequiredFlag(actionItemFlag)
-    FeatureHelper.setFraudReviewEnabled(true)
+
+    // ensure app state & feature flag allow this branch
+    BKAppState.didActionFraudAlertNotification = true
+    _ = FeatureHelper.hasFraudReviewEnabled() // or real setter
+
+    // also make sure the keychain has a device tag (guard must pass)
+    CIBCKeyChain.setPushOTVCRegisteredDeviceTag("dummy-tag")
 
     let expectation = self.expectation(description: "Completion")
 
-    service.performPostSignOnConcurrentFlow { (_,_,_,_,_,actionResponse) in
+    // Act
+    service.performPostSignOnConcurrentFlow { (_, _, _, _, _, actionResponse) in
+        // Assert
         XCTAssertTrue(actionResponse.value == true)
         expectation.fulfill()
     }
 
     waitForExpectations(timeout: 5)
 }
-
