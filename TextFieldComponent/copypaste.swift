@@ -1,80 +1,69 @@
+// 1) helper for normal fraud / KYC flags
+internal func evaluateActionResponse(
+    actionItemFlag: ActionItemRequiredFlagResponseDto
+) -> Results<Bool, ServiceException> {
+
+    if actionItemFlag.fraudCaseReviewRequired == true &&
+        FeatureHelper.hasFraudReviewEnabled() {
+        return .success(true)
+    }
+
+    if actionItemFlag.ccFraudReviewRequired == true &&
+        FeatureHelper.hasFraudOptimizationEnabled() {
+        return .success(true)
+    }
+
+    if actionItemFlag.investmentKycReviewDue == true &&
+        FeatureHelper.hasKYCKEnabled() &&
+        ActionItemsHelper.isSegmentEligibleForKyc() {
+        return .success(true)
+    }
+
+    return .failure(nil)
+}
+
+// 2) mobile-only helper (you already have this)
 internal func evaluateMobileOnlyFraudAction(
     actionItemFlag: ActionItemRequiredFlagResponseDto,
-    otvcService: OTVCServiceHandler,
+    otvcService: OTVServiceHandler,
     completion: @escaping (Results<Bool, ServiceException>) -> Void
 ) {
     var actionResponse: Results<Bool, ServiceException> = .failure(nil)
 
     guard actionItemFlag.fraudCaseReviewMobileOnlyRequired == true,
           BKAppState.didActionFraudAlertNotification == true,
-          FeatureHelper.hasFraudReviewEnabled() else {
+          FeatureHelper.hasFraudReviewEnabled(),
+          let deviceTag = CIBCKeyChain.getPushOTVCRegisteredDeviceTag()
+    else {
         completion(actionResponse)
         return
     }
 
-    guard let deviceTag = CIBCKeyChain.getPushOTVCRegisteredDeviceTag() else {
-        completion(actionResponse)
-        return
-    }
-
-    otvcService.getRegisteredPushOTVCDevice(registerdDeviceTag: deviceTag) { responseObj, _ in
+    otvcService.getRegisteredPushOTVCDevice({ responseObj in
         if let response = responseObj as? RegisteredDeviceResponseDto,
            response.status == .devicePushEnabled {
             actionResponse = .success(true)
         }
         completion(actionResponse)
-    }
+    }, registeredDeviceTag: deviceTag)
 }
 
 
-func test_evaluateMobileOnlyFraudAction_success() {
-    let mockOTVC = MockOTVCService()
-    mockOTVC.getRegisteredDeviceSuccess = true
-    mockOTVC.mockRegisteredDeviceResponseDto =
-        RegisteredDeviceResponseDto(response: ["status": "DEVICE_PUSH_ENABLED"])
+if let actionItemFlag = BKServiceCache.shared.getCachedActionItemRequiredFlag() {
 
-    let service = SignInService()
-    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "fraudCaseReviewMobileOnlyRequired": true
-    ])!
-
-    BKAppState.didActionFraudAlertNotification = true
-    CIBCKeyChain.setPushOTVCRegisteredDeviceTag("dummy-tag")
-
-    let expectation = expectation(description: "Completion")
-
-    service.evaluateMobileOnlyFraudAction(
-        actionItemFlag: actionItemFlag,
-        otvcService: mockOTVC
-    ) { result in
-        XCTAssertTrue(result.value == true)
-        expectation.fulfill()
-    }
-
-    waitForExpectations(timeout: 2)
-}
-
-
-func test_evaluateMobileOnlyFraudAction_failure_conditionsNotMet() {
-    let mockOTVC = MockOTVCService()
-    mockOTVC.getRegisteredDeviceSuccess = false
-
-    let service = SignInService()
-    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "fraudCaseReviewMobileOnlyRequired": false
-    ])!
-
-    BKAppState.didActionFraudAlertNotification = false
-
-    let expectation = expectation(description: "Completion")
-
-    service.evaluateMobileOnlyFraudAction(
-        actionItemFlag: actionItemFlag,
-        otvcService: mockOTVC
-    ) { result in
-        XCTAssertFalse(result.value == true)
-        expectation.fulfill()
-    }
-
-    waitForExpectations(timeout: 2)
-}
+            dispatchGroup.enter()
+            self.evaluateMobileOnlyFraudAction(
+                actionItemFlag: actionItemFlag,
+                otvcService: self.otvcService
+            ) { mobileOnlyResult in
+                if mobileOnlyResult.value == true {
+                    actionResponse = mobileOnlyResult
+                } else {
+                    // fall back to normal fraud / KYC evaluation
+                    actionResponse = self.evaluateActionResponse(
+                        actionItemFlag: actionItemFlag
+                    )
+                }
+                dispatchGroup.leave()
+            }
+        }
