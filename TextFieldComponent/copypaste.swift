@@ -95,3 +95,8 @@ func test_evaluateFraudAction_FraudCaseReviewMobileOnly_setsSuccessTrue() {
 
 
 
+dispatchGroup.enter()
+        self.evaluateFraudAction(actionItemFlag: actionItemFlag) { resultValue in
+            actionResponse = resultValue
+            dispatchGroup.leave()
+        }
