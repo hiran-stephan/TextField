@@ -1,75 +1,56 @@
-func test_actionResponse_success_whenFraudReviewRequired_andFraudOptimizationEnabled() {
-    // Arrange
-    let service = SignInService()
-    
-    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "ccFraudReviewRequired": false,
-        "investmentKycReviewDue": false,
-        "fraudCaseReviewRequired": true,
-        "fraudCaseReviewMobileOnlyRequired": false
-    ])
-    
-    // feature flag ON for fraud review
-    // (use whatever helper you already have in tests to flip this)
-    FeatureHelper.setFraudReviewEnabledForUnitTest(true)
-    FeatureHelper.setFraudOptimizationEnabledForUnitTest(true)
-    FeatureHelper.setKYCKEnabledForUnitTest(false)
-    
-    // Act
-    let result = service.evaluateActionResponse(actionItemFlag: actionItemFlag)
-    
-    // Assert
-    XCTAssertEqual(result.value, true)
+class ActionItemsHelperSpec: QuickSpec {
+    override func spec() {
+
+        describe("ActionItemsHelper.fetchAndCacheKYCContent") {
+
+            var mockWorker: BKKYCContentWorkerMock!
+
+            beforeEach {
+                BKServiceCache.shared.removeCachedKycContent()
+                mockWorker = BKKYCContentWorkerMock()
+            }
+
+            it("returns true if KYC content is already cached") {
+                // Arrange
+                let mockContent = KYCResponse(responses: ["content": [:]])
+                BKServiceCache.shared.setCachedKycContent(mockContent)
+
+                // Act / Assert
+                waitUntil { done in
+                    ActionItemsHelper.fetchAndCacheKYCContent(worker: mockWorker) { result in
+                        expect(result).to(beTrue())
+                        done()
+                    }
+                }
+            }
+
+            it("returns true if KYC content fetch succeeds") {
+                // Arrange
+                mockWorker.simulateSuccess()
+
+                // Act / Assert
+                waitUntil { done in
+                    ActionItemsHelper.fetchAndCacheKYCContent(worker: mockWorker) { result in
+                        expect(result).to(beTrue())
+                        expect(mockWorker.getKycContentCalled).to(beTrue())
+                        done()
+                    }
+                }
+            }
+
+            it("returns false if KYC content fetch fails") {
+                // Arrange
+                mockWorker.simulateFailure()
+
+                // Act / Assert
+                waitUntil { done in
+                    ActionItemsHelper.fetchAndCacheKYCContent(worker: mockWorker) { result in
+                        expect(result).to(beFalse())
+                        expect(mockWorker.getKycContentCalled).to(beTrue())
+                        done()
+                    }
+                }
+            }
+        }
+    }
 }
-
-
-func test_actionResponse_success_whenKycReviewDue_KYCEnabled_segmentEligible_setActionResponseTrue() {
-    // Arrange
-    let service = SignInService()
-    
-    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "ccFraudReviewRequired": false,
-        "investmentKycReviewDue": true,
-        "fraudCaseReviewRequired": false,
-        "fraudCaseReviewMobileOnlyRequired": false
-    ])
-    
-    // feature flags for KYC path
-    FeatureHelper.setFraudReviewEnabledForUnitTest(false)
-    FeatureHelper.setFraudOptimizationEnabledForUnitTest(false)
-    FeatureHelper.setKYCKEnabledForUnitTest(true)
-    ActionItemsHelper.setSegmentEligibleForKycForUnitTest(true)
-    
-    // Act
-    let result = service.evaluateActionResponse(actionItemFlag: actionItemFlag)
-    
-    // Assert
-    XCTAssertEqual(result.value, true)
-}
-
-
-func test_actionResponse_failure_whenNoFraudFlags_andFraudOptimizationDisabled() {
-    // Arrange
-    let service = SignInService()
-    
-    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "ccFraudReviewRequired": false,
-        "investmentKycReviewDue": false,
-        "fraudCaseReviewRequired": false,
-        "fraudCaseReviewMobileOnlyRequired": false
-    ])
-    
-    // turn everything OFF
-    FeatureHelper.setFraudReviewEnabledForUnitTest(false)
-    FeatureHelper.setFraudOptimizationEnabledForUnitTest(false)
-    FeatureHelper.setKYCKEnabledForUnitTest(false)
-    ActionItemsHelper.setSegmentEligibleForKycForUnitTest(false)
-    
-    // Act
-    let result = service.evaluateActionResponse(actionItemFlag: actionItemFlag)
-    
-    // Assert
-    XCTAssertEqual(result.value, false)
-}
-
-
