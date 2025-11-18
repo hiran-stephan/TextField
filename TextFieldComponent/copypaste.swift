@@ -1,3 +1,32 @@
+internal func evaluateMobileOnlyFraudAction(
+    actionItemFlag: ActionItemRequiredFlagResponseDto,
+    otvcService: OTVCServiceHandler,
+    completion: @escaping (Results<Bool, ServiceException>) -> Void
+) {
+    var actionResponse: Results<Bool, ServiceException> = .failure(nil)
+
+    guard actionItemFlag.fraudCaseReviewMobileOnlyRequired == true,
+          BKAppState.didActionFraudAlertNotification == true,
+          FeatureHelper.hasFraudReviewEnabled() else {
+        completion(actionResponse)
+        return
+    }
+
+    guard let deviceTag = CIBCKeyChain.getPushOTVCRegisteredDeviceTag() else {
+        completion(actionResponse)
+        return
+    }
+
+    otvcService.getRegisteredPushOTVCDevice(registerdDeviceTag: deviceTag) { responseObj, _ in
+        if let response = responseObj as? RegisteredDeviceResponseDto,
+           response.status == .devicePushEnabled {
+            actionResponse = .success(true)
+        }
+        completion(actionResponse)
+    }
+}
+
+
 func test_evaluateMobileOnlyFraudAction_success() {
     let mockOTVC = MockOTVCService()
     mockOTVC.getRegisteredDeviceSuccess = true
@@ -10,10 +39,9 @@ func test_evaluateMobileOnlyFraudAction_success() {
     ])!
 
     BKAppState.didActionFraudAlertNotification = true
-    FeatureHelper.setFraudReviewEnabled(true)
     CIBCKeyChain.setPushOTVCRegisteredDeviceTag("dummy-tag")
 
-    let expectation = self.expectation(description: "Completion")
+    let expectation = expectation(description: "Completion")
 
     service.evaluateMobileOnlyFraudAction(
         actionItemFlag: actionItemFlag,
@@ -23,19 +51,22 @@ func test_evaluateMobileOnlyFraudAction_success() {
         expectation.fulfill()
     }
 
-    waitForExpectations(timeout: 3)
+    waitForExpectations(timeout: 2)
 }
 
 
-func test_evaluateMobileOnlyFraudAction_conditionsNotMet_returnsFailure() {
+func test_evaluateMobileOnlyFraudAction_failure_conditionsNotMet() {
     let mockOTVC = MockOTVCService()
-    let service = SignInService()
+    mockOTVC.getRegisteredDeviceSuccess = false
 
+    let service = SignInService()
     let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
         "fraudCaseReviewMobileOnlyRequired": false
     ])!
 
-    let expectation = self.expectation(description: "Completion")
+    BKAppState.didActionFraudAlertNotification = false
+
+    let expectation = expectation(description: "Completion")
 
     service.evaluateMobileOnlyFraudAction(
         actionItemFlag: actionItemFlag,
@@ -45,5 +76,5 @@ func test_evaluateMobileOnlyFraudAction_conditionsNotMet_returnsFailure() {
         expectation.fulfill()
     }
 
-    waitForExpectations(timeout: 3)
+    waitForExpectations(timeout: 2)
 }
