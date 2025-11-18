@@ -1,102 +1,49 @@
-// keep it internal so tests can see it
-internal func evaluateFraudAction(
-    actionItemFlag: ActionItemRequiredFlagResponseDto?,
-    otvcService: OTVCServiceHandler,
-    keychain: PushOTVCKeychainProtocol,
-    appState: BKAppStateProtocol,
-    featureHelper: FeatureHelperProtocol,
-    completion: @escaping (Results<Bool, ServiceException>) -> Void
-) {
-    var actionResponse: Results<Bool, ServiceException> = .failure(nil)
+func test_evaluateMobileOnlyFraudAction_success() {
+    let mockOTVC = MockOTVCService()
+    mockOTVC.getRegisteredDeviceSuccess = true
+    mockOTVC.mockRegisteredDeviceResponseDto =
+        RegisteredDeviceResponseDto(response: ["status": "DEVICE_PUSH_ENABLED"])
 
-    if actionItemFlag?.fraudCaseReviewMobileOnlyRequired == true &&
-       appState.didActionFraudAlertNotification == true &&
-       featureHelper.hasFraudReviewEnabled() {
-
-        guard let deviceTag = keychain.getPushOTVCRegisteredDeviceTag() else {
-            completion(actionResponse)
-            return
-        }
-
-        otvcService.getRegisteredPushOTVCDevice(deviceTag) { (responseObj, _) in
-            if let response = responseObj as? RegisteredDeviceResponseDto,
-               response.status == .devicePushEnabled {
-                actionResponse = .success(true)
-            }
-            completion(actionResponse)
-        }
-
-    } else if actionItemFlag?.fraudCaseReviewRequired == true &&
-              featureHelper.hasFraudReviewEnabled() {
-        actionResponse = .success(true)
-        completion(actionResponse)
-
-    } else {
-        completion(actionResponse)
-    }
-}
-
-
-func test_evaluateFraudAction_FraudCaseReviewMobileOnly_setsSuccessTrue() {
-    // Arrange
+    let service = SignInService()
     let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
-        "fraudCaseReviewRequired": false,
         "fraudCaseReviewMobileOnlyRequired": true
     ])!
 
-    class MockOTVC: OTVCServiceHandler {
-        func getRegisteredPushOTVCDevice(
-            _ registeredDeviceTag: String,
-            _ onCompletion: @escaping OTVCServiceCompletionHandler
-        ) {
-            let dto = RegisteredDeviceResponseDto(response: [
-                "status": "DEVICE_PUSH_ENABLED",
-                "nickname": "test"
-            ])!
-            onCompletion(dto, nil)
-        }
-    }
+    BKAppState.didActionFraudAlertNotification = true
+    FeatureHelper.setFraudReviewEnabled(true)
+    CIBCKeyChain.setPushOTVCRegisteredDeviceTag("dummy-tag")
 
-    class MockKeychain: PushOTVCKeychainProtocol {
-        func getPushOTVCRegisteredDeviceTag() -> String? { "dummy-tag" }
-    }
+    let expectation = self.expectation(description: "Completion")
 
-    class MockAppState: BKAppStateProtocol {
-        var didActionFraudAlertNotification = true
-    }
-
-    class MockFeatureHelper: FeatureHelperProtocol {
-        func hasFraudReviewEnabled() -> Bool { true }
-    }
-
-    let service = SignInService()
-    let mockOTVC = MockOTVC()
-    let mockKeychain = MockKeychain()
-    let mockAppState = MockAppState()
-    let mockFeature = MockFeatureHelper()
-
-    let expectation = self.expectation(description: "fraud mobile only")
-
-    // Act
-    service.evaluateFraudAction(
+    service.evaluateMobileOnlyFraudAction(
         actionItemFlag: actionItemFlag,
-        otvcService: mockOTVC,
-        keychain: mockKeychain,
-        appState: mockAppState,
-        featureHelper: mockFeature
+        otvcService: mockOTVC
     ) { result in
-        // Assert
         XCTAssertTrue(result.value == true)
         expectation.fulfill()
     }
 
-    waitForExpectations(timeout: 1)
+    waitForExpectations(timeout: 3)
 }
 
 
+func test_evaluateMobileOnlyFraudAction_conditionsNotMet_returnsFailure() {
+    let mockOTVC = MockOTVCService()
+    let service = SignInService()
 
-dispatchGroup.enter()
-        self.evaluateFraudAction(actionItemFlag: actionItemFlag) { resultValue in
-            actionResponse = resultValue
-            dispatchGroup.leave()
-        }
+    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
+        "fraudCaseReviewMobileOnlyRequired": false
+    ])!
+
+    let expectation = self.expectation(description: "Completion")
+
+    service.evaluateMobileOnlyFraudAction(
+        actionItemFlag: actionItemFlag,
+        otvcService: mockOTVC
+    ) { result in
+        XCTAssertFalse(result.value == true)
+        expectation.fulfill()
+    }
+
+    waitForExpectations(timeout: 3)
+}
