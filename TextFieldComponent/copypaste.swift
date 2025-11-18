@@ -1,69 +1,75 @@
-// 1) helper for normal fraud / KYC flags
-internal func evaluateActionResponse(
-    actionItemFlag: ActionItemRequiredFlagResponseDto
-) -> Results<Bool, ServiceException> {
-
-    if actionItemFlag.fraudCaseReviewRequired == true &&
-        FeatureHelper.hasFraudReviewEnabled() {
-        return .success(true)
-    }
-
-    if actionItemFlag.ccFraudReviewRequired == true &&
-        FeatureHelper.hasFraudOptimizationEnabled() {
-        return .success(true)
-    }
-
-    if actionItemFlag.investmentKycReviewDue == true &&
-        FeatureHelper.hasKYCKEnabled() &&
-        ActionItemsHelper.isSegmentEligibleForKyc() {
-        return .success(true)
-    }
-
-    return .failure(nil)
-}
-
-// 2) mobile-only helper (you already have this)
-internal func evaluateMobileOnlyFraudAction(
-    actionItemFlag: ActionItemRequiredFlagResponseDto,
-    otvcService: OTVServiceHandler,
-    completion: @escaping (Results<Bool, ServiceException>) -> Void
-) {
-    var actionResponse: Results<Bool, ServiceException> = .failure(nil)
-
-    guard actionItemFlag.fraudCaseReviewMobileOnlyRequired == true,
-          BKAppState.didActionFraudAlertNotification == true,
-          FeatureHelper.hasFraudReviewEnabled(),
-          let deviceTag = CIBCKeyChain.getPushOTVCRegisteredDeviceTag()
-    else {
-        completion(actionResponse)
-        return
-    }
-
-    otvcService.getRegisteredPushOTVCDevice({ responseObj in
-        if let response = responseObj as? RegisteredDeviceResponseDto,
-           response.status == .devicePushEnabled {
-            actionResponse = .success(true)
-        }
-        completion(actionResponse)
-    }, registeredDeviceTag: deviceTag)
+func test_actionResponse_success_whenFraudReviewRequired_andFraudOptimizationEnabled() {
+    // Arrange
+    let service = SignInService()
+    
+    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
+        "ccFraudReviewRequired": false,
+        "investmentKycReviewDue": false,
+        "fraudCaseReviewRequired": true,
+        "fraudCaseReviewMobileOnlyRequired": false
+    ])
+    
+    // feature flag ON for fraud review
+    // (use whatever helper you already have in tests to flip this)
+    FeatureHelper.setFraudReviewEnabledForUnitTest(true)
+    FeatureHelper.setFraudOptimizationEnabledForUnitTest(true)
+    FeatureHelper.setKYCKEnabledForUnitTest(false)
+    
+    // Act
+    let result = service.evaluateActionResponse(actionItemFlag: actionItemFlag)
+    
+    // Assert
+    XCTAssertEqual(result.value, true)
 }
 
 
-if let actionItemFlag = BKServiceCache.shared.getCachedActionItemRequiredFlag() {
+func test_actionResponse_success_whenKycReviewDue_KYCEnabled_segmentEligible_setActionResponseTrue() {
+    // Arrange
+    let service = SignInService()
+    
+    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
+        "ccFraudReviewRequired": false,
+        "investmentKycReviewDue": true,
+        "fraudCaseReviewRequired": false,
+        "fraudCaseReviewMobileOnlyRequired": false
+    ])
+    
+    // feature flags for KYC path
+    FeatureHelper.setFraudReviewEnabledForUnitTest(false)
+    FeatureHelper.setFraudOptimizationEnabledForUnitTest(false)
+    FeatureHelper.setKYCKEnabledForUnitTest(true)
+    ActionItemsHelper.setSegmentEligibleForKycForUnitTest(true)
+    
+    // Act
+    let result = service.evaluateActionResponse(actionItemFlag: actionItemFlag)
+    
+    // Assert
+    XCTAssertEqual(result.value, true)
+}
 
-            dispatchGroup.enter()
-            self.evaluateMobileOnlyFraudAction(
-                actionItemFlag: actionItemFlag,
-                otvcService: self.otvcService
-            ) { mobileOnlyResult in
-                if mobileOnlyResult.value == true {
-                    actionResponse = mobileOnlyResult
-                } else {
-                    // fall back to normal fraud / KYC evaluation
-                    actionResponse = self.evaluateActionResponse(
-                        actionItemFlag: actionItemFlag
-                    )
-                }
-                dispatchGroup.leave()
-            }
-        }
+
+func test_actionResponse_failure_whenNoFraudFlags_andFraudOptimizationDisabled() {
+    // Arrange
+    let service = SignInService()
+    
+    let actionItemFlag = ActionItemRequiredFlagResponseDto(response: [
+        "ccFraudReviewRequired": false,
+        "investmentKycReviewDue": false,
+        "fraudCaseReviewRequired": false,
+        "fraudCaseReviewMobileOnlyRequired": false
+    ])
+    
+    // turn everything OFF
+    FeatureHelper.setFraudReviewEnabledForUnitTest(false)
+    FeatureHelper.setFraudOptimizationEnabledForUnitTest(false)
+    FeatureHelper.setKYCKEnabledForUnitTest(false)
+    ActionItemsHelper.setSegmentEligibleForKycForUnitTest(false)
+    
+    // Act
+    let result = service.evaluateActionResponse(actionItemFlag: actionItemFlag)
+    
+    // Assert
+    XCTAssertEqual(result.value, false)
+}
+
+
