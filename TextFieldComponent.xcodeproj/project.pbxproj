@@ -131,6 +131,7 @@
 		3BF745FA2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf"; sourceTree = "<group>"; };
 		3BF745FB2EB14085008DE35F /* receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "receipt_7133acf4-5fd1-4ccf-8b44-d85f5a2dafdf.pdf"; sourceTree = "<group>"; };
 		3BF745FE2EB3F910008DE35F /* QA_Duela_Davis (1).docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QA_Duela_Davis (1).docx"; sourceTree = "<group>"; };
+		3BF745FF2F42269E008DE35F /* Jerin- BANK.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jerin- BANK.docx"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,6 +199,7 @@
 				3BF745FA2EB14085008DE35F /* receipt_c925cff5-e275-461f-a738-53e7bfb70032.pdf */,
 				3BF745F82EA7E94B008DE35F /* Mobile Financial Sales Specialist.docx */,
 				3BF745F92EA7E94B008DE35F /* Sanctions and Transactions Monitoring Analyst.docx */,
+				3BF745FF2F42269E008DE35F /* Jerin- BANK.docx */,
 				3B76B6862E58F7A600249CE1 /* IMM5739_2-1EE7J7A6 (1).pdf */,
 				3BF745FE2EB3F910008DE35F /* QA_Duela_Davis (1).docx */,
 				3BCAC2692E1D83EF001CC0C9 /* copypaste.swift */,
